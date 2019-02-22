@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_task_header"
+        android:textSize="24sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_task_desc"
+        android:textSize="16sp"/>
+
+    <EditText
+        android:id="@+id/edit_desc_txtBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/edit_task_desc_hint"
+        android:inputType="textShortMessage"
+        android:width="50dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_task_goal"
+        android:textSize="16sp"/>
+
+    <EditText
+        android:id="@+id/edit_goal_txtBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/edit_task_goal_hint"
+        android:inputType="textShortMessage"
+        android:width="50dp"/>
+
+</LinearLayout>

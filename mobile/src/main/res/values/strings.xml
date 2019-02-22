@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">HabbitHub</string>
+    <string name="task_main_header">Task List</string>
+
+
+    <string name="edit_task_header">Edit Task</string>
+    <string name="edit_task_desc">Description</string>
+    <string name="edit_task_goal">Goal</string>
+    <string name="edit_task_done_btn">Done</string>
+    <string name="edit_task_desc_hint">Enter a description of your task</string>
+    <string name="edit_task_goal_hint">Enter your goal</string>
+</resources>
