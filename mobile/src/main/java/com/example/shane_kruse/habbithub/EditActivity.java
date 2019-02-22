@@ -3,11 +3,13 @@ package com.example.shane_kruse.habbithub;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 
 public class EditActivity extends AppCompatActivity {
     private EditText descEdit;
     private EditText goalEdit;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,5 +26,10 @@ public class EditActivity extends AppCompatActivity {
 
         descEdit.setText(desc);
         goalEdit.setText(String.valueOf(goal));
+
+        // Initialize Toolbar
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("Edit Task");
     }
 }
