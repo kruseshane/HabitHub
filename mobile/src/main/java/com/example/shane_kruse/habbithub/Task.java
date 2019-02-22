@@ -3,10 +3,13 @@ package com.example.shane_kruse.habbithub;
 public class Task {
     private String descr;
     private int count;
+    private int current_count;
+
 
     public Task(String descr, int count) {
         this.descr = descr;
         this.count = count;
+        this.current_count = 0;
     }
 
     public String getDescr() {
@@ -23,5 +26,13 @@ public class Task {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public int getCurrent_count() {
+        return current_count;
+    }
+
+    public void setCurrent_count(int current_count) {
+        this.current_count = current_count;
     }
 }

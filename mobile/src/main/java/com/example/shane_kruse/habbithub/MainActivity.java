@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("Task List");
 
         // Create RecyclerView and fill in data from "tasks"
         // aka magic
@@ -85,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
                 final int position = i;
                 final Task task = tasks[i];
                 MyTaskAdapter.ViewHolder taskView = (MyTaskAdapter.ViewHolder) taskRecycler.findViewHolderForAdapterPosition(i);
-                System.out.println(taskView.item.getText());
-                TextView taskTextView = taskView.item;
+                System.out.println(taskView.task_desc.getText());
+                TextView taskTextView = taskView.task_desc;
 
                 taskTextView.setOnClickListener(new View.OnClickListener() {
                     @Override

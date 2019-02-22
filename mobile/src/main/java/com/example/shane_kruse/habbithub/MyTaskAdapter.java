@@ -30,20 +30,26 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder myViewHolder, int i) {
-        TextView item = myViewHolder.item;
-        item.setText(taskList[i].getDescr());
+        myViewHolder.task_desc.setText(taskList[i].getDescr());
+
+        String goal_str = String.valueOf(taskList[i].getCount());
+        String current_goal_str = String.valueOf(taskList[i].getCurrent_count());
+        myViewHolder.task_goal.setText(current_goal_str + "/" + goal_str);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView item;
+        public TextView task_desc;
+        public TextView task_goal;
+
         public ViewHolder (View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            item = (TextView) itemView.findViewById(R.id.task_main);
+            task_desc = (TextView) itemView.findViewById(R.id.task_desc);
+            task_goal = (TextView) itemView.findViewById(R.id.task_goal);
         }
 
         public void onClick(View view) {
-            System.out.println(item.getText());
+            System.out.println(task_desc.getText());
         }
     }
 }
