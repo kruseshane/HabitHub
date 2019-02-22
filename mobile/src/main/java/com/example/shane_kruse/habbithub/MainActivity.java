@@ -1,17 +1,25 @@
 package com.example.shane_kruse.habbithub;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,11 +31,30 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView taskRecycler;
     private MyTaskAdapter mAdapter;
     private Toolbar mToolbar;
+    private Handler myHandler; // was protected
+    int receivedMessageNumber = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*
+        //Create a message handler//
+        myHandler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                Bundle msgBundle = msg.getData();
+                messageText(msgBundle.getString("messageText"));
+                return true;
+            }
+        });
+        */
+
+        //Register to receive local broadcasts, which we'll be creating in the next step//
+        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
+        Receiver messageReceiver = new Receiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, messageFilter);
 
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -86,6 +113,18 @@ public class MainActivity extends AppCompatActivity {
             Task task = tasks[position];
             TextView taskView = (TextView) taskRecycler.getLayoutManager().findViewByPosition(position);
 
+        }
+    }
+
+    //Define a nested class that extends BroadcastReceiver//
+    public class Receiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //Upon receiving each message from the wearable, display the following text//
+
+            String message = intent.getStringExtra("message");
+            Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     }
 }
