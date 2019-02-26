@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
@@ -24,12 +25,16 @@ import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
 
-    Task[] tasks = {new Task("Drink water", 3),
-            new Task("Go for a run", 1),
-            new Task("Work on homework", 1),
-            new Task("Eat healthy", 3)};
+
+    Date date = new Date();
+    Task[] tasks = {new Task("Drink water", 3, 0, date, "n/a", false, "daily", "000FF"),
+            new Task("Go for a run", 1, 0, date, "n/a", false, "daily", "000FF"),
+            new Task("Do homework", 1, 0, date, "n/a", false, "daily", "000FF"),
+            new Task("Eat healthy", 3, 0, date, "n/a", false, "daily", "000FF")};
 
     private RecyclerView taskRecycler;
     private MyTaskAdapter mAdapter;
@@ -69,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Task List");
 
         for (int i = 0; i < tasks.length; i++) {
-            total += tasks[i].getCount();
-            sum += tasks[i].getCurrent_count();
+            total += tasks[i].getGoal();
+            sum += tasks[i].getProg();
         }
 
         progressBarOverall.setFinishedStrokeWidth(45);
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
                         editScreen.putExtra("task_desc", task.getDescr());
-                        editScreen.putExtra("task_goal", task.getCount());
+                        editScreen.putExtra("task_goal", task.getGoal());
                         editScreen.putExtra("task_pos", position);
                         startActivityForResult(editScreen, 101);
                     }
