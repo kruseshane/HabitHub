@@ -9,7 +9,7 @@ public class Task {
     public Task(String descr, int count) {
         this.descr = descr;
         this.count = count;
-        this.current_count = 0;
+        this.current_count = 1;
     }
 
     public String getDescr() {

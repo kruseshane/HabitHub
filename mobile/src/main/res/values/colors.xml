@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="brick">#BD6952</color>
+    <color name="salmon">#C39F75</color>
+    <color name="light_orange">#F1C18A</color>
+    <color name="silver">#D0C3BB</color>
+    <color name="toolbarTransparent">#00FFFFFF</color>
 </resources>

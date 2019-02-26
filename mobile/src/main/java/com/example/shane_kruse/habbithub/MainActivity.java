@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -21,6 +22,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.lzyzsd.circleprogress.DonutProgress;
+
 public class MainActivity extends AppCompatActivity {
 
     Task[] tasks = {new Task("Drink water", 3),
@@ -32,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private MyTaskAdapter mAdapter;
     private Toolbar mToolbar;
     private Handler myHandler; // was protected
-    int receivedMessageNumber = 1;
+    private int total;
+    private float sum;
+    private DonutProgress progressBarOverall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         });
         */
 
+        progressBarOverall = findViewById(R.id.goal_progress_overall);
+
         //Register to receive local broadcasts, which we'll be creating in the next step//
         IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
         Receiver messageReceiver = new Receiver();
@@ -60,6 +67,15 @@ public class MainActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Task List");
+
+        for (int i = 0; i < tasks.length; i++) {
+            total += tasks[i].getCount();
+            sum += tasks[i].getCurrent_count();
+        }
+
+        progressBarOverall.setFinishedStrokeWidth(45);
+        progressBarOverall.setUnfinishedStrokeWidth(45);
+        progressBarOverall.setProgress((sum/total) * 100);
 
         // Create RecyclerView and fill in data from "tasks"
         // aka magic

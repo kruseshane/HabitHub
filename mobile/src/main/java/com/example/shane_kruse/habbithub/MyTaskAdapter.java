@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.lzyzsd.circleprogress.DonutProgress;
+
 import org.w3c.dom.Text;
 
 public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder> {
