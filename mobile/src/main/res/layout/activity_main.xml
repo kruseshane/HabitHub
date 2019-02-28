@@ -37,11 +37,12 @@
                 app:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
                 <ImageView
-                    android:id="@+id/add_task"
+                    android:id="@+id/edit_add_task"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="left"
-                    android:src="@mipmap/ic_launcher_foreground_plus_icon" />
+                    android:background="@android:color/transparent"
+                    android:src="@mipmap/ic_launcher_foreground_edit_task" />
 
                 <TextView
                     android:layout_width="wrap_content"

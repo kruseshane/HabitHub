@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler myHandler; // was protected
     private int total;
     private float sum;
+    private int flag = 0;
     private DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
@@ -65,21 +66,25 @@ public class MainActivity extends AppCompatActivity {
         */
 
 
-        addTask = findViewById(R.id.add_task);
+        addTask = findViewById(R.id.edit_add_task);
         addTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
-                startActivityForResult(editScreen, 101);
-            }
-        });
+                // Add image
+                if (flag == 0) {
+                    addTask.setImageResource(R.mipmap.ic_launcher_foreground_plus_icon);
+                    System.out.println(R.mipmap.ic_launcher_foreground_plus_icon);
+                    int resID = getResources().getIdentifier("ic_launcher_foreground_plus_icon", "mipmap", getPackageName());
+                    System.out.println(resID);
+                    flag = 1;
+                } else { // edit image
+                    addTask.setImageResource(R.mipmap.ic_launcher_foreground_edit_task);
+                    flag = 0;
+                }
 
-        addTask.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
-                startActivityForResult(editScreen, 101);
-                return true;
+
+                //Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
+                //startActivityForResult(editScreen, 101);
             }
         });
 
