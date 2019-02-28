@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private int total;
     private float sum;
     private DonutProgress progressBarOverall;
+    private ImageView addTask;
+    private ImageView menuOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,26 @@ public class MainActivity extends AppCompatActivity {
         });
         */
 
-        progressBarOverall = findViewById(R.id.goal_progress_overall);
+
+        addTask = findViewById(R.id.add_task);
+        addTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
+                startActivityForResult(editScreen, 101);
+            }
+        });
+
+        addTask.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
+                startActivityForResult(editScreen, 101);
+                return true;
+            }
+        });
+
+        menuOptions = findViewById(R.id.menu_options);
 
         //Register to receive local broadcasts, which we'll be creating in the next step//
         IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
@@ -71,13 +93,14 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Task List");
+        getSupportActionBar().setTitle("");
 
         for (int i = 0; i < tasks.length; i++) {
             total += tasks[i].getGoal();
             sum += tasks[i].getProg();
         }
 
+        progressBarOverall = findViewById(R.id.goal_progress_overall);
         progressBarOverall.setFinishedStrokeWidth(45);
         progressBarOverall.setUnfinishedStrokeWidth(45);
         progressBarOverall.setProgress((sum/total) * 100);
@@ -91,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         taskRecycler.setAdapter(mAdapter);
     }
 
+    /*
     // Inflates menu icons as if it were an ActionBar
     // Whatever that means...
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -101,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
         if (id == R.id.toolbar_edit) {
-            item.setIcon(R.mipmap.add_task);
+            item.setIcon(R.mipmap.ic_launcher_foreground_add_task);
 
             for(int i = 0; i < tasks.length; i++) {
                 final int position = i;
@@ -125,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

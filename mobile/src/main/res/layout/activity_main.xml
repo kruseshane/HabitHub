@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_height="match_parent"
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="top"
@@ -10,29 +11,54 @@
 
     <LinearLayout
         android:id="@+id/main_task_layout"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="top"
         android:orientation="vertical"
         tools:context=".Task_Activity">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/progress_view"
-            xmlns:custom="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
             android:background="@drawable/main_grad">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
-                android:minHeight="?attr/actionBarSize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-25dp"
+                android:layout_marginBottom="10dp"
                 android:background="@color/toolbarTransparent"
+                android:minHeight="?attr/actionBarSize"
                 app:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+                <ImageView
+                    android:id="@+id/add_task"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="left"
+                    android:src="@mipmap/ic_launcher_foreground_plus_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="@string/app_name"
+                    android:textSize="30sp" />
+
+                <ImageView
+                    android:id="@+id/menu_options"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="15dp"
+                    android:src="@mipmap/ic_launcher_foreground_menu_options" />
+
             </android.support.v7.widget.Toolbar>
 
             <com.github.lzyzsd.circleprogress.DonutProgress
@@ -40,14 +66,66 @@
                 android:layout_width="225dp"
                 android:layout_height="225dp"
                 android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
                 android:gravity="center"
-                android:layout_marginTop="50dp"
-                custom:donut_text_size="38sp"
-                custom:donut_circle_starting_degree="270"
-                custom:donut_finished_color="@android:color/white"
-                custom:donut_text_color="@android:color/white"/>
+                app:donut_circle_starting_degree="270"
+                app:donut_finished_color="@android:color/white"
+                app:donut_text_color="@android:color/white"
+                app:donut_text_size="38sp" />
 
-        </RelativeLayout>
+        </LinearLayout>
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/toolbarTransparent"
+            android:minHeight="?attr/actionBarSize"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            app:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="Today"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:paddingLeft="-5dp"
+                    android:paddingRight="-5dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="Upcoming"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:paddingLeft="-5dp"
+                    android:paddingRight="5dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="Completed"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+
+        </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/task_list"

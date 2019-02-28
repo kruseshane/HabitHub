@@ -15,7 +15,7 @@
         android:layout_height="300dp"
         android:gravity="center"
         android:background="@color/toolbarTransparent"
-        android:src="@mipmap/ic_launcher_foreground_splash_screen_logo"/>
+        android:src="@drawable/splash_icon"/>
 
     <TextView
         android:layout_width="wrap_content"

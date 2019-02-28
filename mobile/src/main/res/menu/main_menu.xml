@@ -5,7 +5,7 @@
     <item
         android:id="@+id/toolbar_edit"
         app:showAsAction="ifRoom"
-        android:icon="@mipmap/edit_task"
+        android:icon="@mipmap/ic_launcher_foreground_edit_task"
         android:title="Edit">
     </item>
 
@@ -20,7 +20,7 @@
     <item
         android:id="@+id/toolbar_stats"
         app:showAsAction="ifRoom|withText"
-        android:icon="@mipmap/task_stats"
+        android:icon="@mipmap/ic_launcher_foreground_task_stats"
         android:title="Stats">
     </item>
 </menu>

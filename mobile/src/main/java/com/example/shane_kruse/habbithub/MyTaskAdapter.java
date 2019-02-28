@@ -34,8 +34,8 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder myViewHolder, int i) {
         myViewHolder.task_desc.setText(taskList[i].getDescr());
 
-        String goal_str = String.valueOf(taskList[i].getCount());
-        String current_goal_str = String.valueOf(taskList[i].getCurrent_count());
+        String goal_str = String.valueOf(taskList[i].getGoal());
+        String current_goal_str = String.valueOf(taskList[i].getProg());
         myViewHolder.task_goal.setText(current_goal_str + "/" + goal_str);
     }
 
