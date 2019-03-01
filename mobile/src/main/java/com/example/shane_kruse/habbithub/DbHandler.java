@@ -1,7 +1,9 @@
 package com.example.shane_kruse.habbithub;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -24,12 +26,11 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String KEY_COMPLETED = "completed";
     private static final String KEY_INTERVAL = "interval";
     private static final String KEY_COLOR = "color";
-
-    private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_Task + " (" + KEY_DESCR + " VARCHAR, "
-                                                + KEY_GOAL + " INTEGER, " + KEY_PROG + " INTEGER, "
-                                                + KEY_DUE_DATE + " DATETIME, " + KEY_ICON + " VARCAHR, "
-                                                + KEY_COMPLETED + " BIT, " + KEY_INTERVAL + " VARCHAR, "
-                                                + KEY_COLOR + " VARCHAR" + ")";
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " (" + KEY_DESCR
+                                                + " VARCHAR, " + KEY_GOAL + " INTEGER, " + KEY_PROG
+                                                + " INTEGER, " + KEY_DUE_DATE + " DATETIME, " + KEY_ICON
+                                                + " VARCAHR, " + KEY_COMPLETED + " BIT, " + KEY_INTERVAL
+                                                + " VARCHAR, " + KEY_COLOR + " VARCHAR" + ")";
 
     public DbHandler(Context context){
         super(context,DB_NAME, null, DB_VERSION);
@@ -47,7 +48,7 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public ArrayList<Task> loadData() throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-DD HH:MM:SS", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
         ArrayList<Task> tasks = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_Task;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -87,15 +88,17 @@ public class DbHandler extends SQLiteOpenHelper {
         if (t.isCompleted()) completed = 1;
         else completed = 0;
 
-        String query = "INSERT INTO " + TABLE_Task + " (" + KEY_DESCR + " " +
-                        KEY_GOAL + " " + KEY_PROG + " " + KEY_DUE_DATE + " " +
-                        KEY_ICON + " " + KEY_COMPLETED + " " + KEY_INTERVAL + " " +
-                        KEY_COLOR + ") VALUES (" +
-                        t.getDescr() + ", " + t.getGoal() + ", " + t.getProg() + ", " +
-                        date_str + ", " + t.getIcon() + ", " + completed + ", " +
-                        t.getInterval() + ", " + t.getColor() + ")";
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_DESCR, t.getDescr());
+        cv.put(KEY_GOAL, t.getGoal());
+        cv.put(KEY_PROG, t.getProg());
+        cv.put(KEY_DUE_DATE, date_str);
+        cv.put(KEY_ICON, t.getIcon());
+        cv.put(KEY_COMPLETED, completed);
+        cv.put(KEY_INTERVAL, t.getInterval());
+        cv.put(KEY_COLOR, t.getColor());
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
+        db.insert(TABLE_Task, null, cv);
     }
 }

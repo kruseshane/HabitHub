@@ -31,14 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-
-
-    Date date = new Date();
-    Task[] tasks = {new Task("Drink water", 3, 0, date, "n/a", false, "daily", "000FF"),
-            new Task("Go for a run", 1, 0, date, "n/a", false, "daily", "000FF"),
-            new Task("Do homework", 1, 0, date, "n/a", false, "daily", "000FF"),
-            new Task("Eat healthy", 3, 0, date, "n/a", false, "daily", "000FF")};
-
+    private ArrayList<Task> tasks = new ArrayList<>();
     private RecyclerView taskRecycler;
     private MyTaskAdapter mAdapter;
     private Toolbar mToolbar;
@@ -56,7 +49,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ArrayList<Task> tasks = null;
+        /*
+        Task t = new Task("Debug database", 1, 0, new Date(), "n/a", false, "daily", "burgundy");
+        dbh.insertTask(t);
+        Task t2 = new Task("Murder Shane", 1, 0, new Date(), "n/a", false, "daily", "burgundy");
+        dbh.insertTask(t2);
+        */
+
+        tasks = null;
         try {
             tasks = dbh.loadData();
         } catch (ParseException e) {
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             int position = data.getIntExtra("task_pos", 0);
             String new_desc = data.getStringExtra("task_desc");
             int new_goal = data.getIntExtra("task_goal", 0);
-            Task task = tasks[position];
+            Task task = tasks.get(position);
             TextView taskView = (TextView) taskRecycler.getLayoutManager().findViewByPosition(position);
 
         }
