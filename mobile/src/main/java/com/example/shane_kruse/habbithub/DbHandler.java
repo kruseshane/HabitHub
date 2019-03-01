@@ -5,8 +5,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class DbHandler extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
@@ -42,7 +46,8 @@ public class DbHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public ArrayList<Task> loadData() {
+    public ArrayList<Task> loadData() throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-DD HH:MM:SS", Locale.ENGLISH);
         ArrayList<Task> tasks = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_Task;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -52,18 +57,45 @@ public class DbHandler extends SQLiteOpenHelper {
             String descr = cursor.getString(0);
             int goal = cursor.getInt(1);
             int prog = cursor.getInt(2);
-            String due_date = cursor.getString(3);
+
+            String date_str = cursor.getString(3);
+            Date due_date = formatter.parse(date_str);
+
             String icon = cursor.getString(4);
-            int completed = cursor.getInt(5);
+
+            boolean completed;
+            int completed_int = cursor.getInt(5);
+            if (completed_int == 1) completed = true;
+            else completed = false;
+
             String interval = cursor.getString(6);
             String color = cursor.getString(7);
 
             Date temp_due_date = new Date();
 
-            Task task = new Task(descr, goal, prog, temp_due_date, icon, false, interval, color);
+            Task task = new Task(descr, goal, prog, temp_due_date, icon, completed, interval, color);
             tasks.add(task);
         }
-
         return tasks;
+    }
+
+    public void insertTask(Task t) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        String date_str = df.format(t.getDue_date());
+
+        int completed;
+        if (t.isCompleted()) completed = 1;
+        else completed = 0;
+
+        String query = "INSERT INTO " + TABLE_Task + " (" + KEY_DESCR + " " +
+                        KEY_GOAL + " " + KEY_PROG + " " + KEY_DUE_DATE + " " +
+                        KEY_ICON + " " + KEY_COMPLETED + " " + KEY_INTERVAL + " " +
+                        KEY_COLOR + ") VALUES (" +
+                        t.getDescr() + ", " + t.getGoal() + ", " + t.getProg() + ", " +
+                        date_str + ", " + t.getIcon() + ", " + completed + ", " +
+                        t.getInterval() + ", " + t.getColor() + ")";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
     }
 }

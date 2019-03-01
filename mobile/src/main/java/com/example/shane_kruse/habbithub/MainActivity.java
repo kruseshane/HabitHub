@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,11 +49,19 @@ public class MainActivity extends AppCompatActivity {
     private DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
+    private DbHandler dbh = new DbHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ArrayList<Task> tasks = null;
+        try {
+            tasks = dbh.loadData();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         /*
         //Create a message handler//
@@ -100,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
 
-        for (int i = 0; i < tasks.length; i++) {
-            total += tasks[i].getGoal();
-            sum += tasks[i].getProg();
+        for (int i = 0; i < tasks.size(); i++) {
+            total += tasks.get(i).getGoal();
+            sum += tasks.get(i).getProg();
         }
 
         progressBarOverall = findViewById(R.id.goal_progress_overall);
@@ -132,9 +142,9 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.toolbar_edit) {
             item.setIcon(R.mipmap.ic_launcher_foreground_add_task);
 
-            for(int i = 0; i < tasks.length; i++) {
+            for(int i = 0; i < tasks.size(); i++) {
                 final int position = i;
-                final Task task = tasks[i];
+                final Task task = tasks.get(i);
                 MyTaskAdapter.ViewHolder taskView = (MyTaskAdapter.ViewHolder) taskRecycler.findViewHolderForAdapterPosition(i);
                 System.out.println(taskView.task_desc.getText());
                 TextView taskTextView = taskView.task_desc;

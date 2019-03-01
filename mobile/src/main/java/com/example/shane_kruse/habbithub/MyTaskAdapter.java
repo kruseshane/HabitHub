@@ -11,17 +11,19 @@ import com.github.lzyzsd.circleprogress.DonutProgress;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+
 public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder> {
     private int listItemLayout;
-    private Task[] taskList;
+    private ArrayList<Task> taskList;
 
-    public MyTaskAdapter (int layoutID, Task[] data) {
+    public MyTaskAdapter (int layoutID, ArrayList<Task> data) {
         listItemLayout = layoutID;
         taskList = data;
     }
 
     public int getItemCount() {
-        return taskList.length;
+        return taskList.size();
     }
 
     public ViewHolder onCreateViewHolder (ViewGroup parent, int viewType) {
@@ -32,10 +34,10 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder myViewHolder, int i) {
-        myViewHolder.task_desc.setText(taskList[i].getDescr());
+        myViewHolder.task_desc.setText(taskList.get(i).getDescr());
 
-        String goal_str = String.valueOf(taskList[i].getGoal());
-        String current_goal_str = String.valueOf(taskList[i].getProg());
+        String goal_str = String.valueOf(taskList.get(i).getGoal());
+        String current_goal_str = String.valueOf(taskList.get(i).getProg());
         myViewHolder.task_goal.setText(current_goal_str + "/" + goal_str);
     }
 
