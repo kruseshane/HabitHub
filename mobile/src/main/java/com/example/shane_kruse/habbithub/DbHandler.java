@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DbHandler extends SQLiteOpenHelper {
+    private static ArrayList<Task> tasks;
+
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "taskdb";
     private static final String TABLE_Task = "task";
@@ -28,7 +30,7 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String KEY_INTERVAL = "interval";
     private static final String KEY_COLOR = "color";
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " ("
-                                                //+ KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                                + KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                                                 + KEY_DESCR + " VARCHAR, " + KEY_GOAL + " INTEGER, "
                                                 + KEY_PROG + " INTEGER, " + KEY_DUE_DATE + " DATETIME, "
                                                 + KEY_ICON + " VARCAHR, " + KEY_COMPLETED + " BIT, "
@@ -50,43 +52,47 @@ public class DbHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void resetDB() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Task);
+        db.execSQL(CREATE_TABLE);
+        db.close();
+    }
+
     public ArrayList<Task> loadData() throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
         ArrayList<Task> tasks = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_Task;
         SQLiteDatabase db = this.getWritableDatabase();
-
-        /*
-        int deleted = db.delete(TABLE_Task, "prog=0", null);
-        System.out.println(deleted);
-        */
-
         Cursor cursor = db.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
-            String descr = cursor.getString(0);
-            int goal = cursor.getInt(1);
-            int prog = cursor.getInt(2);
+            int id = cursor.getInt(0);
+            String descr = cursor.getString(1);
+            int goal = cursor.getInt(2);
+            int prog = cursor.getInt(3);
 
-            String date_str = cursor.getString(3);
+            String date_str = cursor.getString(4);
             Date due_date = formatter.parse(date_str);
 
-            String icon = cursor.getString(4);
+            String icon = cursor.getString(5);
 
             boolean completed;
-            int completed_int = cursor.getInt(5);
+            int completed_int = cursor.getInt(6);
             if (completed_int == 1) completed = true;
             else completed = false;
 
-            String interval = cursor.getString(6);
-            String color = cursor.getString(7);
+            String interval = cursor.getString(7);
+            String color = cursor.getString(8);
 
-            Task task = new Task(descr, goal, prog, due_date, icon, completed, interval, color);
+            Date temp_due_date = new Date();
+
+            Task task = new Task(descr, goal, prog, temp_due_date, icon, completed, interval, color);
             tasks.add(task);
-
-            //int row_id = (int) cursor.getLong(cursor.getColumnIndex(KEY_ROW));
-            //task.setRow_id(row_id);
+            task.setRow_id(id);
         }
+        db.close();
+        this.tasks = tasks;
         return tasks;
     }
 
@@ -110,6 +116,14 @@ public class DbHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         int row_id = (int) db.insert(TABLE_Task, null, cv);
-        //t.setRow_id(row_id);
+        t.setRow_id(row_id);
+        System.out.println(row_id);
+    }
+
+    public int incrementTask(Task t) {
+        int new_prog  = t.incrementProg();
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.rawQuery("UPDATE " + TABLE_Task + " SET " + KEY_PROG + " = " + new_prog + " WHERE " + KEY_ROW + " = " + t.getRow_id(), null);
+        return new_prog;
     }
 }

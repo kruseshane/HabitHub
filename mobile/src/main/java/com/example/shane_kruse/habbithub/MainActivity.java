@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //dbh.insertTask(new Task("Test", 1, 0, new Date(), "n/a", false, "today", "n/a"));
-
+        //dbh.resetDB();
+        //dbh.insertTask(new Task("Increment Task", 1, 0, new Date(), "n/a", false, "daily", "n/a"));
 
         tasks = null;
         try {
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Create RecyclerView and fill in data from "tasks"
         // aka magic
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, tasks);
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, tasks, MainActivity.this);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
