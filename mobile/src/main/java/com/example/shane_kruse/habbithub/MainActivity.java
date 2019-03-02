@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //dbh.resetDB();
+        //dbh.insertTask(new Task("Increment Task", 1, 0, new Date(), "n/a", false, "daily", "n/a"));
 
         tasks = null;
         try {
@@ -85,8 +86,6 @@ public class MainActivity extends AppCompatActivity {
                     addTask.setImageResource(R.mipmap.ic_launcher_foreground_edit_task);
                     flag = 0;
                 }
-
-
                 //Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
                 //startActivityForResult(editScreen, 101);
             }

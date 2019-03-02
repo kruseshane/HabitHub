@@ -66,7 +66,10 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         public void onClick(View view) {
             System.out.println(task_desc.getText());
             Task t = taskList.get(index);
-            dbh.insertTask(t);
+            dbh.incrementTask(t);
+
+            TextView hold_goal = view.findViewById(R.id.task_goal);
+            hold_goal.setText(t.getProg() + "/" + t.getGoal());
         }
     }
 }
