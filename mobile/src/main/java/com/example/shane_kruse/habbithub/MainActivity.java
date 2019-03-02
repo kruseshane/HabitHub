@@ -49,12 +49,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*
-        Task t = new Task("Debug database", 1, 0, new Date(), "n/a", false, "daily", "burgundy");
-        dbh.insertTask(t);
-        Task t2 = new Task("Murder Shane", 1, 0, new Date(), "n/a", false, "daily", "burgundy");
-        dbh.insertTask(t2);
-        */
+        //dbh.insertTask(new Task("Test", 1, 0, new Date(), "n/a", false, "today", "n/a"));
+
 
         tasks = null;
         try {
@@ -75,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         });
         */
 
-
         addTask = findViewById(R.id.edit_add_task);
         addTask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,8 +86,6 @@ public class MainActivity extends AppCompatActivity {
                     addTask.setImageResource(R.mipmap.ic_launcher_foreground_edit_task);
                     flag = 0;
                 }
-
-
                 //Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
                 //startActivityForResult(editScreen, 101);
             }

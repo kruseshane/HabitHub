@@ -18,6 +18,7 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "taskdb";
     private static final String TABLE_Task = "task";
+    private static final String KEY_ROW = "_id";
     private static final String KEY_DESCR = "descr";
     private static final String KEY_GOAL = "goal";
     private static final String KEY_PROG = "prog";
@@ -26,11 +27,13 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String KEY_COMPLETED = "completed";
     private static final String KEY_INTERVAL = "interval";
     private static final String KEY_COLOR = "color";
-    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " (" + KEY_DESCR
-                                                + " VARCHAR, " + KEY_GOAL + " INTEGER, " + KEY_PROG
-                                                + " INTEGER, " + KEY_DUE_DATE + " DATETIME, " + KEY_ICON
-                                                + " VARCAHR, " + KEY_COMPLETED + " BIT, " + KEY_INTERVAL
-                                                + " VARCHAR, " + KEY_COLOR + " VARCHAR" + ")";
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " ("
+                                                //+ KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                                + KEY_DESCR + " VARCHAR, " + KEY_GOAL + " INTEGER, "
+                                                + KEY_PROG + " INTEGER, " + KEY_DUE_DATE + " DATETIME, "
+                                                + KEY_ICON + " VARCAHR, " + KEY_COMPLETED + " BIT, "
+                                                + KEY_INTERVAL + " VARCHAR, " + KEY_COLOR + " VARCHAR"
+                                                + ")";
 
     public DbHandler(Context context){
         super(context,DB_NAME, null, DB_VERSION);
@@ -52,6 +55,12 @@ public class DbHandler extends SQLiteOpenHelper {
         ArrayList<Task> tasks = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_Task;
         SQLiteDatabase db = this.getWritableDatabase();
+
+        /*
+        int deleted = db.delete(TABLE_Task, "prog=0", null);
+        System.out.println(deleted);
+        */
+
         Cursor cursor = db.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
@@ -72,10 +81,11 @@ public class DbHandler extends SQLiteOpenHelper {
             String interval = cursor.getString(6);
             String color = cursor.getString(7);
 
-            Date temp_due_date = new Date();
-
-            Task task = new Task(descr, goal, prog, temp_due_date, icon, completed, interval, color);
+            Task task = new Task(descr, goal, prog, due_date, icon, completed, interval, color);
             tasks.add(task);
+
+            //int row_id = (int) cursor.getLong(cursor.getColumnIndex(KEY_ROW));
+            //task.setRow_id(row_id);
         }
         return tasks;
     }
@@ -99,6 +109,7 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_COLOR, t.getColor());
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_Task, null, cv);
+        int row_id = (int) db.insert(TABLE_Task, null, cv);
+        //t.setRow_id(row_id);
     }
 }
