@@ -5,7 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="brick">#BD6952</color>
     <color name="salmon">#C39F75</color>
-    <color name="light_orange">#F1C18A</color>
-    <color name="silver">#D0C3BB</color>
+    <color name="light_orange">#F4CA8F</color>
+    <color name="silver">#C0C0C0</color>
     <color name="toolbarTransparent">#00FFFFFF</color>
 </resources>

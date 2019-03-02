@@ -1,40 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/silver">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary">
+        android:layout_marginBottom="10dp"
+        android:background="@color/toolbarTransparent"
+        android:minHeight="?attr/actionBarSize"
+        app:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+        <TextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/back_text"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:layout_gravity="left"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/next_text"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="23sp"
+            android:layout_gravity="right"
+            android:textStyle="bold"
+            android:layout_marginEnd="24dp"
+            android:textColor="@android:color/black"/>
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:gravity="center">
 
+        <!--
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/edit_task_desc"
             android:textSize="24sp"/>
-
+        -->
         <EditText
             android:id="@+id/edit_desc_txtBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/edit_task_desc_hint"
             android:inputType="textShortMessage"
-            android:width="150dp"/>
+            android:background="@android:color/transparent"
+            android:textSize="30sp"
+            android:gravity="center"
+            android:width="250dp"
+            android:layout_marginBottom="25dp"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_task_color"
+            android:textSize="25sp"
+            android:paddingTop="24dp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="15dp"/>
+
+        <GridView
+            android:id="@+id/color_selector_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="6"
+            android:columnWidth="125dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:listSelector="@drawable/icon_selector">
+        </GridView>
+
+        <!--
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,6 +102,59 @@
             android:hint="@string/edit_task_goal_hint"
             android:inputType="textShortMessage"
             android:width="100dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_task_interval"
+            android:textSize="25sp"
+            android:paddingTop="24dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="@string/daily_button"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="@string/weekly_button"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="@string/monthly_button"/>
+        </LinearLayout>
+        -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_task_icon"
+            android:textSize="25sp"
+            android:paddingTop="24dp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="15dp"/>
+
+        <GridView
+            android:id="@+id/icon_selector_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="4"
+            android:columnWidth="100dp"
+            android:gravity="center"
+            android:listSelector="@drawable/icon_selector">
+        </GridView>
     </LinearLayout>
+
+
 
 </LinearLayout>
