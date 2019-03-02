@@ -49,12 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*
-        Task t = new Task("Debug database", 1, 0, new Date(), "n/a", false, "daily", "burgundy");
-        dbh.insertTask(t);
-        Task t2 = new Task("Murder Shane", 1, 0, new Date(), "n/a", false, "daily", "burgundy");
-        dbh.insertTask(t2);
-        */
+        //dbh.resetDB();
 
         tasks = null;
         try {
@@ -74,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-
 
         addTask = findViewById(R.id.edit_add_task);
         addTask.setOnClickListener(new View.OnClickListener() {
@@ -122,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Create RecyclerView and fill in data from "tasks"
         // aka magic
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, tasks);
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, tasks, MainActivity.this);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());

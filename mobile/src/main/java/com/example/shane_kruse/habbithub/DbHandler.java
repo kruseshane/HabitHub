@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DbHandler extends SQLiteOpenHelper {
+    private static ArrayList<Task> tasks;
+
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "taskdb";
     private static final String TABLE_Task = "task";
@@ -47,6 +49,13 @@ public class DbHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void resetDB() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Task);
+        db.execSQL(CREATE_TABLE);
+        db.close();
+    }
+
     public ArrayList<Task> loadData() throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
         ArrayList<Task> tasks = new ArrayList<>();
@@ -77,6 +86,8 @@ public class DbHandler extends SQLiteOpenHelper {
             Task task = new Task(descr, goal, prog, temp_due_date, icon, completed, interval, color);
             tasks.add(task);
         }
+        db.close();
+        this.tasks = tasks;
         return tasks;
     }
 
@@ -99,6 +110,14 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_COLOR, t.getColor());
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_Task, null, cv);
+        int row_id = (int) db.insert(TABLE_Task, null, cv);
+        t.setRow_id(row_id);
+        System.out.println(row_id);
+    }
+
+    public int incrementTask(Task t) {
+        int new_prog  = t.incrementProg();
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.rawQuery("UPDATE " + TABLE_Task + " SET " + KEY_PROG + " = " + new_prog + " WHERE " + KEY)
     }
 }

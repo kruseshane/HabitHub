@@ -11,6 +11,7 @@ public class Task {
     private boolean completed;  //Has the goal been met
     private String interval;    //Daily, weekly, monthly, etc
     private String color;       //Color hex
+    private int row_id;         //Row ID in Database
 
 
     public Task(String descr, int goal, int prog, Date due_date, String icon, boolean completed, String interval, String color) {
@@ -22,6 +23,23 @@ public class Task {
         this.completed = completed;
         this.interval = interval;
         this.color = color;
+        this.row_id = 0;
+    }
+
+    public int incrementProg(){
+        prog++;
+        if (prog >= goal) {
+            completed = true;
+        }
+        return prog;
+    }
+
+    public void setRow_id(int id) {
+        this.row_id = id;
+    }
+
+    public int getRow_id() {
+        return this.row_id;
     }
 
     public String getDescr() {
