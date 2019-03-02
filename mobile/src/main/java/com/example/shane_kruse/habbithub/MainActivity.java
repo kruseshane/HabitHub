@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
                 //startActivityForResult(editScreen, 101);
+                //Test
             }
         });
 
