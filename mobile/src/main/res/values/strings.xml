@@ -2,11 +2,19 @@
     <string name="app_name">HabitHub</string>
     <string name="task_main_header">Task List</string>
 
-
+    <string name="back_text">Back</string>
+    <string name="next_text">Save</string>
     <string name="edit_task_header">Edit Task</string>
     <string name="edit_task_desc">Description</string>
+    <string name="edit_task_color">Select a Color</string>
     <string name="edit_task_goal">Goal</string>
+    <string name="edit_task_interval">Task Interval</string>
+    <string name="edit_task_icon">Select an Icon</string>
+
     <string name="edit_task_done_btn">Done</string>
-    <string name="edit_task_desc_hint">Enter a description of your task</string>
+    <string name="edit_task_desc_hint">Name of habit</string>
     <string name="edit_task_goal_hint">Enter your goal</string>
+    <string name="daily_button">Daily</string>
+    <string name="weekly_button">Weekly</string>
+    <string name="monthly_button">Monthly</string>
 </resources>
