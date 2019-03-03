@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private int total;
     private float sum;
     private int flag = 0;
-    private DonutProgress progressBarOverall;
+    DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
     private DbHandler dbh = new DbHandler(this);
@@ -100,17 +100,23 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
 
-        for (int i = 0; i < tasks.size(); i++) {
-            total += tasks.get(i).getGoal();
-            sum += tasks.get(i).getProg();
+        progressBarOverall = findViewById(R.id.goal_progress_overall);
+        setProgressBarAttributes();
+
+        if (tasks.size() < 1) {
+            updateGoalProgress(0, 0);
+        } else {
+            for (int i = 0; i < tasks.size(); i++) {
+                total += tasks.get(i).getGoal();
+                sum += tasks.get(i).getProg();
+            }
+            updateGoalProgress(sum, total);
         }
 
-        progressBarOverall = findViewById(R.id.goal_progress_overall);
-        progressBarOverall.setFinishedStrokeWidth(45);
-        progressBarOverall.setUnfinishedStrokeWidth(45);
-        progressBarOverall.setProgress((sum/total) * 100);
 
         todayButton = findViewById(R.id.today_button);
+        todayButton.setPressed(true); // Default to today
+
         upcomingButton = findViewById(R.id.upcoming_button);
         completedButton = findViewById(R.id.completed_button);
 
@@ -211,5 +217,19 @@ public class MainActivity extends AppCompatActivity {
             String message = intent.getStringExtra("message");
             Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void updateGoalProgress(float sum, int total) {
+        for (int i = 0; i < tasks.size(); i++) {
+            total += tasks.get(i).getGoal();
+            sum += tasks.get(i).getProg();
+        }
+
+        progressBarOverall.setProgress((sum/total) * 100);
+    }
+
+    private void setProgressBarAttributes() {
+        progressBarOverall.setFinishedStrokeWidth(45);
+        progressBarOverall.setUnfinishedStrokeWidth(45);
     }
 }
