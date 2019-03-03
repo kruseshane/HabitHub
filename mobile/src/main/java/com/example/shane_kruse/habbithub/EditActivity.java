@@ -58,29 +58,6 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
-        /*
-        ArrayList<Integer> iconIDs = new ArrayList<>();
-        iconIDs.add(R.mipmap.ic_launcher_foreground_dog_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_water_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_heart_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_run_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_sit_ups_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_sleep_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_broom_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_dishwasher_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_beer_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_coffee_task_icon);
-        iconIDs.add(R.mipmap.ic_launcher_foreground_wine_task_icon);
-
-        // Initialize a new array adapter instance
-        final ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
-                getApplicationContext(),
-                android.R.layout.simple_list_item_1,
-                iconIDs
-        );
-        */
-
-
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -88,6 +65,16 @@ public class EditActivity extends AppCompatActivity {
 
         backText = findViewById(R.id.back);
         backText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // This is the save text for now
+        nextText = findViewById(R.id.next);
+        nextText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(EditActivity.this, MainActivity.class);

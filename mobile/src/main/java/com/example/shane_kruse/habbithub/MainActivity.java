@@ -1,5 +1,6 @@
 package com.example.shane_kruse.habbithub;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +20,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +46,11 @@ public class MainActivity extends AppCompatActivity {
     private ImageView addTask;
     private ImageView menuOptions;
     private DbHandler dbh = new DbHandler(this);
+    private Button todayButton;
+    private Button upcomingButton;
+    private Button completedButton;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,20 +84,8 @@ public class MainActivity extends AppCompatActivity {
         addTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Add image
-                if (flag == 0) {
-                    addTask.setImageResource(R.mipmap.ic_launcher_foreground_plus_icon);
-                    System.out.println(R.mipmap.ic_launcher_foreground_plus_icon);
-                    int resID = getResources().getIdentifier("ic_launcher_foreground_plus_icon", "mipmap", getPackageName());
-                    System.out.println(resID);
-                    flag = 1;
-                } else { // edit image
-                    addTask.setImageResource(R.mipmap.ic_launcher_foreground_edit_task);
-                    flag = 0;
-                }
-                //Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
-                //startActivityForResult(editScreen, 101);
-                //Test
+                Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
+                startActivityForResult(editScreen, 101);
             }
         });
 
@@ -116,6 +111,39 @@ public class MainActivity extends AppCompatActivity {
         progressBarOverall.setUnfinishedStrokeWidth(45);
         progressBarOverall.setProgress((sum/total) * 100);
 
+        todayButton = findViewById(R.id.today_button);
+        upcomingButton = findViewById(R.id.upcoming_button);
+        completedButton = findViewById(R.id.completed_button);
+
+        todayButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                todayButton.setPressed(true);
+                upcomingButton.setPressed(false);
+                completedButton.setPressed(false);
+                return true;
+            }
+        });
+
+        upcomingButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                todayButton.setPressed(false);
+                upcomingButton.setPressed(true);
+                completedButton.setPressed(false);
+                return true;
+            }
+        });
+
+        completedButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                todayButton.setPressed(false);
+                upcomingButton.setPressed(false);
+                completedButton.setPressed(true);
+                return true;
+            }
+        });
         // Create RecyclerView and fill in data from "tasks"
         // aka magic
         mAdapter = new MyTaskAdapter(R.layout.task_recycler, tasks, MainActivity.this);
