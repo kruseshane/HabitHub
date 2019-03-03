@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class EditActivity extends AppCompatActivity {
     private EditText descEdit;
@@ -29,6 +31,9 @@ public class EditActivity extends AppCompatActivity {
     private TextView backText;
     private TextView nextText;
     private IconAdapterGridView mAdapter;
+    private String icon;
+    private String hex;
+    private DbHandler hand;
 
 
     Integer[] iconIDs = {
@@ -58,6 +63,8 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        hand = new DbHandler(EditActivity.this);
+
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -77,6 +84,9 @@ public class EditActivity extends AppCompatActivity {
         nextText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Date date = new GregorianCalendar(2019, 3, 3).getTime();
+                Task t = new Task(String.valueOf(descEdit.getText()), 1, 0, date, icon, false, "Today", hex);
+                hand.insertTask(t);
                 Intent intent = new Intent(EditActivity.this, MainActivity.class);
                 startActivity(intent);
             }
@@ -103,6 +113,26 @@ public class EditActivity extends AppCompatActivity {
         colorSelection = findViewById(R.id.color_selector_view);
         colorSelection.setAdapter(new ColorAdapterGridView(this));
 
+        colorSelection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                // Get hex based off item selected
+                switch(position) {
+                    case 0:
+                        hex = "#289BAF";
+                    case 1:
+                        hex = "#D33D3D";
+                        break;
+                    case 2:
+                        hex = "#90F24B";
+                        break;
+                    case 3:
+                        hex = "#E38BFC";
+                        break;
+                }
+            }
+        });
+
         iconSelection = findViewById(R.id.icon_selector_view);
         mAdapter = new IconAdapterGridView(this);
         iconSelection.setAdapter(mAdapter);
@@ -110,7 +140,8 @@ public class EditActivity extends AppCompatActivity {
         iconSelection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-
+                // Get id of icon selected
+                icon = String.valueOf(iconIDs[position]);
             }
         });
     }
@@ -148,12 +179,13 @@ public class EditActivity extends AppCompatActivity {
                 iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 iv.setPadding(16, 16, 16, 16);
 
+
             } else {
                 iv = (ImageView) convertView;
             }
 
             iv.setImageResource(iconIDs[position]);
-
+            iv.setId(iconIDs[position]);
 
 
             return iv;
