@@ -7,7 +7,7 @@ public class Task {
     private int goal;           //Number of times Task should be completed
     private int prog;           //Current progress towards the goal
     private Date due_date;      //Date/Time that the task must be completed by
-    private String icon;        //Icon ID
+    private String icon;           //Icon ID
     private boolean completed;  //Has the goal been met
     private String interval;    //Daily, weekly, monthly, etc
     private String color;       //Color hex
