@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         //dbh.resetDB();
         //dbh.insertTask(new Task("Increment Task", 1, 0, new Date(), "n/a", false, "daily", "n/a"));
 
+
         tasks = null;
         try {
             tasks = dbh.loadData();
