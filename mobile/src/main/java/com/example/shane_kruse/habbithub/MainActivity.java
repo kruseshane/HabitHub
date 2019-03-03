@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -220,12 +221,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateGoalProgress(float sum, int total) {
+        DecimalFormat df = new DecimalFormat("#.#");
         for (int i = 0; i < tasks.size(); i++) {
             total += tasks.get(i).getGoal();
             sum += tasks.get(i).getProg();
         }
 
-        progressBarOverall.setProgress((sum/total) * 100);
+        float prog = (sum/total) * 100;
+
+        progressBarOverall.setProgress(Float.parseFloat(df.format(prog)));
     }
 
     private void setProgressBarAttributes() {

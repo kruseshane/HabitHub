@@ -84,7 +84,7 @@ public class EditActivity extends AppCompatActivity {
         nextText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Date date = new GregorianCalendar(2019, 3, 3).getTime();
+                Date date = new Date();
                 Task t = new Task(String.valueOf(descEdit.getText()), 1, 0, date, icon, false, "Today", hex);
                 hand.insertTask(t);
                 Intent intent = new Intent(EditActivity.this, MainActivity.class);

@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
 
@@ -43,12 +44,14 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         String goal_str = String.valueOf(taskList.get(i).getGoal());
         String current_goal_str = String.valueOf(taskList.get(i).getProg());
         myViewHolder.task_goal.setText(current_goal_str + "/" + goal_str);
+        myViewHolder.task_icon.setImageResource(Integer.parseInt(taskList.get(i).getIcon()));
         myViewHolder.setIndex(i);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView task_desc;
         public TextView task_goal;
+        public ImageView task_icon;
         private int index;
 
         public ViewHolder (View itemView) {
@@ -56,6 +59,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
             itemView.setOnClickListener(this);
             task_desc = (TextView) itemView.findViewById(R.id.task_desc);
             task_goal = (TextView) itemView.findViewById(R.id.task_goal);
+            task_icon = (ImageView) itemView.findViewById(R.id.icon);
             this.index = -1;
         }
 
