@@ -1,6 +1,5 @@
 package com.example.shane_kruse.habbithub;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,53 +19,78 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-
-
-    Date date = new Date();
-    Task[] tasks = {new Task("Drink water", 3, 0, date, "n/a", false, "daily", "000FF"),
-            new Task("Go for a run", 1, 0, date, "n/a", false, "daily", "000FF"),
-            new Task("Do homework", 1, 0, date, "n/a", false, "daily", "000FF"),
-            new Task("Eat healthy", 3, 0, date, "n/a", false, "daily", "000FF")};
-
+    private ArrayList<Task> tasks = new ArrayList<>();
     private RecyclerView taskRecycler;
     private MyTaskAdapter mAdapter;
     private Toolbar mToolbar;
     private Handler myHandler; // was protected
     private int total;
     private float sum;
+    private int flag = 0;
     private DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
-    private Button todayButton;
-    private Button upcomingButton;
-    private Button completedButton;
-
-    @SuppressLint("ClickableViewAccessibility")
+    private DbHandler dbh = new DbHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //dbh.resetDB();
+        //dbh.insertTask(new Task("Increment Task", 1, 0, new Date(), "n/a", false, "daily", "n/a"));
+
+        //Comment here
+
+        tasks = null;
+        try {
+            tasks = dbh.loadData();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        /*
+        //Create a message handler//
+        myHandler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                Bundle msgBundle = msg.getData();
+                messageText(msgBundle.getString("messageText"));
+                return true;
+            }
+        });
+        */
 
         addTask = findViewById(R.id.edit_add_task);
         addTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
-                startActivityForResult(editScreen, 101);
+                // Add image
+                if (flag == 0) {
+                    addTask.setImageResource(R.mipmap.ic_launcher_foreground_plus_icon);
+                    System.out.println(R.mipmap.ic_launcher_foreground_plus_icon);
+                    int resID = getResources().getIdentifier("ic_launcher_foreground_plus_icon", "mipmap", getPackageName());
+                    System.out.println(resID);
+                    flag = 1;
+                } else { // edit image
+                    addTask.setImageResource(R.mipmap.ic_launcher_foreground_edit_task);
+                    flag = 0;
+                }
+                //Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
+                //startActivityForResult(editScreen, 101);
+                //Test
             }
         });
 
@@ -82,9 +106,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
 
-        for (int i = 0; i < tasks.length; i++) {
-            total += tasks[i].getGoal();
-            sum += tasks[i].getProg();
+        for (int i = 0; i < tasks.size(); i++) {
+            total += tasks.get(i).getGoal();
+            sum += tasks.get(i).getProg();
         }
 
         progressBarOverall = findViewById(R.id.goal_progress_overall);
@@ -92,43 +116,9 @@ public class MainActivity extends AppCompatActivity {
         progressBarOverall.setUnfinishedStrokeWidth(45);
         progressBarOverall.setProgress((sum/total) * 100);
 
-        todayButton = findViewById(R.id.today_button);
-        upcomingButton = findViewById(R.id.upcoming_button);
-        completedButton = findViewById(R.id.completed_button);
-
-        todayButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                todayButton.setPressed(true);
-                upcomingButton.setPressed(false);
-                completedButton.setPressed(false);
-                return true;
-            }
-        });
-
-        upcomingButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                todayButton.setPressed(false);
-                upcomingButton.setPressed(true);
-                completedButton.setPressed(false);
-                return true;
-            }
-        });
-
-        completedButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                todayButton.setPressed(false);
-                upcomingButton.setPressed(false);
-                completedButton.setPressed(true);
-                return true;
-            }
-        });
-
         // Create RecyclerView and fill in data from "tasks"
         // aka magic
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, tasks);
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, tasks, MainActivity.this);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
@@ -148,9 +138,9 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.toolbar_edit) {
             item.setIcon(R.mipmap.ic_launcher_foreground_add_task);
 
-            for(int i = 0; i < tasks.length; i++) {
+            for(int i = 0; i < tasks.size(); i++) {
                 final int position = i;
-                final Task task = tasks[i];
+                final Task task = tasks.get(i);
                 MyTaskAdapter.ViewHolder taskView = (MyTaskAdapter.ViewHolder) taskRecycler.findViewHolderForAdapterPosition(i);
                 System.out.println(taskView.task_desc.getText());
                 TextView taskTextView = taskView.task_desc;
@@ -178,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             int position = data.getIntExtra("task_pos", 0);
             String new_desc = data.getStringExtra("task_desc");
             int new_goal = data.getIntExtra("task_goal", 0);
-            Task task = tasks[position];
+            Task task = tasks.get(position);
             TextView taskView = (TextView) taskRecycler.getLayoutManager().findViewByPosition(position);
 
         }
