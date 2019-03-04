@@ -2,6 +2,7 @@ package com.example.shane_kruse.habbithub;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -63,6 +64,8 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         hand = new DbHandler(EditActivity.this);
 
         // Initialize Toolbar
@@ -85,6 +88,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Date date = new Date();
+                System.out.println(hex);
                 Task t = new Task(String.valueOf(descEdit.getText()), 1, 0, date, icon, false, "Today", hex);
                 hand.insertTask(t);
                 Intent intent = new Intent(EditActivity.this, MainActivity.class);
@@ -117,11 +121,12 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // Get hex based off item selected
+                System.out.println(position);
                 switch(position) {
                     case 0:
-                        hex = "#289BAF";
-                    case 1:
                         hex = "#D33D3D";
+                    case 1:
+                        hex = "#289BAF";
                         break;
                     case 2:
                         hex = "#90F24B";

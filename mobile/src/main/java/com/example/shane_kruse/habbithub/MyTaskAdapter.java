@@ -1,6 +1,9 @@
 package com.example.shane_kruse.habbithub;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -44,6 +47,8 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         String goal_str = String.valueOf(taskList.get(i).getGoal());
         String current_goal_str = String.valueOf(taskList.get(i).getProg());
         myViewHolder.task_goal.setText(current_goal_str + "/" + goal_str);
+        myViewHolder.task_icon.setBackgroundResource(R.drawable.task_icon_background_shape_circle);
+        myViewHolder.task_icon.getBackground().setColorFilter(Color.parseColor(taskList.get(i).getColor()), PorterDuff.Mode.SRC);
         myViewHolder.task_icon.setImageResource(Integer.parseInt(taskList.get(i).getIcon()));
         myViewHolder.setIndex(i);
     }
