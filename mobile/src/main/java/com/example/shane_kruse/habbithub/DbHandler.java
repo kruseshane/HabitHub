@@ -10,9 +10,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class DbHandler extends SQLiteOpenHelper {
     private static ArrayList<Task> tasks;
@@ -27,14 +29,19 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String KEY_DUE_DATE = "due_date";
     private static final String KEY_ICON = "icon";
     private static final String KEY_COMPLETED = "completed";
+    private static final String KEY_INTERVAL_TYPE = "interval_type";
     private static final String KEY_INTERVAL = "interval";
+    private static final String KEY_REPEAT = "repeat";
+    private static final String KEY_REMINDER_TIME = "reminder_time";
     private static final String KEY_COLOR = "color";
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " ("
                                                 + KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                                                 + KEY_DESCR + " VARCHAR, " + KEY_GOAL + " INTEGER, "
                                                 + KEY_PROG + " INTEGER, " + KEY_DUE_DATE + " DATETIME, "
                                                 + KEY_ICON + " VARCAHR, " + KEY_COMPLETED + " BIT, "
-                                                + KEY_INTERVAL + " VARCHAR, " + KEY_COLOR + " VARCHAR"
+                                                + KEY_INTERVAL_TYPE + " VARCHAR, " + KEY_INTERVAL + " VARCHAR, "
+                                                + KEY_REPEAT + " BIT, " + KEY_REMINDER_TIME + " TEXT, "
+                                                + KEY_COLOR + " VARCHAR"
                                                 + ")";
 
     public DbHandler(Context context){
@@ -82,12 +89,15 @@ public class DbHandler extends SQLiteOpenHelper {
             if (completed_int == 1) completed = true;
             else completed = false;
 
-            String interval = cursor.getString(7);
-            String color = cursor.getString(8);
+            String interval_type = cursor.getString(7);
+            String interval = cursor.getString(8);
+            boolean repeat = (1 == cursor.getInt(9));
+            Date reminder_time = Date.from(Instant.parse(cursor.getString(10)));
+            String color = cursor.getString(11);
 
             Date temp_due_date = new Date();
 
-            Task task = new Task(descr, goal, prog, temp_due_date, icon, completed, interval, color);
+            Task task = new Task(descr, goal, prog, temp_due_date, icon, completed, interval_type, interval, repeat, reminder_time, color);
             tasks.add(task);
             task.setRow_id(id);
         }
@@ -97,7 +107,8 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public void insertTask(Task t) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        df.setTimeZone(TimeZone.getTimeZone("CET"));
         String date_str = df.format(t.getDue_date());
 
         int completed;
@@ -111,7 +122,10 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_DUE_DATE, date_str);
         cv.put(KEY_ICON, t.getIcon());
         cv.put(KEY_COMPLETED, completed);
+        cv.put(KEY_INTERVAL_TYPE, t.getInterval_type());
         cv.put(KEY_INTERVAL, t.getInterval());
+        cv.put(KEY_REPEAT, t.isRepeat());
+        cv.put(KEY_REMINDER_TIME, df.format(t.getReminder_time()));
         cv.put(KEY_COLOR, t.getColor());
 
         SQLiteDatabase db = this.getWritableDatabase();

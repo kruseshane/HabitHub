@@ -3,25 +3,32 @@ package com.example.shane_kruse.habbithub;
 import java.util.Date;
 
 public class Task {
-    private String descr;       //Description of Task
-    private int goal;           //Number of times Task should be completed
-    private int prog;           //Current progress towards the goal
-    private Date due_date;      //Date/Time that the task must be completed by
-    private String icon;           //Icon ID
-    private boolean completed;  //Has the goal been met
-    private String interval;    //Daily, weekly, monthly, etc
-    private String color;       //Color hex
-    private int row_id;         //Row ID in Database
+    private String descr;           //Description of Task
+    private int goal;               //Number of times Task should be completed
+    private int prog;               //Current progress towards the goal
+    private Date due_date;          //Date/Time that the task must be completed by
+    private String icon;            //Icon ID
+    private boolean completed;      //Has the goal been met
+    private String interval_type;   //Daily, weekly, monthly
+    private String interval;        //M, T, W, EVERYDAY, 4, BI-WEEKLY, START, WHOLE, etc
+    private boolean repeat;         //On or off to repeat task every interval type
+    private Date reminder_time;     //Set time of day to be reminded about task
+    private String color;           //Color hex
+    private int row_id;             //Row ID in Database
 
 
-    public Task(String descr, int goal, int prog, Date due_date, String icon, boolean completed, String interval, String color) {
+    public Task(String descr, int goal, int prog, Date due_date, String icon, boolean completed,
+                String interval_type, String interval, boolean repeat, Date reminder_time, String color) {
         this.descr = descr;
         this.goal = goal;
         this.prog = prog;
         this.due_date = due_date;
         this.icon = icon;
         this.completed = completed;
+        this.interval_type = interval_type;
         this.interval = interval;
+        this.repeat = repeat;
+        this.reminder_time = reminder_time;
         this.color = color;
         this.row_id = 0;
     }
@@ -104,6 +111,30 @@ public class Task {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getInterval_type() {
+        return interval_type;
+    }
+
+    public void setInterval_type(String interval_type) {
+        this.interval_type = interval_type;
+    }
+
+    public boolean isRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        this.repeat = repeat;
+    }
+
+    public Date getReminder_time() {
+        return reminder_time;
+    }
+
+    public void setReminder_time(Date reminder_time) {
+        this.reminder_time = reminder_time;
     }
 
 }
