@@ -18,7 +18,7 @@ public class SplashScreen extends AppCompatActivity {
 
     private class Timer extends CountDownTimer {
 
-        public Timer(long millisLength, long millisUpdate) {
+        Timer(long millisLength, long millisUpdate) {
             super(millisLength, millisUpdate);
         }
 

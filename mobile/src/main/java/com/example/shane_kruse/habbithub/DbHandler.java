@@ -3,11 +3,8 @@ package com.example.shane_kruse.habbithub;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -17,8 +14,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class DbHandler extends SQLiteOpenHelper {
-    private static ArrayList<Task> tasks;
-
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "taskdb";
     private static final String TABLE_Task = "task";
@@ -44,7 +39,7 @@ public class DbHandler extends SQLiteOpenHelper {
                                                 + KEY_COLOR + " VARCHAR"
                                                 + ")";
 
-    public DbHandler(Context context){
+    DbHandler(Context context){
         super(context,DB_NAME, null, DB_VERSION);
     }
 
@@ -66,7 +61,7 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public ArrayList<Task> loadData() throws ParseException {
+    ArrayList<Task> loadData() throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
         ArrayList<Task> tasks = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_Task;
@@ -84,10 +79,8 @@ public class DbHandler extends SQLiteOpenHelper {
 
             String icon = cursor.getString(5);
 
-            boolean completed;
             int completed_int = cursor.getInt(6);
-            if (completed_int == 1) completed = true;
-            else completed = false;
+            boolean completed = completed_int == 1;
 
             String interval_type = cursor.getString(7);
             String interval = cursor.getString(8);
@@ -95,18 +88,16 @@ public class DbHandler extends SQLiteOpenHelper {
             Date reminder_time = Date.from(Instant.parse(cursor.getString(10)));
             String color = cursor.getString(11);
 
-            Date temp_due_date = new Date();
-
-            Task task = new Task(descr, goal, prog, temp_due_date, icon, completed, interval_type, interval, repeat, reminder_time, color);
+            Task task = new Task(descr, goal, prog, due_date, icon, completed, interval_type, interval, repeat, reminder_time, color);
             tasks.add(task);
             task.setRow_id(id);
         }
+        cursor.close();
         db.close();
-        this.tasks = tasks;
         return tasks;
     }
 
-    public void insertTask(Task t) {
+    void insertTask(Task t) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         df.setTimeZone(TimeZone.getTimeZone("CET"));
         String date_str = df.format(t.getDue_date());
@@ -134,10 +125,13 @@ public class DbHandler extends SQLiteOpenHelper {
         System.out.println(row_id);
     }
 
-    public int incrementTask(Task t) {
+    int incrementTask(Task t) {
         int new_prog  = t.incrementProg();
         SQLiteDatabase db = this.getWritableDatabase();
-        db.rawQuery("UPDATE " + TABLE_Task + " SET " + KEY_PROG + " = " + new_prog + " WHERE " + KEY_ROW + " = " + t.getRow_id(), null);
+        Cursor cursor = db.rawQuery("UPDATE " + TABLE_Task + " SET " + KEY_PROG + " = " + new_prog
+                                    + " WHERE " + KEY_ROW + " = " + t.getRow_id(), null);
+        cursor.close();
+        db.close();
         return new_prog;
     }
 }

@@ -59,7 +59,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         public ImageView task_icon;
         private int index;
 
-        public ViewHolder (View itemView) {
+        ViewHolder (View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             task_desc = (TextView) itemView.findViewById(R.id.task_desc);
@@ -68,7 +68,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
             this.index = -1;
         }
 
-        public void setIndex(int index) {
+        void setIndex(int index) {
             this.index = index;
         }
 

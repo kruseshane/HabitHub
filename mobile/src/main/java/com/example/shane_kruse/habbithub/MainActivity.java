@@ -6,10 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,22 +15,17 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.github.lzyzsd.circleprogress.DonutProgress;
-
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Task> tasks = new ArrayList<>();
@@ -103,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
         progressBarOverall = findViewById(R.id.goal_progress_overall);
         setProgressBarAttributes();
@@ -203,12 +195,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 101 && resultCode == RESULT_OK) {
-            int position = data.getIntExtra("task_pos", 0);
-            String new_desc = data.getStringExtra("task_desc");
-            int new_goal = data.getIntExtra("task_goal", 0);
-            Task task = tasks.get(position);
-            TextView taskView = (TextView) taskRecycler.getLayoutManager().findViewByPosition(position);
-
+            if (data != null) {
+                int position = data.getIntExtra("task_pos", 0);
+                String new_desc = data.getStringExtra("task_desc");
+                int new_goal = data.getIntExtra("task_goal", 0);
+                Task task = tasks.get(position);
+                TextView taskView = (TextView) taskRecycler.getLayoutManager().findViewByPosition(position);
+            }
         }
     }
 

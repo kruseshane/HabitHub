@@ -5,23 +5,17 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.Objects;
 
 public class EditActivity extends AppCompatActivity {
     private EditText descEdit;
@@ -71,7 +65,7 @@ public class EditActivity extends AppCompatActivity {
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Activity Creation");
 
         backText = findViewById(R.id.back);
         backText.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +83,8 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Date date = new Date();
                 System.out.println(hex);
-                Task t = new Task(String.valueOf(descEdit.getText()), 1, 0, date, icon, false, "Today", hex);
+                Task t = new Task(String.valueOf(descEdit.getText()), 1, 0, date, icon, false,
+                        "Today", "M, W, F", true, new Date(), hex);
                 hand.insertTask(t);
                 Intent intent = new Intent(EditActivity.this, MainActivity.class);
                 startActivity(intent);
@@ -152,10 +147,10 @@ public class EditActivity extends AppCompatActivity {
     }
 
 
-    private class IconAdapterGridView extends BaseAdapter {
+    class IconAdapterGridView extends BaseAdapter {
         private Context context;
 
-        public IconAdapterGridView(Context context) {
+        IconAdapterGridView(Context context) {
             this.context = context;
         }
 
@@ -201,7 +196,7 @@ public class EditActivity extends AppCompatActivity {
     private class ColorAdapterGridView extends BaseAdapter {
         private Context context;
 
-        public ColorAdapterGridView(Context context) {
+        ColorAdapterGridView(Context context) {
             this.context = context;
         }
 
