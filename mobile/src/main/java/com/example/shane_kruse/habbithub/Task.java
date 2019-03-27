@@ -7,7 +7,7 @@ public class Task {
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
     private int prog;               //Current progress towards the goal
-    private Date due_date;          //Date/Time that the task must be completed by
+    private ZonedDateTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
     private boolean completed;      //Has the goal been met
     private String interval_type;   //Daily, weekly, monthly
@@ -18,7 +18,7 @@ public class Task {
     private int row_id;             //Row ID in Database
 
 
-    public Task(String descr, int goal, int prog, Date due_date, String icon, boolean completed,
+    public Task(String descr, int goal, int prog, ZonedDateTime due_date, String icon, boolean completed,
                 String interval_type, String interval, boolean repeat, ZonedDateTime reminder_time, String color) {
         this.descr = descr;
         this.goal = goal;
@@ -74,11 +74,11 @@ public class Task {
         this.prog = prog;
     }
 
-    public Date getDue_date() {
+    public ZonedDateTime getDue_date() {
         return due_date;
     }
 
-    public void setDue_date(Date due_date) {
+    public void setDue_date(ZonedDateTime due_date) {
         this.due_date = due_date;
     }
 
