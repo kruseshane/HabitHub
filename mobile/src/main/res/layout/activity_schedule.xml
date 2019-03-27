@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/interval_type_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/interval_daily_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Daily"/>
+
+        <Button
+            android:id="@+id/interval_weekly_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Weekly"/>
+
+        <Button
+            android:id="@+id/interval_monthly_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Monthly"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/interval_schedule_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/interval_sunday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SU"/>
+
+        <Button
+            android:id="@+id/interval_monday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="M"/>
+
+        <Button
+            android:id="@+id/interval_tuesday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="T"/>
+
+        <Button
+            android:id="@+id/interval_wednesday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="W"/>
+
+        <Button
+            android:id="@+id/interval_thursday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TR"/>
+
+        <Button
+            android:id="@+id/interval_friday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="F"/>
+
+        <Button
+            android:id="@+id/interval_saturday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SA"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/interval_other_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Everyday"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="What time?"
+        android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/select_time_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Time"/>
+
+    <Button
+        android:id="@+id/anytime_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Anytime"/>
+
+    <LinearLayout
+        android:id="@+id/repeat_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Repeat Task"
+            android:textAlignment="center"/>
+
+        <CheckBox
+            android:id="@+id/repeat_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+</LinearLayout>
