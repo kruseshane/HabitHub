@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -85,7 +86,9 @@ public class DbHandler extends SQLiteOpenHelper {
             String interval_type = cursor.getString(7);
             String interval = cursor.getString(8);
             boolean repeat = (1 == cursor.getInt(9));
-            Date reminder_time = Date.from(Instant.parse(cursor.getString(10)));
+            System.out.println(cursor.getString(10));
+            ZonedDateTime reminder_time = ZonedDateTime.parse(cursor.getString(10));
+            //Date reminder_time = Date.from(Instant.parse(cursor.getString(10)));
             String color = cursor.getString(11);
 
             Task task = new Task(descr, goal, prog, due_date, icon, completed, interval_type, interval, repeat, reminder_time, color);
@@ -98,7 +101,7 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     void insertTask(Task t) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
         df.setTimeZone(TimeZone.getTimeZone("CET"));
         String date_str = df.format(t.getDue_date());
 
@@ -116,7 +119,7 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_INTERVAL_TYPE, t.getInterval_type());
         cv.put(KEY_INTERVAL, t.getInterval());
         cv.put(KEY_REPEAT, t.isRepeat());
-        cv.put(KEY_REMINDER_TIME, df.format(t.getReminder_time()));
+        cv.put(KEY_REMINDER_TIME, t.getReminder_time().toOffsetDateTime().toString());
         cv.put(KEY_COLOR, t.getColor());
 
         SQLiteDatabase db = this.getWritableDatabase();

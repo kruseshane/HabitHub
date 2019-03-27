@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -83,8 +85,9 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Date date = new Date();
                 System.out.println(hex);
+                //ZonedDateTime zdt = new ZonedDateTime.parse("2012-02-22T02:06:58.147Z");
                 Task t = new Task(String.valueOf(descEdit.getText()), 1, 0, date, icon, false,
-                        "Today", "M, W, F", true, new Date(), hex);
+                        "Today", "M, W, F", true, ZonedDateTime.now(), hex);
                 hand.insertTask(t);
                 Intent intent = new Intent(EditActivity.this, MainActivity.class);
                 startActivity(intent);

@@ -1,5 +1,6 @@
 package com.example.shane_kruse.habbithub;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class Task {
@@ -12,13 +13,13 @@ public class Task {
     private String interval_type;   //Daily, weekly, monthly
     private String interval;        //M, T, W, EVERYDAY, 4, BI-WEEKLY, START, WHOLE, etc
     private boolean repeat;         //On or off to repeat task every interval type
-    private Date reminder_time;     //Set time of day to be reminded about task
+    private ZonedDateTime reminder_time;     //Set time of day to be reminded about task
     private String color;           //Color hex
     private int row_id;             //Row ID in Database
 
 
     public Task(String descr, int goal, int prog, Date due_date, String icon, boolean completed,
-                String interval_type, String interval, boolean repeat, Date reminder_time, String color) {
+                String interval_type, String interval, boolean repeat, ZonedDateTime reminder_time, String color) {
         this.descr = descr;
         this.goal = goal;
         this.prog = prog;
@@ -129,11 +130,11 @@ public class Task {
         this.repeat = repeat;
     }
 
-    public Date getReminder_time() {
+    public ZonedDateTime getReminder_time() {
         return reminder_time;
     }
 
-    public void setReminder_time(Date reminder_time) {
+    public void setReminder_time(ZonedDateTime reminder_time) {
         this.reminder_time = reminder_time;
     }
 
