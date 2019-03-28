@@ -83,10 +83,10 @@ public class EditActivity extends AppCompatActivity {
         nextText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Task t = new Task(String.valueOf(descEdit.getText()), 1, 0, ZonedDateTime.now(), icon,
-                        false, "Today", "M, W, F", true, ZonedDateTime.now(), hex);
-                hand.insertTask(t);
-                Intent intent = new Intent(EditActivity.this, MainActivity.class);
+                Intent intent = new Intent(EditActivity.this, ScheduleActivity.class);
+                intent.putExtra("desc", descEdit.getText());
+                intent.putExtra("icon", icon);
+                intent.putExtra("hex", hex);
                 startActivity(intent);
             }
         });

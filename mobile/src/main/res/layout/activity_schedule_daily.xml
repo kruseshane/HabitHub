@@ -1,0 +1,70 @@
+<LinearLayout android:id="@+id/interval_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/interval_daily_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/interval_sunday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SU"/>
+
+        <Button
+            android:id="@+id/interval_monday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="M"/>
+
+        <Button
+            android:id="@+id/interval_tuesday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="T"/>
+
+        <Button
+            android:id="@+id/interval_wednesday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="W"/>
+
+        <Button
+            android:id="@+id/interval_thursday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TR"/>
+
+        <Button
+            android:id="@+id/interval_friday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="F"/>
+
+        <Button
+            android:id="@+id/interval_saturday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SA"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/interval_everyday_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Everyday"/>
+
+</LinearLayout>
