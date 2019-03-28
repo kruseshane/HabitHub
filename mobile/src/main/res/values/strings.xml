@@ -2,6 +2,8 @@
     <string name="app_name">HabitHub</string>
     <string name="task_main_header">Task List</string>
 
+    <string name="toolbar_create_title">Create</string>
+    <string name="toolbar_schedule_title">Schedule</string>
     <string name="back_text">Back</string>
     <string name="next_text">Save</string>
     <string name="edit_task_header">Edit Task</string>

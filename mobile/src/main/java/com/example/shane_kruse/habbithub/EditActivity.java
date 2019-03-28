@@ -67,7 +67,6 @@ public class EditActivity extends AppCompatActivity {
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Activity Creation");
 
         backText = findViewById(R.id.back);
         backText.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +83,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(EditActivity.this, ScheduleActivity.class);
-                intent.putExtra("desc", descEdit.getText());
+                intent.putExtra("desc", descEdit.getText().toString());
                 intent.putExtra("icon", icon);
                 intent.putExtra("hex", hex);
                 startActivity(intent);

@@ -1,14 +1,15 @@
 package com.example.shane_kruse.habbithub;
 
+import android.animation.LayoutTransition;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import java.util.Objects;
 
 public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
@@ -23,7 +24,10 @@ public class ScheduleActivity extends AppCompatActivity {
         // Initialize toolbar
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Activity Scheduling");
+
+        // Enable animated layout changes
+        ((ViewGroup) findViewById(R.id.schedule_layout)).getLayoutTransition()
+                .enableTransitionType(LayoutTransition.CHANGING);
 
         // Read Task info from create page
         Bundle data = getIntent().getExtras();
