@@ -26,15 +26,6 @@
             android:layout_gravity="left"
             android:textColor="@android:color/black"/>
 
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/toolbar_create_title"
-            android:textSize="32sp"
-            android:textStyle="normal"
-            android:layout_gravity="center"
-            android:textColor="@android:color/black"/>
 
         <TextView
             android:id="@+id/next"

@@ -67,6 +67,7 @@ public class EditActivity extends AppCompatActivity {
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
         backText = findViewById(R.id.back);
         backText.setOnClickListener(new View.OnClickListener() {

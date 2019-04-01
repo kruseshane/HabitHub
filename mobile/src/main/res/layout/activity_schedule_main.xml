@@ -27,15 +27,6 @@
             android:layout_gravity="left"
             android:textColor="@android:color/black"/>
 
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/toolbar_schedule_title"
-            android:textSize="32sp"
-            android:textStyle="normal"
-            android:layout_gravity="center"
-            android:textColor="@android:color/black"/>
 
         <TextView
             android:id="@+id/save"
@@ -52,12 +43,14 @@
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
+        android:layout_weight="1"
         android:id="@+id/interval_type_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
+            android:padding="10dp"
             android:id="@+id/interval_daily_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,6 +58,7 @@
             android:text="Daily"/>
 
         <Button
+            android:padding="10dp"
             android:id="@+id/interval_weekly_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -72,6 +66,7 @@
             android:text="Weekly"/>
 
         <Button
+            android:padding="10dp"
             android:id="@+id/interval_monthly_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,25 +78,32 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:text="What time?"
+        android:textSize="32sp"
         android:textAlignment="center"/>
 
     <Button
         android:id="@+id/select_time_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Select Time"/>
+        android:layout_weight="1"
+        android:text="Select Time"
+        android:textSize="24sp"/>
 
     <Button
         android:id="@+id/anytime_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Anytime"/>
+        android:layout_weight="1"
+        android:text="Anytime"
+        android:textSize="18sp"/>
 
     <LinearLayout
         android:id="@+id/repeat_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <TextView
@@ -109,13 +111,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Repeat Task"
+            android:textSize="32sp"
             android:textAlignment="center"/>
 
         <CheckBox
             android:id="@+id/repeat_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
