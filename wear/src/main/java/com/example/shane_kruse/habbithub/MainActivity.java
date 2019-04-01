@@ -37,6 +37,9 @@ import java.util.logging.Logger;
 
 public class MainActivity extends WearableActivity {
 
+    // ShaneDev branch
+    // Shane Kruse
+
     private PieChart pieChart;
     private float[] yData = {16.67f, 16.67f, 16.67f, 16.67f, 16.66f, 16.66f};
     private String[] xData = {"run", "water", "coffee", "read", "code", "hw"};
