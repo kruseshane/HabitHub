@@ -1,6 +1,7 @@
 package com.example.shane_kruse.habbithub;
 
 import android.animation.LayoutTransition;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.time.ZonedDateTime;
+import java.util.Objects;
 
 
 public class ScheduleActivity extends AppCompatActivity {
@@ -24,6 +29,7 @@ public class ScheduleActivity extends AppCompatActivity {
         // Initialize toolbar
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
         // Enable animated layout changes
         ((ViewGroup) findViewById(R.id.schedule_layout)).getLayoutTransition()
@@ -37,6 +43,21 @@ public class ScheduleActivity extends AppCompatActivity {
 
         // Set current interval layout to daily
         setIntervalDisplay("DAILY");
+
+        // Save Button
+        TextView save = findViewById(R.id.save);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DbHandler hand = new DbHandler(ScheduleActivity.this);
+                hand.insertTask(new Task(taskDesc, 1, 0, ZonedDateTime.now(), taskIcon,
+                        false, "daily", "EVERYDAY", false,
+                        ZonedDateTime.now(), taskHex));
+
+                Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
+                startActivity(i);
+            }
+        });
 
         // Buttons for days
         Button daily_btn = findViewById(R.id.interval_daily_btn);

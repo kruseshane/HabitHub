@@ -80,7 +80,7 @@ public class Task {
 
     public void setDue_date(ZonedDateTime due_date) {
         this.due_date = due_date;
-    }
+}
 
     public String getIcon() {
         return icon;
