@@ -25,6 +25,9 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String KEY_REPEAT = "repeat";
     private static final String KEY_REMINDER_TIME = "reminder_time";
     private static final String KEY_COLOR = "color";
+    private static final String KEY_ON_WATCH = "on_watch";
+    private static final String KEY_ABBREV = "abbrev";
+
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " ("
                                                 + KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                                                 + KEY_DESCR + " VARCHAR, " + KEY_GOAL + " INTEGER, "
@@ -32,7 +35,8 @@ public class DbHandler extends SQLiteOpenHelper {
                                                 + KEY_ICON + " VARCAHR, " + KEY_COMPLETED + " BIT, "
                                                 + KEY_INTERVAL_TYPE + " VARCHAR, " + KEY_INTERVAL + " VARCHAR, "
                                                 + KEY_REPEAT + " BIT, " + KEY_REMINDER_TIME + " TEXT, "
-                                                + KEY_COLOR + " VARCHAR"
+                                                + KEY_COLOR + " VARCHAR, " + KEY_ON_WATCH + " BIT, "
+                                                + KEY_ABBREV + " VARCHAR"
                                                 + ")";
 
     DbHandler(Context context){
@@ -78,8 +82,11 @@ public class DbHandler extends SQLiteOpenHelper {
             System.out.println(cursor.getString(10));
             ZonedDateTime reminder_time = ZonedDateTime.parse(cursor.getString(10));
             String color = cursor.getString(11);
+            boolean on_watch = (1 == cursor.getInt(12));
+            String abbrev = cursor.getString(13);
 
-            Task task = new Task(descr, goal, prog, due_date, icon, completed, interval_type, interval, repeat, reminder_time, color);
+            Task task = new Task(descr, goal, prog, due_date, icon, completed, interval_type,
+                                interval, repeat, reminder_time, color, on_watch, abbrev);
             tasks.add(task);
             task.setRow_id(id);
         }
@@ -105,6 +112,8 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_REPEAT, t.isRepeat());
         cv.put(KEY_REMINDER_TIME, t.getReminder_time().toOffsetDateTime().toString());
         cv.put(KEY_COLOR, t.getColor());
+        cv.put(KEY_ON_WATCH, t.isOn_watch());
+        cv.put(KEY_ABBREV, t.getAbbrev());
 
         SQLiteDatabase db = this.getWritableDatabase();
         int row_id = (int) db.insert(TABLE_Task, null, cv);
