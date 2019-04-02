@@ -60,9 +60,9 @@ public class ScheduleActivity extends AppCompatActivity {
         color = (String) data.get("hex");
 
         // Set current interval layout to daily
+        interval = new ArrayList<>();
         setIntervalDisplay("DAILY");
         interval_type = "DAILY";
-        interval = new ArrayList<>();
 
         // Save Button
         TextView save = findViewById(R.id.save);

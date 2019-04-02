@@ -91,13 +91,12 @@
         android:textSize="32sp"
         android:textAlignment="center"/>
 
-    <Button
-        android:id="@+id/select_time_btn"
-        android:layout_width="match_parent"
+    <TimePicker
+        android:id="@+id/time_picker"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Select Time"
-        android:textSize="24sp"/>
+        android:layout_weight="2"
+        android:timePickerMode="spinner" />
 
     <Button
         android:id="@+id/anytime_btn"
