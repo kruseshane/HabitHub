@@ -123,9 +123,13 @@ public class DbHandler extends SQLiteOpenHelper {
 
     int incrementTask(Task t) {
         int new_prog  = t.incrementProg();
+        int row = t.getRow_id();
+
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("UPDATE " + TABLE_Task + " SET " + KEY_PROG + " = " + new_prog
-                                    + " WHERE " + KEY_ROW + " = " + t.getRow_id(), null);
+                                    + " WHERE " + KEY_ROW + " = " + row, null);
+
+        cursor.moveToFirst();
         cursor.close();
         db.close();
         return new_prog;
