@@ -52,7 +52,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
                 hand.insertTask(new Task(taskDesc, 1, 0, ZonedDateTime.now(), taskIcon,
                         false, "daily", "EVERYDAY", false,
-                        ZonedDateTime.now(), taskHex));
+                        ZonedDateTime.now(), taskHex, false, "n/a"));
 
                 Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
                 startActivity(i);

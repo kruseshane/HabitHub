@@ -16,10 +16,13 @@ public class Task {
     private ZonedDateTime reminder_time;     //Set time of day to be reminded about task
     private String color;           //Color hex
     private int row_id;             //Row ID in Database
+    private boolean on_watch;       //Is task on smartwatch
+    private String abbrev;          //Abbreviation for smartwatch
 
 
     public Task(String descr, int goal, int prog, ZonedDateTime due_date, String icon, boolean completed,
-                String interval_type, String interval, boolean repeat, ZonedDateTime reminder_time, String color) {
+                String interval_type, String interval, boolean repeat, ZonedDateTime reminder_time,
+                String color, boolean on_watch, String abbrev) {
         this.descr = descr;
         this.goal = goal;
         this.prog = prog;
@@ -31,7 +34,9 @@ public class Task {
         this.repeat = repeat;
         this.reminder_time = reminder_time;
         this.color = color;
-        this.row_id = 0;
+        this.row_id = -1;
+        this.on_watch = on_watch;
+        this.abbrev = abbrev;
     }
 
     public int incrementProg(){
@@ -136,6 +141,22 @@ public class Task {
 
     public void setReminder_time(ZonedDateTime reminder_time) {
         this.reminder_time = reminder_time;
+    }
+
+    public boolean isOn_watch() {
+        return on_watch;
+    }
+
+    public void setOn_watch(boolean on_watch) {
+        this.on_watch = on_watch;
+    }
+
+    public String getAbbrev() {
+        return abbrev;
+    }
+
+    public void setAbbrev(String abbrev) {
+        this.abbrev = abbrev;
     }
 
 }
