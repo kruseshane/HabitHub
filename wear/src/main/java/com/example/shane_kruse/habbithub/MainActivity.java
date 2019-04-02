@@ -1,17 +1,22 @@
 package com.example.shane_kruse.habbithub;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
@@ -41,8 +46,6 @@ public class MainActivity extends WearableActivity {
     // Shane Kruse
 
     private PieChart pieChart;
-    private float[] yData = {16.67f, 16.67f, 16.67f, 16.67f, 16.66f, 16.66f};
-    private String[] xData = {"run", "water", "coffee", "read", "code", "hw"};
     private PieData pieData;
     private ConstraintLayout background;
     private Handler myHandler; // was protected
@@ -64,6 +67,118 @@ public class MainActivity extends WearableActivity {
             }
         });
 
+        // Send message to phone to sync related tasks
+        new NewThread("/my_path", "REQUEST_UPDATE").start();
+
+        //Register to receive local broadcasts, which we'll be creating in the next step//
+        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
+        Receiver messageReceiver = new Receiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, messageFilter);
+
+        //createPieChart();
+
+    }
+
+    //Define a nested class that extends BroadcastReceiver//
+    public class Receiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            if (message.length() > 1) {
+                message = message.substring(0, message.length() - 1);
+                System.out.println("Watch received: " + message);
+                parseUpdate(message);
+            } else {
+                parseUpdate(message);
+            }
+        }
+    }
+
+    class NewThread extends Thread {
+        String path;
+        String message;
+
+        //Constructor for sending information to the Data Layer//
+        NewThread(String p, String m) {
+            path = p;
+            message = m;
+        }
+
+        public void run() {
+
+            System.out.println("Sending message to phone");
+            //Retrieve the connected devices, known as nodes//
+            Task<List<Node>> mobileDeviceList =
+                    Wearable.getNodeClient(getApplicationContext()).getConnectedNodes();
+            try {
+
+                List<Node> nodeList = Tasks.await(mobileDeviceList);
+                for (Node n : nodeList) {
+                    Task<Integer> sendMessageTask =
+
+                            //Send the message//
+                            Wearable.getMessageClient(MainActivity.this).sendMessage(n.getId(), path, message.getBytes());
+
+                    try {
+
+                        //Block on a task and get the result synchronously//
+                        Integer result = Tasks.await(sendMessageTask);
+                        sendmessage(message);
+                        System.out.println(message + " sent");
+
+                        //if the Task fails, then…..//
+                    } catch (ExecutionException exception) {
+                        //TO DO: Handle the exception//
+                    } catch (InterruptedException exception) {
+                        //TO DO: Handle the exception//
+                    }
+                }
+
+            } catch (ExecutionException exception) {
+                //TO DO: Handle the exception//
+            } catch (InterruptedException exception) {
+                //TO DO: Handle the exception//
+            }
+
+        }
+
+        //Use a Bundle to encapsulate our message//
+        public void sendmessage(String messageText) {
+            Bundle bundle = new Bundle();
+            bundle.putString("messageText", messageText);
+            Message msg = myHandler.obtainMessage();
+            msg.setData(bundle);
+            myHandler.sendMessage(msg);
+
+        }
+    }
+
+    public void parseUpdate(String updateMsg) {
+        String[] tasks = updateMsg.split("&");
+        String[] xData = new String[tasks.length];
+        float[] yData = new float[tasks.length];
+        ArrayList<Integer> colors = new ArrayList<>();
+        if (tasks[0].contains(",")) {
+            for (int i = 0; i < tasks.length; i++) {
+                String[] data = tasks[i].split(",");
+
+                // data[0]=name, data[1]=color, data[2]=prog, data[3]=goal
+                xData[i] = data[0];
+                yData[i] = (float)1/tasks.length;
+                colors.add(Color.parseColor(data[1]));
+            }
+        } else {
+            xData[0] = "No current tasks";
+            yData[0] = 100.0f;
+            colors.add(Color.LTGRAY);
+        }
+
+        createPieChart(xData, yData, colors);
+}
+
+    public void createPieChart(String[] xData, float[] yData, ArrayList<Integer> colors) {
+
         background = findViewById(R.id.pie_background);
         pieChart = findViewById(R.id.pie_chart);
 
@@ -82,16 +197,6 @@ public class MainActivity extends WearableActivity {
 
         pieDataSet.setSliceSpace(2);
         pieDataSet.setValueTextSize(12);
-
-        //add colors to dataset
-        ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.rgb(255, 140, 0));
-        colors.add(Color.BLUE);
-        colors.add(Color.rgb(255,105,180));
-        colors.add(Color.rgb(192, 14, 14));
-        colors.add(Color.rgb(35, 145, 49));
-        colors.add(Color.rgb(128, 0, 128));
-        colors.add(Color.MAGENTA);
 
         pieDataSet.setColors(colors);
 
@@ -128,62 +233,5 @@ public class MainActivity extends WearableActivity {
         pieDataSet.setDrawValues(false);
         pieChart.setData(pieData);
         pieChart.invalidate();
-    }
-
-    class NewThread extends Thread {
-        String path;
-        String message;
-
-        //Constructor for sending information to the Data Layer//
-        NewThread(String p, String m) {
-            path = p;
-            message = m;
-        }
-
-        public void run() {
-
-            //Retrieve the connected devices, known as nodes//
-            Task<List<Node>> mobileDeviceList =
-                    Wearable.getNodeClient(getApplicationContext()).getConnectedNodes();
-            try {
-
-                List<Node> nodeList = Tasks.await(mobileDeviceList);
-                for (Node n : nodeList) {
-                    Task<Integer> sendMessageTask =
-
-                            //Send the message//
-                            Wearable.getMessageClient(MainActivity.this).sendMessage(n.getId(), path, message.getBytes());
-
-                    try {
-
-                        //Block on a task and get the result synchronously//
-                        Integer result = Tasks.await(sendMessageTask);
-                        sendmessage(message);
-
-                        //if the Task fails, then…..//
-                    } catch (ExecutionException exception) {
-                        //TO DO: Handle the exception//
-                    } catch (InterruptedException exception) {
-                        //TO DO: Handle the exception//
-                    }
-                }
-
-            } catch (ExecutionException exception) {
-                //TO DO: Handle the exception//
-            } catch (InterruptedException exception) {
-                //TO DO: Handle the exception//
-            }
-
-        }
-
-        //Use a Bundle to encapsulate our message//
-        public void sendmessage(String messageText) {
-            Bundle bundle = new Bundle();
-            bundle.putString("messageText", messageText);
-            Message msg = myHandler.obtainMessage();
-            msg.setData(bundle);
-            myHandler.sendMessage(msg);
-
-        }
     }
 }

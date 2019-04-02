@@ -13,9 +13,8 @@ public class MessageService extends WearableListenerService {
     public void onMessageReceived(MessageEvent messageEvent) {
 
         //If the message’s path equals "/my_path"...//
-        Log.d("Path", messageEvent.getPath());
         if (messageEvent.getPath().equals("/my_path")) {
-
+            System.out.println("Message from phone received");
             //...retrieve the message//
             final String message = new String(messageEvent.getData());
 

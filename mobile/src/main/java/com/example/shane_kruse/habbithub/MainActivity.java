@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -22,10 +23,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.lzyzsd.circleprogress.DonutProgress;
+import com.google.android.gms.tasks.Tasks;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Task> tasks = new ArrayList<>();
@@ -56,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         //dbh.resetDB();
         //dbh.insertTask(new Task("Increment Task", 1, 0, new Date(), "n/a", false, "daily", "n/a"));
 
-
         tasks = null;
         try {
             tasks = dbh.loadData();
@@ -64,17 +72,14 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        /*
         //Create a message handler//
         myHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                Bundle msgBundle = msg.getData();
-                messageText(msgBundle.getString("messageText"));
+                Bundle stuff = msg.getData();
                 return true;
             }
         });
-        */
 
         addTask = findViewById(R.id.edit_add_task);
         addTask.setOnClickListener(new View.OnClickListener() {
@@ -155,43 +160,6 @@ public class MainActivity extends AppCompatActivity {
         taskRecycler.setAdapter(mAdapter);
     }
 
-    /*
-    // Inflates menu icons as if it were an ActionBar
-    // Whatever that means...
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item){
-        int id = item.getItemId();
-        if (id == R.id.toolbar_edit) {
-            item.setIcon(R.mipmap.ic_launcher_foreground_add_task);
-
-            for(int i = 0; i < tasks.size(); i++) {
-                final int position = i;
-                final Task task = tasks.get(i);
-                MyTaskAdapter.ViewHolder taskView = (MyTaskAdapter.ViewHolder) taskRecycler.findViewHolderForAdapterPosition(i);
-                System.out.println(taskView.task_desc.getText());
-                TextView taskTextView = taskView.task_desc;
-
-                taskTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent editScreen = new Intent(MainActivity.this, EditActivity.class);
-                        editScreen.putExtra("task_desc", task.getDescr());
-                        editScreen.putExtra("task_goal", task.getGoal());
-                        editScreen.putExtra("task_pos", position);
-                        startActivityForResult(editScreen, 101);
-                    }
-                });
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    */
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 101 && resultCode == RESULT_OK) {
@@ -213,6 +181,17 @@ public class MainActivity extends AppCompatActivity {
             //Upon receiving each message from the wearable, display the following text//
 
             String message = intent.getStringExtra("message");
+            //System.out.println(message);
+            if (message.equals("REQUEST_UPDATE")) {
+                System.out.println("REQUEST_UPDATE RECEIVED");
+                String updateMsg = dbh.getTasks();
+
+                // Send update to watch
+                new NewThread("/my_path", updateMsg).start();
+
+                System.out.println("UPDATE SENT");
+
+            }
             Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     }
@@ -232,5 +211,64 @@ public class MainActivity extends AppCompatActivity {
     private void setProgressBarAttributes() {
         progressBarOverall.setFinishedStrokeWidth(45);
         progressBarOverall.setUnfinishedStrokeWidth(45);
+    }
+
+    class NewThread extends Thread {
+        String path;
+        String message;
+
+        //Constructor for sending information to the Data Layer//
+        NewThread(String p, String m) {
+            path = p;
+            message = m;
+        }
+
+        public void run() {
+
+            System.out.println("Sending message to phone");
+            //Retrieve the connected devices, known as nodes//
+            com.google.android.gms.tasks.Task<List<Node>> mobileDeviceList =
+                    Wearable.getNodeClient(getApplicationContext()).getConnectedNodes();
+            try {
+
+                List<Node> nodeList = Tasks.await(mobileDeviceList);
+                for (Node n : nodeList) {
+                    com.google.android.gms.tasks.Task<Integer> sendMessageTask =
+
+                            //Send the message//
+                            Wearable.getMessageClient(MainActivity.this).sendMessage(n.getId(), path, message.getBytes());
+
+                    try {
+
+                        //Block on a task and get the result synchronously//
+                        Integer result = Tasks.await(sendMessageTask);
+                        sendmessage(message);
+                        System.out.println(message + " sent");
+
+                        //if the Task fails, then…..//
+                    } catch (ExecutionException exception) {
+                        //TO DO: Handle the exception//
+                    } catch (InterruptedException exception) {
+                        //TO DO: Handle the exception//
+                    }
+                }
+
+            } catch (ExecutionException exception) {
+                //TO DO: Handle the exception//
+            } catch (InterruptedException exception) {
+                //TO DO: Handle the exception//
+            }
+
+        }
+
+        //Use a Bundle to encapsulate our message//
+        public void sendmessage(String messageText) {
+            Bundle bundle = new Bundle();
+            bundle.putString("messageText", messageText);
+            Message msg = myHandler.obtainMessage();
+            msg.setData(bundle);
+            myHandler.sendMessage(msg);
+
+        }
     }
 }

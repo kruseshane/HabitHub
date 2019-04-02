@@ -134,4 +134,24 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
         return new_prog;
     }
+
+    public String getTasks() {
+        String s = "";
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor mCount = db.rawQuery("select count(*) from " + TABLE_Task, null);
+        mCount.moveToFirst();
+        int count= mCount.getInt(0);
+        mCount.close();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_Task, null);
+        System.out.println(count);
+        if (count > 0 && cursor.moveToFirst()) {
+            do {
+                s += cursor.getString(1) + "," + cursor.getString(11) + "," + cursor.getInt(3) +
+                "," + cursor.getInt(2) + "&";
+            } while (cursor.moveToNext());
+        }
+
+        //System.out.println(s);
+        return s;
+    }
 }
