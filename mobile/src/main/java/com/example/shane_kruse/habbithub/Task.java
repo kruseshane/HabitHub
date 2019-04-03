@@ -1,6 +1,7 @@
 package com.example.shane_kruse.habbithub;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Task {
@@ -11,7 +12,7 @@ public class Task {
     private String icon;            //Icon ID
     private boolean completed;      //Has the goal been met
     private String interval_type;   //Daily, weekly, monthly
-    private String interval;        //M, T, W, EVERYDAY, 4, BI-WEEKLY, START, WHOLE, etc
+    private ArrayList<String> interval;        //M, T, W, EVERYDAY, 4, BI-WEEKLY, START, WHOLE, etc
     private boolean repeat;         //On or off to repeat task every interval type
     private ZonedDateTime reminder_time;     //Set time of day to be reminded about task
     private String color;           //Color hex
@@ -21,7 +22,7 @@ public class Task {
 
 
     public Task(String descr, int goal, int prog, ZonedDateTime due_date, String icon, boolean completed,
-                String interval_type, String interval, boolean repeat, ZonedDateTime reminder_time,
+                String interval_type, ArrayList<String> interval, boolean repeat, ZonedDateTime reminder_time,
                 String color, boolean on_watch, String abbrev) {
         this.descr = descr;
         this.goal = goal;
@@ -103,11 +104,11 @@ public class Task {
         this.completed = completed;
     }
 
-    public String getInterval() {
+    public ArrayList<String> getInterval() {
         return interval;
     }
 
-    public void setInterval(String interval) {
+    public void setInterval(ArrayList<String> interval) {
         this.interval = interval;
     }
 

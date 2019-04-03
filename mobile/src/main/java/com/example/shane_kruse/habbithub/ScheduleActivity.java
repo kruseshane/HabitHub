@@ -3,9 +3,12 @@ package com.example.shane_kruse.habbithub;
 import android.animation.LayoutTransition;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -13,23 +16,27 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
 public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
     Button dailyBtn, weeklyBtn, monthlyBtn, anytimeBtn;
-    Switch repeatCheck;
+    Switch repeatSwitch, watchSwitch;
+    TimePicker duedatePicker;
+    TextView save;
 
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
     private int prog;               //Current progress towards the goal
     private ZonedDateTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
-    private boolean completed;      //Has the goal been met
+    private boolean completed = false;      //Has the goal been met
     private String interval_type;   //Daily, weekly, monthly
     private ArrayList<String> interval;        //M, T, W, EVERYDAY, 4, BI-WEEKLY, START, WHOLE, etc
     private boolean repeat;         //On or off to repeat task every interval type
@@ -50,37 +57,44 @@ public class ScheduleActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
-        // Enable animated layout changes
-        ((ViewGroup) findViewById(R.id.schedule_layout)).getLayoutTransition()
-                .enableTransitionType(LayoutTransition.CHANGING);
-
-        // Read Task info from create page
-        Bundle data = getIntent().getExtras();
-        descr = (String) data.get("desc");
-        icon = (String) data.get("icon");
-        color = (String) data.get("hex");
-
-        // Set current interval layout to daily
-        interval = new ArrayList<>();
-        setIntervalDisplay("DAILY");
-        interval_type = "DAILY";
-
         // Save Button
-        TextView save = findViewById(R.id.save);
+        save = findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DbHandler hand = new DbHandler(ScheduleActivity.this);
-                hand.insertTask(new Task(descr, 1, 0, ZonedDateTime.now(), icon,
-                        false, "daily", "EVERYDAY", false,
-                        ZonedDateTime.now(), color, false, "n/a"));
+                if (interval.isEmpty()) {
+                    showPopup();
+                    return;
+                }
 
+                // Set due date
+                int hour = 24;
+                int minute = 59;
+                if (!anytimeBtn.isSelected()) {
+                    hour = duedatePicker.getHour();
+                    minute = duedatePicker.getMinute();
+                }
+                due_date = ZonedDateTime.now();
+                due_date.withHour(hour);
+                due_date.withMinute(minute);
+
+                // Read booleans from switches
+                repeat = repeatSwitch.isSelected();
+                on_watch = watchSwitch.isSelected();
+
+                // Add to database
+                DbHandler hand = new DbHandler(ScheduleActivity.this);
+                hand.insertTask(new Task(descr, 1, 0, due_date, icon,
+                        completed, interval_type, interval, repeat,
+                        ZonedDateTime.now(), color, on_watch, "n/a"));
+
+                // Return to dashboard
                 Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
                 startActivity(i);
             }
         });
 
-        // Buttons for interval type
+        // Buttons
         dailyBtn = findViewById(R.id.interval_daily_btn);
         dailyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,13 +119,45 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         });
 
-        repeatCheck = findViewById(R.id.repeat_switch);
+        anytimeBtn = findViewById(R.id.anytime_btn);
+        anytimeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        // Switches
+        repeatSwitch = findViewById(R.id.repeat_switch);
+        watchSwitch = findViewById(R.id.watch_task_switch);
+
+        // TimePicker
+        duedatePicker = findViewById(R.id.time_picker);
+
+        // Enable animated layout changes
+        ((ViewGroup) findViewById(R.id.schedule_layout)).getLayoutTransition()
+                .enableTransitionType(LayoutTransition.CHANGING);
+
+        // Read Task info from create page
+        Bundle data = getIntent().getExtras();
+        descr = (String) data.get("desc");
+        icon = (String) data.get("icon");
+        color = (String) data.get("hex");
+
+        // Set current interval layout to daily
+        interval = new ArrayList<>();
+        setIntervalDisplay("DAILY");
+        interval_type = "DAILY";
+
     }
 
     public void setIntervalDisplay(String interval_type) {
         final int INDEX = 2;
         LinearLayout parent_layout = findViewById(R.id.schedule_layout);
         parent_layout.removeViewAt(INDEX);
+
+        ArrayList<Button> buttonList = new ArrayList<>();
+        ArrayList<String> intervalList = new ArrayList<>();
 
         switch (interval_type) {
             case "DAILY":
@@ -125,7 +171,10 @@ public class ScheduleActivity extends AppCompatActivity {
                 interval.clear();
 
                 // Setup new buttons
-                Button sundayBtn = findViewById(R.id.interval_sunday_btn);
+                final Button sundayBtn = findViewById(R.id.interval_sunday_btn);
+                buttonList.add(sundayBtn);
+                intervalList.add("SUNDAY");
+
                 sundayBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -134,52 +183,31 @@ public class ScheduleActivity extends AppCompatActivity {
                 });
 
                 Button mondayBtn = findViewById(R.id.interval_monday_btn);
-                mondayBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("MONDAY")) interval.add("MONDAY");
-                    }
-                });
+                buttonList.add(mondayBtn);
+                intervalList.add("MONDAY");
 
                 Button tuesdayBtn = findViewById(R.id.interval_tuesday_btn);
-                tuesdayBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("TUESDAY")) interval.add("TUESDAY");
-                    }
-                });
+                buttonList.add(tuesdayBtn);
+                intervalList.add("TUESDAY");
 
                 Button wednesdayBtn = findViewById(R.id.interval_wednesday_btn);
-                wednesdayBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("WEDNESDAY")) interval.add("WEDNESDAY");
-                    }
-                });
+                buttonList.add(wednesdayBtn);
+                intervalList.add("WEDNESDAY");
 
                 Button thursdayBtn = findViewById(R.id.interval_thursday_btn);
-                thursdayBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("THURSDAY")) interval.add("THURSDAY");
-                    }
-                });
+                buttonList.add(thursdayBtn);
+                intervalList.add("THURSDAY");
 
                 Button fridayBtn = findViewById(R.id.interval_friday_btn);
-                fridayBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("FRIDAY")) interval.add("FRIDAY");
-                    }
-                });
+                buttonList.add(fridayBtn);
+                intervalList.add("FRIDAY");
 
                 Button saturdayBtn = findViewById(R.id.interval_saturday_btn);
-                saturdayBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("SATURDAY")) interval.add("SATURDAY");
-                    }
-                });
+                buttonList.add(saturdayBtn);
+                intervalList.add("SATURDAY");
+
+                // Setup Buttons
+                setupIntervalBtn(buttonList, intervalList);
 
                 break;
 
@@ -191,12 +219,10 @@ public class ScheduleActivity extends AppCompatActivity {
                 interval.clear();
 
                 Button biweeklyBtn = findViewById(R.id.interval_biweekly_btn);
-                biweeklyBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("BIWEEKLY")) interval.add("BIWEEKLY");
-                    }
-                });
+                buttonList.add(biweeklyBtn);
+                intervalList.add("BIWEEKLY");
+
+                setupIntervalBtn(buttonList, intervalList);
 
                 break;
 
@@ -208,38 +234,58 @@ public class ScheduleActivity extends AppCompatActivity {
                 interval.clear();
 
                 Button startBtn = findViewById(R.id.interval_start_btn);
-                startBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("START")) interval.add("START");
-                    }
-                });
+                buttonList.add(startBtn);
+                intervalList.add("START");
 
                 Button midBtn = findViewById(R.id.interval_mid_btn);
-                midBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("MID")) interval.add("MID");
-                    }
-                });
+                buttonList.add(midBtn);
+                intervalList.add("MID");
 
                 Button endBtn = findViewById(R.id.interval_end_btn);
-                endBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("END")) interval.add("END");
-                    }
-                });
+                buttonList.add(endBtn);
+                intervalList.add("END");
 
                 Button anytimeBtn = findViewById(R.id.interval_whole_btn);
-                anytimeBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!interval.contains("ANY")) interval.add("ANY");
-                    }
-                });
+                buttonList.add(anytimeBtn);
+                intervalList.add("ANY");
+
+                setupIntervalBtn(buttonList, intervalList);
 
                 break;
+        }
+    }
+
+    void showPopup() {
+        LayoutInflater inflater = getLayoutInflater();
+        View popup = inflater.inflate(R.layout.not_completed_popup, null);
+        final AlertDialog alert = new AlertDialog.Builder(this).create();
+        alert.setView(popup);
+
+        Button dismissBtn = popup.findViewById(R.id.dismissBtn);
+        dismissBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alert.dismiss();
+            }
+        });
+
+        alert.show();
+    }
+
+    void setupIntervalBtn(ArrayList<Button> buttons, ArrayList<String> intervals) {
+        for (int i = 0; i < buttons.size(); i++) {
+            final Button b = buttons.get(i);
+            final String inter = intervals.get(i);
+
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!interval.contains(inter)) interval.add(inter);
+                    b.setSelected(true);
+                    b.setBackgroundColor(Color.GREEN);
+                }
+            });
+
         }
     }
 }

@@ -1,0 +1,30 @@
+<LinearLayout
+    android:id="@+id/schedule_popup"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/not_completed"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="32sp"
+        android:textAlignment="center"
+        android:padding="10dp"
+        android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/dismissBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ok"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="24sp"
+        android:textAlignment="center"
+        android:layout_gravity="center"/>
+
+    </LinearLayout>

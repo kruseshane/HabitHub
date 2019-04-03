@@ -5,7 +5,8 @@
     <string name="toolbar_create_title">Create</string>
     <string name="toolbar_schedule_title">Schedule</string>
     <string name="back_text">Back</string>
-    <string name="next_text">Save</string>
+    <string name="next_text">Next</string>
+    <string name="save_text">Save</string>
     <string name="edit_task_header">Edit Task</string>
     <string name="edit_task_desc">Description</string>
     <string name="edit_task_color">Select a Color</string>
@@ -19,4 +20,7 @@
     <string name="daily_button">Daily</string>
     <string name="weekly_button">Weekly</string>
     <string name="monthly_button">Monthly</string>
+
+    <string name="not_completed">Please select when this task should occur</string>
+    <string name="ok">Ok</string>
 </resources>

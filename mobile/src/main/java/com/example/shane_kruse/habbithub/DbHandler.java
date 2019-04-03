@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DbHandler extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
@@ -77,13 +78,17 @@ public class DbHandler extends SQLiteOpenHelper {
             int completed_int = cursor.getInt(6);
             boolean completed = completed_int == 1;
             String interval_type = cursor.getString(7);
-            String interval = cursor.getString(8);
+            String interval_str = cursor.getString(8);
             boolean repeat = (1 == cursor.getInt(9));
             System.out.println(cursor.getString(10));
             ZonedDateTime reminder_time = ZonedDateTime.parse(cursor.getString(10));
             String color = cursor.getString(11);
             boolean on_watch = (1 == cursor.getInt(12));
             String abbrev = cursor.getString(13);
+
+            // Turn string into ArrayList<String>
+            String[] interval_list = interval_str.split(",");
+            ArrayList<String> interval = new ArrayList<String>(Arrays.asList(interval_list));
 
             Task task = new Task(descr, goal, prog, due_date, icon, completed, interval_type,
                                 interval, repeat, reminder_time, color, on_watch, abbrev);
@@ -100,6 +105,12 @@ public class DbHandler extends SQLiteOpenHelper {
         if (t.isCompleted()) completed = 1;
         else completed = 0;
 
+        // Turn interval into String
+        String interval_str = "";
+        for (String s: t.getInterval()) {
+            interval_str += s + ",";
+        }
+
         ContentValues cv = new ContentValues();
         cv.put(KEY_DESCR, t.getDescr());
         cv.put(KEY_GOAL, t.getGoal());
@@ -108,7 +119,7 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_ICON, t.getIcon());
         cv.put(KEY_COMPLETED, completed);
         cv.put(KEY_INTERVAL_TYPE, t.getInterval_type());
-        cv.put(KEY_INTERVAL, t.getInterval());
+        cv.put(KEY_INTERVAL, interval_str);
         cv.put(KEY_REPEAT, t.isRepeat());
         cv.put(KEY_REMINDER_TIME, t.getReminder_time().toOffsetDateTime().toString());
         cv.put(KEY_COLOR, t.getColor());
