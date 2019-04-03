@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.time.ZonedDateTime;
@@ -21,7 +22,7 @@ import java.util.Objects;
 public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
     Button dailyBtn, weeklyBtn, monthlyBtn, anytimeBtn;
-    CheckBox repeatCheck;
+    Switch repeatCheck;
 
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
@@ -104,7 +105,7 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         });
 
-        repeatCheck = findViewById(R.id.repeat_checkbox);
+        repeatCheck = findViewById(R.id.repeat_switch);
     }
 
     public void setIntervalDisplay(String interval_type) {
