@@ -91,13 +91,12 @@
         android:textSize="32sp"
         android:textAlignment="center"/>
 
-    <Button
-        android:id="@+id/select_time_btn"
-        android:layout_width="match_parent"
+    <TimePicker
+        android:id="@+id/time_picker"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Select Time"
-        android:textSize="24sp"/>
+        android:layout_weight="2"
+        android:timePickerMode="spinner" />
 
     <Button
         android:id="@+id/anytime_btn"
@@ -122,11 +121,36 @@
             android:textSize="32sp"
             android:textAlignment="center"/>
 
-        <CheckBox
-            android:id="@+id/repeat_checkbox"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_weight="1" />
+        <Switch
+            android:id="@+id/repeat_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="48dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/watch_task_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add task to watch?"
+            android:textSize="32sp"
+            android:textAlignment="center"/>
+
+        <Switch
+            android:id="@+id/watch_task_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="48dp" />
 
     </LinearLayout>
 
