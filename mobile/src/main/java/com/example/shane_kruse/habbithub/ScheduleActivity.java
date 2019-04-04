@@ -94,6 +94,14 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         });
 
+        TextView back = findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         // Buttons
         dailyBtn = findViewById(R.id.interval_daily_btn);
         dailyBtn.setOnClickListener(new View.OnClickListener() {

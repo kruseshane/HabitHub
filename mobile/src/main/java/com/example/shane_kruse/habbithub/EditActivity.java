@@ -69,16 +69,7 @@ public class EditActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
-        backText = findViewById(R.id.back);
-        backText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(EditActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // This is the save text for now
+        // Next Button
         nextText = findViewById(R.id.next);
         nextText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +78,16 @@ public class EditActivity extends AppCompatActivity {
                 intent.putExtra("desc", descEdit.getText().toString());
                 intent.putExtra("icon", icon);
                 intent.putExtra("hex", hex);
+                startActivity(intent);
+            }
+        });
+
+        // Back button
+        backText = findViewById(R.id.back);
+        backText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
