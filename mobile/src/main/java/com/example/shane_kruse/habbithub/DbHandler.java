@@ -111,6 +111,10 @@ public class DbHandler extends SQLiteOpenHelper {
             interval_str += s + ",";
         }
 
+        // Convert boolean into 0 or 1 to be inserted into BIT field on database
+        int repeatBit = t.isRepeat() ? 1 : 0;
+        int watchBit = t.isOn_watch() ? 1 : 0;
+
         ContentValues cv = new ContentValues();
         cv.put(KEY_DESCR, t.getDescr());
         cv.put(KEY_GOAL, t.getGoal());
@@ -120,10 +124,10 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_COMPLETED, completed);
         cv.put(KEY_INTERVAL_TYPE, t.getInterval_type());
         cv.put(KEY_INTERVAL, interval_str);
-        cv.put(KEY_REPEAT, t.isRepeat());
+        cv.put(KEY_REPEAT, repeatBit);
         cv.put(KEY_REMINDER_TIME, t.getReminder_time().toOffsetDateTime().toString());
         cv.put(KEY_COLOR, t.getColor());
-        cv.put(KEY_ON_WATCH, t.isOn_watch());
+        cv.put(KEY_ON_WATCH, watchBit);
         cv.put(KEY_ABBREV, t.getAbbrev());
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -146,7 +150,7 @@ public class DbHandler extends SQLiteOpenHelper {
         return new_prog;
     }
 
-    public String getTasks() {
+    public String getWatchTasks() {
         String s = "";
         SQLiteDatabase db = getReadableDatabase();
         Cursor mCount = db.rawQuery("select count(*) from " + TABLE_Task, null);
@@ -154,11 +158,12 @@ public class DbHandler extends SQLiteOpenHelper {
         int count= mCount.getInt(0);
         mCount.close();
         Cursor cursor = db.rawQuery("select * from " + TABLE_Task, null);
-        System.out.println(count);
         if (count > 0 && cursor.moveToFirst()) {
             do {
-                s += cursor.getString(1) + "," + cursor.getString(11) + "," + cursor.getInt(3) +
-                "," + cursor.getInt(2) + "&";
+                if (cursor.getInt(12) == 1) {
+                    s += cursor.getString(1) + "," + cursor.getString(11) + "," + cursor.getInt(3) +
+                            "," + cursor.getInt(2) + "&";
+                }
             } while (cursor.moveToNext());
         }
 

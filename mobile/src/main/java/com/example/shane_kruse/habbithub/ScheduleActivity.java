@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -80,7 +81,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 // Read booleans from switches
                 repeat = repeatSwitch.isSelected();
-                on_watch = watchSwitch.isSelected();
+                //on_watch = watchSwitch.isSelected();
 
                 // Add to database
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
@@ -137,7 +138,28 @@ public class ScheduleActivity extends AppCompatActivity {
 
         // Switches
         repeatSwitch = findViewById(R.id.repeat_switch);
+        repeatSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    repeat = true;
+                } else {
+                    repeat = false;
+                }
+            }
+        });
+
         watchSwitch = findViewById(R.id.watch_task_switch);
+        watchSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    on_watch = true;
+                } else {
+                    on_watch = false;
+                }
+            }
+        });
 
         // TimePicker
         duedatePicker = findViewById(R.id.time_picker);

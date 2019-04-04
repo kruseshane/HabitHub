@@ -184,7 +184,8 @@ public class MainActivity extends AppCompatActivity {
             //System.out.println(message);
             if (message.equals("REQUEST_UPDATE")) {
                 System.out.println("REQUEST_UPDATE RECEIVED");
-                String updateMsg = dbh.getTasks();
+                //dbh.getWatchTasks();
+                String updateMsg = dbh.getWatchTasks();
 
                 // Send update to watch
                 new NewThread("/my_path", updateMsg).start();
