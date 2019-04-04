@@ -22,5 +22,6 @@
     <string name="monthly_button">Monthly</string>
 
     <string name="not_completed">Please select when this task should occur</string>
+    <string name="abbrev_popup_text">Enter a 5 letter term for your task</string>
     <string name="ok">Ok</string>
 </resources>
