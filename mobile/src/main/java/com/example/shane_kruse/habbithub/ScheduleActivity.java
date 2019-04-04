@@ -31,11 +31,11 @@ public class ScheduleActivity extends AppCompatActivity {
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
     TextView save;
-    NumberPicker dailyNumPicker, weeklyNumPicker, weeklyDaysPicker, monthlyNumPicker;
+    NumberPicker dailyNumPicker, weeklyNumPicker, monthlyNumPicker;
 
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
-    private int prog;               //Current progress towards the goal
+    private int prog = 0;               //Current progress towards the goal
     private ZonedDateTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
     private boolean completed = false;      //Has the goal been met
@@ -69,13 +69,25 @@ public class ScheduleActivity extends AppCompatActivity {
                     return;
                 }
 
+                // Read goal based on interval type
+                switch(interval_type) {
+                    case "DAILY":
+                        goal = dailyNumPicker.getValue();
+                        break;
+                    case "WEEKLY":
+                        goal = weeklyNumPicker.getValue();
+                        break;
+                    case "MONTHLY":
+                        goal = monthlyNumPicker.getValue();
+                }
+
                 // Read booleans from switches
                 repeat = repeatSwitch.isSelected();
                 on_watch = watchSwitch.isSelected();
 
                 // Add to database
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
-                hand.insertTask(new Task(descr, 1, 0, due_date, icon,
+                hand.insertTask(new Task(descr, goal, prog, due_date, icon,
                         completed, interval_type, interval, repeat,
                         ZonedDateTime.now(), color, on_watch, "n/a"));
 
@@ -139,7 +151,6 @@ public class ScheduleActivity extends AppCompatActivity {
         interval = new ArrayList<>();
         setIntervalDisplay("DAILY");
         interval_type = "DAILY";
-
     }
 
     public void setIntervalDisplay(String interval_type) {
@@ -218,8 +229,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 setupIntervalBtn(buttonList, intervalList);
 
-                weeklyDaysPicker = findViewById(R.id.weekly_days_picker);
-                weeklyNumPicker = findViewById(R.id.weekly_times_per_day_picker);
+                weeklyNumPicker = findViewById(R.id.weekly_days_picker);
 
                 break;
 
