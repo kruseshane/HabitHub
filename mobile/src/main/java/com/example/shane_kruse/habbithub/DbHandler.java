@@ -161,7 +161,7 @@ public class DbHandler extends SQLiteOpenHelper {
         if (count > 0 && cursor.moveToFirst()) {
             do {
                 if (cursor.getInt(12) == 1) {
-                    s += cursor.getString(1) + "," + cursor.getString(11) + "," + cursor.getInt(3) +
+                    s += cursor.getString(13) + "," + cursor.getString(11) + "," + cursor.getInt(3) +
                             "," + cursor.getInt(2) + "&";
                 }
             } while (cursor.moveToNext());

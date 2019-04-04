@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ public class ScheduleActivity extends AppCompatActivity {
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
     TextView save;
+    EditText abbrevText;
 
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
@@ -45,7 +47,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private String color;           //Color hex
     private int row_id;             //Row ID in Database
     private boolean on_watch;       //Is task on smartwatch
-    private String abbrev;          //Abbreviation for smartwatch
+    private String abbrev = "";          //Abbreviation for smartwatch
 
     protected void onCreate (Bundle savedInstance) {
         // Initialize layout
@@ -79,15 +81,11 @@ public class ScheduleActivity extends AppCompatActivity {
                 due_date.withHour(hour);
                 due_date.withMinute(minute);
 
-                // Read booleans from switches
-                repeat = repeatSwitch.isSelected();
-                //on_watch = watchSwitch.isSelected();
-
                 // Add to database
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
                 hand.insertTask(new Task(descr, 1, 0, due_date, icon,
                         completed, interval_type, interval, repeat,
-                        ZonedDateTime.now(), color, on_watch, "n/a"));
+                        ZonedDateTime.now(), color, on_watch, abbrev));
 
                 // Return to dashboard
                 Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
@@ -155,6 +153,23 @@ public class ScheduleActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     on_watch = true;
+                    LayoutInflater inflater = getLayoutInflater();
+                    View popup = inflater.inflate(R.layout.abbrev_popup, null);
+                    final AlertDialog alert = new AlertDialog.Builder(ScheduleActivity.this).create();
+                    alert.setView(popup);
+
+                    abbrevText = popup.findViewById(R.id.abbrev_text);
+                    Button okBtn = popup.findViewById(R.id.ok_button);
+                    okBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (String.valueOf(abbrevText.getText()).length() < 6) {
+                                abbrev = String.valueOf(abbrevText.getText());
+                                alert.dismiss();
+                            }
+                        }
+                    });
+                    alert.show();
                 } else {
                     on_watch = false;
                 }
