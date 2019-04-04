@@ -59,6 +59,7 @@
             android:padding="20dp"/>
 
         <NumberPicker
+            android:id="@+id/times_per_month_picker"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"

@@ -14,12 +14,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="How many days?"
+            android:text="How many days a week?"
             android:layout_weight="1"
             android:textAlignment="center"
             android:padding="20dp"/>
 
         <NumberPicker
+            android:id="@+id/weekly_days_picker"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_weight="1"
@@ -42,7 +43,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/goal_picker_weekly"
+            android:text="@string/goal_picker_daily"
             android:fontFamily="sans-serif-condensed"
             android:textSize="20sp"
             android:textAlignment="center"
@@ -51,6 +52,7 @@
             android:padding="20dp"/>
 
         <NumberPicker
+            android:id="@+id/weekly_times_per_day_picker"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"

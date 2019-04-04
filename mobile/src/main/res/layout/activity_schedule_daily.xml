@@ -86,6 +86,7 @@
             android:padding="20dp"/>
 
         <NumberPicker
+            android:id="@+id/daily_times_per_day_picker"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
