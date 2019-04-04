@@ -22,5 +22,8 @@
     <string name="monthly_button">Monthly</string>
 
     <string name="not_completed">Please select when this task should occur</string>
+    <string name="goal_picker_daily">How many times a day?</string>
+    <string name="goal_picker_weekly">How many times a week?</string>
+    <string name="goal_picker_monthly">How many times a month?</string>
     <string name="ok">Ok</string>
 </resources>

@@ -33,8 +33,7 @@
             android:text="Schedule"
             android:textSize="30sp"
             android:fontFamily="sans-serif-condensed"
-            android:layout_gravity="center_horizontal"
-            />
+            android:layout_gravity="center_horizontal"/>
 
         <TextView
             android:id="@+id/save"
@@ -51,7 +50,6 @@
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
-        android:layout_weight="1"
         android:id="@+id/interval_type_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -86,23 +84,20 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="What time?"
         android:textSize="32sp"
         android:textAlignment="center"/>
 
     <TimePicker
         android:id="@+id/time_picker"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
         android:timePickerMode="spinner" />
 
     <Button
         android:id="@+id/anytime_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="Anytime"
         android:textSize="18sp"/>
 
@@ -110,7 +105,6 @@
         android:id="@+id/repeat_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="horizontal">
 
         <TextView
@@ -134,7 +128,6 @@
         android:id="@+id/watch_task_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="horizontal">
 
         <TextView
