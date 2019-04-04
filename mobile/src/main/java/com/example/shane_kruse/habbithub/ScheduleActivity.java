@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -28,15 +29,16 @@ import java.util.Objects;
 
 public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
-    Button dailyBtn, weeklyBtn, monthlyBtn, anytimeBtn;
+    Button dailyBtn, weeklyBtn, monthlyBtn, timepickerBtn;
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
     TextView save;
     EditText abbrevText;
+    NumberPicker dailyNumPicker, weeklyNumPicker, monthlyNumPicker;
 
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
-    private int prog;               //Current progress towards the goal
+    private int prog = 0;               //Current progress towards the goal
     private ZonedDateTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
     private boolean completed = false;      //Has the goal been met
@@ -65,27 +67,32 @@ public class ScheduleActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (interval.isEmpty()) {
+                if (interval.isEmpty() || due_date == null) {
                     showPopup();
                     return;
                 }
 
-                // Set due date
-                int hour = 24;
-                int minute = 59;
-                if (!anytimeBtn.isSelected()) {
-                    hour = duedatePicker.getHour();
-                    minute = duedatePicker.getMinute();
+                // Read goal based on interval type
+                switch(interval_type) {
+                    case "DAILY":
+                        goal = dailyNumPicker.getValue();
+                        break;
+                    case "WEEKLY":
+                        goal = weeklyNumPicker.getValue();
+                        break;
+                    case "MONTHLY":
+                        goal = monthlyNumPicker.getValue();
                 }
-                due_date = ZonedDateTime.now();
-                due_date.withHour(hour);
-                due_date.withMinute(minute);
+
+                // Read booleans from switches
+                repeat = repeatSwitch.isSelected();
+                on_watch = watchSwitch.isSelected();
 
                 // Add to database
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
-                hand.insertTask(new Task(descr, 1, 0, due_date, icon,
+                hand.insertTask(new Task(descr, goal, prog, due_date, icon,
                         completed, interval_type, interval, repeat,
-                        ZonedDateTime.now(), color, on_watch, abbrev));
+                        ZonedDateTime.now(), color, on_watch, "n/a"));
 
                 // Return to dashboard
                 Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
@@ -126,11 +133,11 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         });
 
-        anytimeBtn = findViewById(R.id.anytime_btn);
-        anytimeBtn.setOnClickListener(new View.OnClickListener() {
+        timepickerBtn = findViewById(R.id.timepicker_btn);
+        timepickerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                showTimepickerPopup();
             }
         });
 
@@ -193,7 +200,6 @@ public class ScheduleActivity extends AppCompatActivity {
         interval = new ArrayList<>();
         setIntervalDisplay("DAILY");
         interval_type = "DAILY";
-
     }
 
     public void setIntervalDisplay(String interval_type) {
@@ -254,6 +260,9 @@ public class ScheduleActivity extends AppCompatActivity {
                 // Setup Buttons
                 setupIntervalBtn(buttonList, intervalList);
 
+                // Setup NumberPickers
+                dailyNumPicker = findViewById(R.id.daily_times_per_day_picker);
+
                 break;
 
             case "WEEKLY":
@@ -268,6 +277,8 @@ public class ScheduleActivity extends AppCompatActivity {
                 intervalList.add("BIWEEKLY");
 
                 setupIntervalBtn(buttonList, intervalList);
+
+                weeklyNumPicker = findViewById(R.id.weekly_days_picker);
 
                 break;
 
@@ -296,6 +307,8 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 setupIntervalBtn(buttonList, intervalList);
 
+                monthlyNumPicker = findViewById(R.id.times_per_month_picker);
+
                 break;
         }
     }
@@ -310,6 +323,51 @@ public class ScheduleActivity extends AppCompatActivity {
         dismissBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                alert.dismiss();
+            }
+        });
+
+        alert.show();
+    }
+
+    void showTimepickerPopup() {
+        LayoutInflater inflater = getLayoutInflater();
+        View popup = inflater.inflate(R.layout.timepicker_popup, null);
+        final AlertDialog alert = new AlertDialog.Builder(this).create();
+        alert.setView(popup);
+
+        duedatePicker = popup.findViewById(R.id.time_picker);
+
+        final Button anytimeBtn = popup.findViewById(R.id.anytimeBtn);
+        anytimeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (anytimeBtn.isSelected()) {
+                    anytimeBtn.setBackgroundColor(Color.GRAY);
+                    anytimeBtn.setSelected(false);
+                }
+                else {
+                    anytimeBtn.setBackgroundColor(Color.GREEN);
+                    anytimeBtn.setSelected(true);
+                }
+            }
+        });
+
+        final Button saveBtn = popup.findViewById(R.id.saveBtn);
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set due date
+                int hour = 24;
+                int minute = 59;
+                if (!anytimeBtn.isSelected()) {
+                    hour = duedatePicker.getHour();
+                    minute = duedatePicker.getMinute();
+                }
+                due_date = ZonedDateTime.now();
+                due_date.withHour(hour);
+                due_date.withMinute(minute);
+
                 alert.dismiss();
             }
         });
