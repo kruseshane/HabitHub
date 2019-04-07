@@ -150,6 +150,22 @@ public class DbHandler extends SQLiteOpenHelper {
         return new_prog;
     }
 
+    public void incrementTaskFromWatch(String abbrev, int newProg) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("UPDATE " + TABLE_Task + " SET " + KEY_PROG + " = " + newProg
+         + " WHERE " + KEY_ABBREV + " = '" + abbrev + "'", null);
+        cursor.moveToFirst();
+        cursor.close();
+    }
+
+    public int getCurrentProg(String taskDesc) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + KEY_PROG + " FROM " + TABLE_Task + " WHERE " + KEY_DESCR
+         + " = '" + taskDesc + "'", null);
+        cursor.moveToFirst();
+        return cursor.getInt(0);
+    }
+
     public String getWatchTasks() {
         String s = "";
         SQLiteDatabase db = getReadableDatabase();

@@ -44,9 +44,10 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
     public void onBindViewHolder (@NonNull ViewHolder myViewHolder, int i) {
         myViewHolder.task_desc.setText(taskList.get(i).getDescr());
 
-        String goal_str = String.valueOf(taskList.get(i).getGoal());
-        String current_goal_str = String.valueOf(taskList.get(i).getProg());
-        myViewHolder.task_goal.setText(current_goal_str + "/" + goal_str);
+        //String goal_str = String.valueOf(taskList.get(i).getGoal());
+        //String current_goal_str = String.valueOf(taskList.get(i).getProg());
+        //myViewHolder.task_goal.setText(current_goal_str + "/" + goal_str);
+        myViewHolder.task_goal.setText(dbh.getCurrentProg(taskList.get(i).getDescr()) + "/" + taskList.get(i).getGoal());
         myViewHolder.task_icon.setBackgroundResource(R.drawable.task_icon_background_shape_circle);
         myViewHolder.task_icon.getBackground().setColorFilter(Color.parseColor(taskList.get(i).getColor()), PorterDuff.Mode.SRC);
         myViewHolder.task_icon.setImageResource(Integer.parseInt(taskList.get(i).getIcon()));
@@ -56,6 +57,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView task_desc;
         public TextView task_goal;
+        public TextView hold_goal;
         public ImageView task_icon;
         private int index;
 
@@ -76,8 +78,10 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
             System.out.println(task_desc.getText());
             Task t = taskList.get(index);
             dbh.incrementTask(t);
-            TextView hold_goal = view.findViewById(R.id.task_goal);
-            hold_goal.setText(t.getProg() + "/" + t.getGoal());
+            hold_goal = view.findViewById(R.id.task_goal);
+            //hold_goal.setText(t.getProg() + "/" + t.getGoal());
+
+            hold_goal.setText(dbh.getCurrentProg(t.getDescr()) + "/" + t.getGoal());
 
             int total = 0;
             float sum = 0;

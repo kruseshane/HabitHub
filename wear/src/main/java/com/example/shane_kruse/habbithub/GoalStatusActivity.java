@@ -15,6 +15,7 @@ public class GoalStatusActivity extends Activity {
     private int sliceColor;
     private RelativeLayout taskView;
     private boolean bool;
+    private String progStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class GoalStatusActivity extends Activity {
         String task = intent.getStringExtra("task");
         sliceColor = intent.getIntExtra("slice_color", 0);
         bool = intent.getBooleanExtra("updateStatus", false);
+        progStatus = intent.getStringExtra("goalStatus");
 
         taskView = findViewById(R.id.task_view);
         taskText = findViewById(R.id.task_text);
@@ -33,7 +35,7 @@ public class GoalStatusActivity extends Activity {
         taskView.setBackgroundColor(sliceColor);
         taskText.setTextColor(Color.WHITE);
         taskText.setText(task);
-        goalStatus.setText("Only __ more left to meet your goal");
+        goalStatus.setText(progStatus);
 
         Timer timer = new Timer(3000, 3000);
         timer.start();
