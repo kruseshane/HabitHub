@@ -14,6 +14,7 @@ public class GoalStatusActivity extends Activity {
     private TextView taskText;
     private int sliceColor;
     private RelativeLayout taskView;
+    private boolean bool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,7 @@ public class GoalStatusActivity extends Activity {
         Intent intent = getIntent();
         String task = intent.getStringExtra("task");
         sliceColor = intent.getIntExtra("slice_color", 0);
+        bool = intent.getBooleanExtra("updateStatus", false);
 
         taskView = findViewById(R.id.task_view);
         taskText = findViewById(R.id.task_text);
@@ -51,6 +53,7 @@ public class GoalStatusActivity extends Activity {
         @Override
         public void onFinish() {
             Intent intent = new Intent(GoalStatusActivity.this, MainActivity.class);
+            intent.putExtra("updateStatus", bool);
             startActivity(intent);
             finish();
         }

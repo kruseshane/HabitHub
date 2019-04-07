@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private Handler myHandler; // was protected
     private int total;
     private float sum;
-    private int flag = 0;
     DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
@@ -52,25 +51,12 @@ public class MainActivity extends AppCompatActivity {
     private Button todayButton;
     private Button upcomingButton;
     private Button completedButton;
+    private String newTaskMsg;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        setContentView(R.layout.activity_main);
-
-        //dbh.resetDB();
-        //dbh.insertTask(new Task("Increment Task", 1, 0, new Date(), "n/a", false, "daily", "n/a"));
-
-        tasks = null;
-        try {
-            tasks = dbh.loadData();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         //Create a message handler//
         myHandler = new Handler(new Handler.Callback() {
@@ -80,6 +66,25 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        setContentView(R.layout.activity_main);
+
+        Intent intent = getIntent();
+        newTaskMsg = intent.getStringExtra("taskMsg");
+        System.out.println("taskMsg = " + newTaskMsg);
+        if (newTaskMsg != null && newTaskMsg.equals(getString(R.string.new_smartwatch_task))) {
+            System.out.println("Sending " + newTaskMsg + " to watch");
+            new NewThread("/my_path", newTaskMsg).start();
+        }
+
+        tasks = null;
+        try {
+            tasks = dbh.loadData();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         addTask = findViewById(R.id.edit_add_task);
         addTask.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
             }
             updateGoalProgress(sum, total);
         }
-
 
         todayButton = findViewById(R.id.today_button);
         todayButton.setPressed(true); // Default to today
@@ -226,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void run() {
 
-            System.out.println("Sending message to phone");
+            System.out.println("Sending " + message + " to watch");
             //Retrieve the connected devices, known as nodes//
             com.google.android.gms.tasks.Task<List<Node>> mobileDeviceList =
                     Wearable.getNodeClient(getApplicationContext()).getConnectedNodes();
@@ -266,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
         public void sendmessage(String messageText) {
             Bundle bundle = new Bundle();
             bundle.putString("messageText", messageText);
+            System.out.println(myHandler.toString());
             Message msg = myHandler.obtainMessage();
             msg.setData(bundle);
             myHandler.sendMessage(msg);

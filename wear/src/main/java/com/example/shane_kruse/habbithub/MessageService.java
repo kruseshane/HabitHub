@@ -13,10 +13,9 @@ import com.google.android.gms.wearable.WearableListenerService;
 
             //If the message’s path equals "/my_path"...//
             if (messageEvent.getPath().equals("/my_path")) {
-                System.out.println("Message from watch received");
                 //...retrieve the message//
                 final String message = new String(messageEvent.getData());
-
+                System.out.println("Received " + message + " from phone");
                 Intent messageIntent = new Intent();
                 messageIntent.setAction(Intent.ACTION_SEND);
                 messageIntent.putExtra("message", message);

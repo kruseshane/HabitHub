@@ -167,7 +167,6 @@ public class DbHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
-        //System.out.println(s);
         return s;
     }
 }

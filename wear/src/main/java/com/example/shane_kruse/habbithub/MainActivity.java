@@ -42,13 +42,16 @@ import java.util.logging.Logger;
 
 public class MainActivity extends WearableActivity {
 
-    // ShaneDev branch
-    // Shane Kruse
-
     private PieChart pieChart;
     private PieData pieData;
     private ConstraintLayout background;
-    private Handler myHandler; // was protected
+    private Handler myHandler;
+    private boolean upToDate;
+    private boolean newTaskReceived;
+    private ArrayList<String> xData;
+    private ArrayList<Float> yData;
+    private ArrayList<Integer> colors;
+    private PieChartVars vars;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,8 @@ public class MainActivity extends WearableActivity {
 
         // Enables Always-on
         setAmbientEnabled();
+
+        vars = new PieChartVars();
 
         //Create a message handler//
         myHandler = new Handler(new Handler.Callback() {
@@ -67,15 +72,20 @@ public class MainActivity extends WearableActivity {
             }
         });
 
-        // Send message to phone to sync related tasks
-        new NewThread("/my_path", "REQUEST_UPDATE").start();
+        Intent intent = getIntent();
+        upToDate = intent.getBooleanExtra("updateStatus", false);
+        if (!upToDate) {
+            // Send message to phone to sync related tasks
+            new NewThread("/my_path", "REQUEST_UPDATE").start();
+            upToDate = true;
+        } else {
+            createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
+        }
 
         //Register to receive local broadcasts, which we'll be creating in the next step//
         IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
         Receiver messageReceiver = new Receiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, messageFilter);
-
-        //createPieChart();
 
     }
 
@@ -85,12 +95,15 @@ public class MainActivity extends WearableActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
-            if (message.length() > 1) {
-                message = message.substring(0, message.length() - 1);
-                System.out.println("Watch received: " + message);
-                parseUpdate(message);
+            if (message.equals(getString(R.string.new_smartwatch_task))) {
+                new NewThread("/my_path", "REQUEST_UPDATE").start();
             } else {
-                parseUpdate(message);
+                if (message.length() > 1) {
+                    message = message.substring(0, message.length() - 1);
+                    parseUpdate(message);
+                } else {
+                    parseUpdate(message);
+                }
             }
         }
     }
@@ -150,31 +163,35 @@ public class MainActivity extends WearableActivity {
             Message msg = myHandler.obtainMessage();
             msg.setData(bundle);
             myHandler.sendMessage(msg);
-
         }
     }
 
     public void parseUpdate(String updateMsg) {
-        String[] tasks = updateMsg.split("&");
-        String[] xData = new String[tasks.length];
-        float[] yData = new float[tasks.length];
-        ArrayList<Integer> colors = new ArrayList<>();
+        String [] tasks = updateMsg.split("&");
+
+        xData = new ArrayList<>();
+        yData = new ArrayList<>();
+        colors = new ArrayList<>();
+
         if (tasks[0].contains(",")) {
             for (int i = 0; i < tasks.length; i++) {
                 String[] data = tasks[i].split(",");
 
-                // data[0]=name, data[1]=color, data[2]=prog, data[3]=goal
-                xData[i] = data[0];
-                yData[i] = (float)1/tasks.length;
+                // data[0]=abbrev, data[1]=color, data[2]=prog, data[3]=goal
+                xData.add(data[0]);
+                yData.add((float)1/tasks.length);
                 colors.add(Color.parseColor(data[1]));
             }
         } else {
-            xData[0] = "No current tasks";
-            yData[0] = 100.0f;
+            xData.add("No tasks on watch");
+            yData.add(100.0f);
             colors.add(Color.LTGRAY);
         }
 
-        createPieChart(xData, yData, colors);
+        vars.setxData(xData);
+        vars.setyData(yData);
+        vars.setColors(colors);
+        createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
 }
 
     public void createPieChart(String[] xData, float[] yData, ArrayList<Integer> colors) {
@@ -216,12 +233,11 @@ public class MainActivity extends WearableActivity {
                 Intent intent = new Intent(MainActivity.this, GoalStatusActivity.class);
                 intent.putExtra("task", pe.getLabel());
                 intent.putExtra("slice_color", backColor);
+                intent.putExtra("updateStatus", upToDate);
                 startActivity(intent);
 
                 //Sending a message can block the main UI thread, so use a new thread//
                 new NewThread("/my_path", pe.getLabel()).start();
-
-                finish();
             }
 
             @Override

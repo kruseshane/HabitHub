@@ -1,6 +1,7 @@
 package com.example.shane_kruse.habbithub;
 
 import android.animation.LayoutTransition;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -35,6 +36,7 @@ public class ScheduleActivity extends AppCompatActivity {
     TextView save;
     EditText abbrevText;
     NumberPicker dailyNumPicker, weeklyNumPicker, monthlyNumPicker;
+    Context context;
 
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
@@ -49,11 +51,14 @@ public class ScheduleActivity extends AppCompatActivity {
     private String color;           //Color hex
     private int row_id;             //Row ID in Database
     private boolean on_watch;       //Is task on smartwatch
-    private String abbrev = "";          //Abbreviation for smartwatch
+    private String abbrev;          //Abbreviation for smartwatch
 
     protected void onCreate (Bundle savedInstance) {
         // Initialize layout
         super.onCreate(savedInstance);
+
+        context = getApplicationContext();
+
         setContentView(R.layout.activity_schedule_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -84,18 +89,23 @@ public class ScheduleActivity extends AppCompatActivity {
                         goal = monthlyNumPicker.getValue();
                 }
 
-                // Read booleans from switches
-                repeat = repeatSwitch.isSelected();
-                on_watch = watchSwitch.isSelected();
+                String newTaskMsg = "";
+                System.out.println("Task assinged to watch: " + on_watch);
+                // Send added task to watch if on watch selected
+                if (on_watch) {
+                    //newTaskMsg = abbrev + "," + color + "," + prog + "," + goal + "&";
+                    newTaskMsg = getString(R.string.new_smartwatch_task);
+                }
 
                 // Add to database
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
                 hand.insertTask(new Task(descr, goal, prog, due_date, icon,
                         completed, interval_type, interval, repeat,
-                        ZonedDateTime.now(), color, on_watch, "n/a"));
+                        ZonedDateTime.now(), color, on_watch, abbrev));
 
                 // Return to dashboard
                 Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
+                i.putExtra("taskMsg", newTaskMsg);
                 startActivity(i);
             }
         });
@@ -262,6 +272,9 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 // Setup NumberPickers
                 dailyNumPicker = findViewById(R.id.daily_times_per_day_picker);
+                dailyNumPicker.setMinValue(0);
+                dailyNumPicker.setMaxValue(10);
+                dailyNumPicker.setValue(5);
 
                 break;
 
