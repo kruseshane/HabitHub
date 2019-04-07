@@ -187,9 +187,8 @@ public class ScheduleActivity extends AppCompatActivity {
                         }
                     });
                     alert.show();
-                } else {
-                    on_watch = false;
-                }
+
+                } else on_watch = false;
             }
         });
 
