@@ -186,6 +186,14 @@ public class MainActivity extends AppCompatActivity {
 
             String message = intent.getStringExtra("message");
             //System.out.println(message);
+            Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            System.out.println(message);
+            if (message.split(",")[0].equals("$")) {
+                String [] data = message.split(",");
+                dbh.incrementTaskFromWatch(data[1], Integer.parseInt(data[2]));
+
+                mAdapter.notifyItemChanged(Integer.parseInt(data[3]));
+            }
             if (message.equals("REQUEST_UPDATE")) {
                 System.out.println("REQUEST_UPDATE RECEIVED");
                 //dbh.getWatchTasks();
@@ -197,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("UPDATE SENT");
 
             }
-            Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -244,7 +252,6 @@ public class MainActivity extends AppCompatActivity {
                             Wearable.getMessageClient(MainActivity.this).sendMessage(n.getId(), path, message.getBytes());
 
                     try {
-
                         //Block on a task and get the result synchronously//
                         Integer result = Tasks.await(sendMessageTask);
                         sendmessage(message);

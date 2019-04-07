@@ -7,6 +7,8 @@ public class PieChartVars {
     public static ArrayList<String> xData;
     public static ArrayList<Float> yData;
     public static ArrayList<Integer> colors;
+    public static int[] taskGoals;
+    public static int[] taskProgs;
 
     public static void setColors(ArrayList<Integer> colors) {
         PieChartVars.colors = colors;
@@ -18,6 +20,14 @@ public class PieChartVars {
 
     public static void setyData(ArrayList<Float> yData) {
         PieChartVars.yData = yData;
+    }
+
+    public static void setTaskGoals(int[] taskGoals) {
+        PieChartVars.taskGoals = taskGoals;
+    }
+
+    public static void setTaskProgs(int[] taskProgs) {
+        PieChartVars.taskProgs = taskProgs;
     }
 
     public static float[] floatVals(ArrayList<Float> arr) {

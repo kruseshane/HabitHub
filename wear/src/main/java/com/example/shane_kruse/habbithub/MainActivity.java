@@ -51,6 +51,8 @@ public class MainActivity extends WearableActivity {
     private ArrayList<String> xData;
     private ArrayList<Float> yData;
     private ArrayList<Integer> colors;
+    private int[] taskGoals;
+    private int[] taskProgs;
     private PieChartVars vars;
 
     @Override
@@ -172,6 +174,8 @@ public class MainActivity extends WearableActivity {
         xData = new ArrayList<>();
         yData = new ArrayList<>();
         colors = new ArrayList<>();
+        taskProgs = new int[tasks.length];
+        taskGoals = new int[tasks.length];
 
         if (tasks[0].contains(",")) {
             for (int i = 0; i < tasks.length; i++) {
@@ -181,6 +185,8 @@ public class MainActivity extends WearableActivity {
                 xData.add(data[0]);
                 yData.add((float)1/tasks.length);
                 colors.add(Color.parseColor(data[1]));
+                taskProgs[i] = Integer.parseInt(data[2]);
+                taskGoals[i] = Integer.parseInt(data[3]);
             }
         } else {
             xData.add("No tasks on watch");
@@ -191,6 +197,8 @@ public class MainActivity extends WearableActivity {
         vars.setxData(xData);
         vars.setyData(yData);
         vars.setColors(colors);
+        vars.setTaskGoals(taskGoals);
+        vars.setTaskProgs(taskProgs);
         createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
 }
 
@@ -234,10 +242,19 @@ public class MainActivity extends WearableActivity {
                 intent.putExtra("task", pe.getLabel());
                 intent.putExtra("slice_color", backColor);
                 intent.putExtra("updateStatus", upToDate);
+                vars.taskProgs[pieDataSet.getEntryIndex(e)] += 1;
+                int goalStatus = (vars.taskGoals[pieDataSet.getEntryIndex(e)] - vars.taskProgs[pieDataSet.getEntryIndex(e)]);
+                if (goalStatus > 0) {
+                    intent.putExtra("goalStatus", "Only " + goalStatus + " more left to meet your goal");
+                } else {
+                    intent.putExtra("goalStatus", "You did it!!!");
+                }
                 startActivity(intent);
 
-                //Sending a message can block the main UI thread, so use a new thread//
-                new NewThread("/my_path", pe.getLabel()).start();
+                new NewThread("/my_path", "$," + pe.getLabel() + "," + vars.taskProgs[pieDataSet.getEntryIndex(e)] +
+                         "," + pieDataSet.getEntryIndex(e)).start();
+
+                finish();
             }
 
             @Override
