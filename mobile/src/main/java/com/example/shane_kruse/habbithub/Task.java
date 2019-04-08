@@ -10,10 +10,9 @@ public class Task {
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
     private int prog;               //Current progress towards the goal
-    private LocalDateTime due_date; //Date/Time that the task must be completed by
+    private LocalTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
     private boolean completed;      //Has the goal been met
-    private String interval_type;   //Daily, weekly, monthly
     private ArrayList<String> interval;        //M, T, W, EVERYDAY, 4, BI-WEEKLY, START, WHOLE, etc
     private boolean repeat;         //On or off to repeat task every interval type
     private String color;           //Color hex
@@ -22,9 +21,9 @@ public class Task {
     private String abbrev;          //Abbreviation for smartwatch
 
 
-    public Task(String descr, int goal, int prog, LocalDateTime due_date, String icon,
-                boolean completed, String interval_type, ArrayList<String> interval,
-                boolean repeat, String color, boolean on_watch, String abbrev) {
+    public Task(String descr, int goal, int prog, LocalTime due_date, String icon,
+                boolean completed, ArrayList<String> interval, boolean repeat,
+                String color, boolean on_watch, String abbrev) {
 
         this.descr = descr;
         this.goal = goal;
@@ -32,7 +31,6 @@ public class Task {
         this.due_date = due_date;
         this.icon = icon;
         this.completed = completed;
-        this.interval_type = interval_type;
         this.interval = interval;
         this.repeat = repeat;
         this.color = color;
@@ -81,11 +79,11 @@ public class Task {
         this.prog = prog;
     }
 
-    public LocalDateTime getDue_date() {
+    public LocalTime getDue_date() {
         return due_date;
     }
 
-    public void setDue_date(LocalDateTime due_date) {
+    public void setDue_date(LocalTime due_date) {
         this.due_date = due_date;
 }
 
@@ -119,14 +117,6 @@ public class Task {
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public String getInterval_type() {
-        return interval_type;
-    }
-
-    public void setInterval_type(String interval_type) {
-        this.interval_type = interval_type;
     }
 
     public boolean isRepeat() {

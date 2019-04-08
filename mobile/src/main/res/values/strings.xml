@@ -31,4 +31,12 @@
     <string name="ok">Ok</string>
 
     <string name="new_smartwatch_task">NEW_TASK</string>
+
+    <string name="monday">M</string>
+    <string name="tuesday">T</string>
+    <string name="wednesday">W</string>
+    <string name="thursday">TR</string>
+    <string name="friday">F</string>
+    <string name="saturday">SA</string>
+    <string name="sunday">SU</string>
 </resources>

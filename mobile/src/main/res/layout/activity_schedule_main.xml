@@ -50,49 +50,117 @@
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
-        android:id="@+id/interval_type_layout"
+        android:id="@+id/interval_daily_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
-            android:padding="10dp"
-            android:id="@+id/interval_daily_btn"
+            android:id="@+id/interval_sunday_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Daily"/>
+            android:text="SU"/>
 
         <Button
-            android:padding="10dp"
-            android:id="@+id/interval_weekly_btn"
+            android:id="@+id/interval_monday_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Weekly"/>
+            android:text="M"/>
 
         <Button
-            android:padding="10dp"
-            android:id="@+id/interval_monthly_btn"
+            android:id="@+id/interval_tuesday_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Monthly"/>
+            android:text="T"/>
+
+        <Button
+            android:id="@+id/interval_wednesday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="W"/>
+
+        <Button
+            android:id="@+id/interval_thursday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TR"/>
+
+        <Button
+            android:id="@+id/interval_friday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="F"/>
+
+        <Button
+            android:id="@+id/interval_saturday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SA"/>
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    </LinearLayout>
-
 
     <Button
-        android:id="@+id/timepicker_btn"
+        android:id="@+id/interval_everyday_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Everyday"/>
+
+    <LinearLayout
+        android:id="@+id/goal_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/goal_picker_daily"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:padding="20dp"/>
+
+        <NumberPicker
+            android:id="@+id/daily_times_per_day_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="20dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:text="@string/select_time"
-        android:textSize="18sp"/>
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-condensed"/>
+
+    <TimePicker
+        android:id="@+id/time_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:timePickerMode="spinner" />
+
+    <Button
+        android:id="@+id/anytimeBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/anytime"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="24sp"/>
+
 
     <LinearLayout
         android:id="@+id/repeat_layout"

@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -24,7 +23,6 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String KEY_DUE_DATE = "due_date";
     private static final String KEY_ICON = "icon";
     private static final String KEY_COMPLETED = "completed";
-    private static final String KEY_INTERVAL_TYPE = "interval_type";
     private static final String KEY_INTERVAL = "interval";
     private static final String KEY_REPEAT = "repeat";
     private static final String KEY_COLOR = "color";
@@ -36,11 +34,10 @@ public class DbHandler extends SQLiteOpenHelper {
                                                 + KEY_DESCR + " VARCHAR, " + KEY_GOAL + " INTEGER, "
                                                 + KEY_PROG + " INTEGER, " + KEY_DUE_DATE + " TEXT, "
                                                 + KEY_ICON + " VARCAHR, " + KEY_COMPLETED + " BIT, "
-                                                + KEY_INTERVAL_TYPE + " VARCHAR, " + KEY_INTERVAL + " VARCHAR, "
-                                                + KEY_REPEAT + " BIT, " + KEY_COLOR + " VARCHAR, "
-                                                + KEY_ON_WATCH + " BIT, " + KEY_ABBREV + " VARCHAR"
+                                                + KEY_INTERVAL + " VARCHAR, " + KEY_REPEAT + " BIT, "
+                                                + KEY_COLOR + " VARCHAR, " + KEY_ON_WATCH + " BIT, "
+                                                + KEY_ABBREV + " VARCHAR"
                                                 + ")";
-
 
     DbHandler(Context context){
         super(context,DB_NAME, null, DB_VERSION);
@@ -75,21 +72,20 @@ public class DbHandler extends SQLiteOpenHelper {
             String descr = cursor.getString(1);
             int goal = cursor.getInt(2);
             int prog = cursor.getInt(3);
-            LocalDateTime due_date = LocalDateTime.parse(cursor.getString(4));
+            LocalTime due_date = LocalTime.parse(cursor.getString(4));
             String icon = cursor.getString(5);
             boolean completed = cursor.getInt(6) == 1;
-            String interval_type = cursor.getString(7);
-            String interval_str = cursor.getString(8);
-            boolean repeat = (1 == cursor.getInt(9));
-            String color = cursor.getString(10);
-            boolean on_watch = (1 == cursor.getInt(11));
-            String abbrev = cursor.getString(12);
+            String interval_str = cursor.getString(7);
+            boolean repeat = (1 == cursor.getInt(8));
+            String color = cursor.getString(9);
+            boolean on_watch = (1 == cursor.getInt(10));
+            String abbrev = cursor.getString(11);
 
             // Turn string into ArrayList<String>
             String[] interval_list = interval_str.split(",");
             ArrayList<String> interval = new ArrayList<String>(Arrays.asList(interval_list));
 
-            Task task = new Task(descr, goal, prog, due_date, icon, completed, interval_type,
+            Task task = new Task(descr, goal, prog, due_date, icon, completed,
                                 interval, repeat, color, on_watch, abbrev);
             tasks.add(task);
             task.setRow_id(id);
@@ -121,7 +117,6 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_DUE_DATE, t.getDue_date().toString());
         cv.put(KEY_ICON, t.getIcon());
         cv.put(KEY_COMPLETED, completed);
-        cv.put(KEY_INTERVAL_TYPE, t.getInterval_type());
         cv.put(KEY_INTERVAL, interval_str);
         cv.put(KEY_REPEAT, repeatBit);
         cv.put(KEY_COLOR, t.getColor());

@@ -32,12 +32,16 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Task> tasks = new ArrayList<>();
+    private ArrayList<Task> currentTasks;
+    private ArrayList<Task> upcomingTasks;
+    private ArrayList<Task> completedTasks;
     private RecyclerView taskRecycler;
     private MyTaskAdapter mAdapter;
     private Toolbar mToolbar;
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
-    private DbHandler dbh = new DbHandler(this);
+    private DbHandler dbh;
     private Button todayButton;
     private Button upcomingButton;
     private Button completedButton;
@@ -57,8 +61,40 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbh  = new DbHandler(this);
 
-        // Check if update interval has been passed since last launch
+        tasks = null;
+        try {
+            tasks = dbh.loadData();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        // Load tasks into Current/Upcoming/Completed
+        for (Task t : tasks) {
+            // Check if the task is completed
+            if (t.isCompleted()) {
+                completedTasks.add(t);
+                continue;
+            }
+
+            // Check if the task is due today
+            boolean isCurrent = false;
+            for (String dayAbrev : t.getInterval()) {
+                Calendar calendar = Calendar.getInstance();
+                int today = calendar.get(Calendar.DAY_OF_WEEK);
+                int day_due = getDay(dayAbrev);
+
+                if (today == day_due) {
+                    currentTasks.add(t);
+                    isCurrent = true;
+                    break;
+                }
+            }
+
+            // Check if the task is upcoming
+            if (!isCurrent) upcomingTasks.add(t);
+        }
 
 
         //Create a message handler//
@@ -80,13 +116,6 @@ public class MainActivity extends AppCompatActivity {
         if (newTaskMsg != null && newTaskMsg.equals(getString(R.string.new_smartwatch_task))) {
             System.out.println("Sending " + newTaskMsg + " to watch");
             new NewThread("/my_path", newTaskMsg).start();
-        }
-
-        tasks = null;
-        try {
-            tasks = dbh.loadData();
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
 
         addTask = findViewById(R.id.edit_add_task);
@@ -165,6 +194,34 @@ public class MainActivity extends AppCompatActivity {
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
         taskRecycler.setAdapter(mAdapter);
+    }
+
+    int getDay(String dayAbrev) {
+        int day = -1;
+        switch(dayAbrev) {
+            case "M":
+                day = Calendar.MONDAY;
+                break;
+            case "T":
+                day = Calendar.TUESDAY;
+                break;
+            case "W":
+                day = Calendar.WEDNESDAY;
+                break;
+            case "TR":
+                day = Calendar.THURSDAY;
+                break;
+            case "F":
+                day = Calendar.FRIDAY;
+                break;
+            case "SA":
+                day = Calendar.SATURDAY;
+                break;
+            case "SU":
+                day = Calendar.SUNDAY;
+                break;
+        }
+        return day;
     }
 
     @Override
