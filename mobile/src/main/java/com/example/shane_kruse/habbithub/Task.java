@@ -1,5 +1,6 @@
 package com.example.shane_kruse.habbithub;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,22 +9,22 @@ public class Task {
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
     private int prog;               //Current progress towards the goal
-    private ZonedDateTime due_date; //Date/Time that the task must be completed by
+    private LocalTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
     private boolean completed;      //Has the goal been met
     private String interval_type;   //Daily, weekly, monthly
     private ArrayList<String> interval;        //M, T, W, EVERYDAY, 4, BI-WEEKLY, START, WHOLE, etc
     private boolean repeat;         //On or off to repeat task every interval type
-    private ZonedDateTime reminder_time;     //Set time of day to be reminded about task
     private String color;           //Color hex
     private int row_id;             //Row ID in Database
     private boolean on_watch;       //Is task on smartwatch
     private String abbrev;          //Abbreviation for smartwatch
 
 
-    public Task(String descr, int goal, int prog, ZonedDateTime due_date, String icon, boolean completed,
-                String interval_type, ArrayList<String> interval, boolean repeat, ZonedDateTime reminder_time,
-                String color, boolean on_watch, String abbrev) {
+    public Task(String descr, int goal, int prog, LocalTime due_date, String icon,
+                boolean completed, String interval_type, ArrayList<String> interval,
+                boolean repeat, String color, boolean on_watch, String abbrev) {
+
         this.descr = descr;
         this.goal = goal;
         this.prog = prog;
@@ -33,7 +34,6 @@ public class Task {
         this.interval_type = interval_type;
         this.interval = interval;
         this.repeat = repeat;
-        this.reminder_time = reminder_time;
         this.color = color;
         this.row_id = -1;
         this.on_watch = on_watch;
@@ -80,11 +80,11 @@ public class Task {
         this.prog = prog;
     }
 
-    public ZonedDateTime getDue_date() {
+    public LocalTime getDue_date() {
         return due_date;
     }
 
-    public void setDue_date(ZonedDateTime due_date) {
+    public void setDue_date(LocalTime due_date) {
         this.due_date = due_date;
 }
 
@@ -136,13 +136,6 @@ public class Task {
         this.repeat = repeat;
     }
 
-    public ZonedDateTime getReminder_time() {
-        return reminder_time;
-    }
-
-    public void setReminder_time(ZonedDateTime reminder_time) {
-        this.reminder_time = reminder_time;
-    }
 
     public boolean isOn_watch() {
         return on_watch;

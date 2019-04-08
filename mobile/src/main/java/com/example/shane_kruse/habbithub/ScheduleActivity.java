@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -21,10 +20,8 @@ import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -41,15 +38,13 @@ public class ScheduleActivity extends AppCompatActivity {
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
     private int prog = 0;               //Current progress towards the goal
-    private ZonedDateTime due_date; //Date/Time that the task must be completed by
+    private LocalTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
     private boolean completed = false;      //Has the goal been met
     private String interval_type;   //Daily, weekly, monthly
     private ArrayList<String> interval;        //M, T, W, EVERYDAY, 4, BI-WEEKLY, START, WHOLE, etc
     private boolean repeat;         //On or off to repeat task every interval type
-    private ZonedDateTime reminder_time;     //Set time of day to be reminded about task
     private String color;           //Color hex
-    private int row_id;             //Row ID in Database
     private boolean on_watch;       //Is task on smartwatch
     private String abbrev;          //Abbreviation for smartwatch
 
@@ -100,8 +95,8 @@ public class ScheduleActivity extends AppCompatActivity {
                 // Add to database
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
                 hand.insertTask(new Task(descr, goal, prog, due_date, icon,
-                        completed, interval_type, interval, repeat,
-                        ZonedDateTime.now(), color, on_watch, abbrev));
+                                        completed, interval_type, interval,
+                                        repeat, color, on_watch, abbrev));
 
                 // Return to dashboard
                 Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
@@ -376,10 +371,8 @@ public class ScheduleActivity extends AppCompatActivity {
                     hour = duedatePicker.getHour();
                     minute = duedatePicker.getMinute();
                 }
-                due_date = ZonedDateTime.now();
-                due_date.withHour(hour);
-                due_date.withMinute(minute);
 
+                due_date = LocalTime.of(hour, minute);
                 alert.dismiss();
             }
         });

@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 public class DbHandler extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "taskdb";
+
     private static final String TABLE_Task = "task";
     private static final String KEY_ROW = "_id";
     private static final String KEY_DESCR = "descr";
@@ -24,33 +27,55 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String KEY_INTERVAL_TYPE = "interval_type";
     private static final String KEY_INTERVAL = "interval";
     private static final String KEY_REPEAT = "repeat";
-    private static final String KEY_REMINDER_TIME = "reminder_time";
     private static final String KEY_COLOR = "color";
     private static final String KEY_ON_WATCH = "on_watch";
     private static final String KEY_ABBREV = "abbrev";
 
-    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " ("
-                                                + KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+    private static final String CREATE_TABLE_TASK = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " ("
+                                                + KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                                                 + KEY_DESCR + " VARCHAR, " + KEY_GOAL + " INTEGER, "
                                                 + KEY_PROG + " INTEGER, " + KEY_DUE_DATE + " TEXT, "
                                                 + KEY_ICON + " VARCAHR, " + KEY_COMPLETED + " BIT, "
                                                 + KEY_INTERVAL_TYPE + " VARCHAR, " + KEY_INTERVAL + " VARCHAR, "
-                                                + KEY_REPEAT + " BIT, " + KEY_REMINDER_TIME + " TEXT, "
-                                                + KEY_COLOR + " VARCHAR, " + KEY_ON_WATCH + " BIT, "
-                                                + KEY_ABBREV + " VARCHAR"
+                                                + KEY_REPEAT + " BIT, " + KEY_COLOR + " VARCHAR, "
+                                                + KEY_ON_WATCH + " BIT, " + KEY_ABBREV + " VARCHAR"
                                                 + ")";
+
+    private static final String TABLE_Update = "updateDB";
+    private static final String KEY_DAILY = "daily";
+    private static final String KEY_WEEKLY = "weekly";
+    private static final String KEY_MONTHLY = "monthly";
+
+    private static final String CREATE_TABLE_UPDATE = "CREATE TABLE IF NOT EXISTS " + TABLE_Update + " ("
+                                                    + KEY_DAILY + " TEXT, " + KEY_WEEKLY + " TEXT, "
+                                                    + KEY_MONTHLY + " TEXT"
+                                                    + ")";
 
     DbHandler(Context context){
         super(context,DB_NAME, null, DB_VERSION);
     }
 
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE);
+        db.execSQL(CREATE_TABLE_TASK);
+        db.execSQL(CREATE_TABLE_UPDATE);
+
+        // If the updateDB is empty, set the timestamp to be the current time
+        String countQuery = "SELECT COUNT(*) FROM " + TABLE_Update;
+        Cursor cursor = db.rawQuery(countQuery, null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        if (count == 0) {
+            ContentValues cv = new ContentValues();
+            cv.put(KEY_DAILY, LocalDateTime.now().toString());
+            cv.put(KEY_WEEKLY, LocalDateTime.now().toString());
+            cv.put(KEY_MONTHLY, LocalDateTime.now().toString());
+        }
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
         // Drop older table if exist
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Task);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Update);
         // Create tables again
         onCreate(db);
     }
@@ -58,7 +83,9 @@ public class DbHandler extends SQLiteOpenHelper {
     public void resetDB() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Task);
-        db.execSQL(CREATE_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Update);
+        db.execSQL(CREATE_TABLE_TASK);
+        db.execSQL(CREATE_TABLE_UPDATE);
         db.close();
     }
 
@@ -73,25 +100,22 @@ public class DbHandler extends SQLiteOpenHelper {
             String descr = cursor.getString(1);
             int goal = cursor.getInt(2);
             int prog = cursor.getInt(3);
-            ZonedDateTime due_date = ZonedDateTime.parse(cursor.getString(4));
+            LocalTime due_date = LocalTime.parse(cursor.getString(4));
             String icon = cursor.getString(5);
-            int completed_int = cursor.getInt(6);
-            boolean completed = completed_int == 1;
+            boolean completed = cursor.getInt(6) == 1;
             String interval_type = cursor.getString(7);
             String interval_str = cursor.getString(8);
             boolean repeat = (1 == cursor.getInt(9));
-            System.out.println(cursor.getString(10));
-            ZonedDateTime reminder_time = ZonedDateTime.parse(cursor.getString(10));
-            String color = cursor.getString(11);
-            boolean on_watch = (1 == cursor.getInt(12));
-            String abbrev = cursor.getString(13);
+            String color = cursor.getString(10);
+            boolean on_watch = (1 == cursor.getInt(11));
+            String abbrev = cursor.getString(12);
 
             // Turn string into ArrayList<String>
             String[] interval_list = interval_str.split(",");
             ArrayList<String> interval = new ArrayList<String>(Arrays.asList(interval_list));
 
             Task task = new Task(descr, goal, prog, due_date, icon, completed, interval_type,
-                                interval, repeat, reminder_time, color, on_watch, abbrev);
+                                interval, repeat, color, on_watch, abbrev);
             tasks.add(task);
             task.setRow_id(id);
         }
@@ -119,13 +143,12 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_DESCR, t.getDescr());
         cv.put(KEY_GOAL, t.getGoal());
         cv.put(KEY_PROG, t.getProg());
-        cv.put(KEY_DUE_DATE, t.getDue_date().toOffsetDateTime().toString());
+        cv.put(KEY_DUE_DATE, t.getDue_date().getHour() + ":" + t.getDue_date().getMinute());
         cv.put(KEY_ICON, t.getIcon());
         cv.put(KEY_COMPLETED, completed);
         cv.put(KEY_INTERVAL_TYPE, t.getInterval_type());
         cv.put(KEY_INTERVAL, interval_str);
         cv.put(KEY_REPEAT, repeatBit);
-        cv.put(KEY_REMINDER_TIME, t.getReminder_time().toOffsetDateTime().toString());
         cv.put(KEY_COLOR, t.getColor());
         cv.put(KEY_ON_WATCH, watchBit);
         cv.put(KEY_ABBREV, t.getAbbrev());
@@ -148,6 +171,50 @@ public class DbHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return new_prog;
+    }
+
+    void updateTime(String updateType) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String key = "DAILY";
+
+        switch (updateType) {
+            case "DAILY":
+                key = KEY_DAILY;
+                break;
+            case "WEEKLY":
+                key = KEY_WEEKLY;
+                break;
+            case "MONTHLY":
+                key = KEY_MONTHLY;
+                break;
+        }
+
+        Cursor cursor = db.rawQuery("UPDATE " + TABLE_Update + " SET " + key
+                + " = " + LocalDateTime.now().toString(), null);
+        cursor.close();
+        db.close();
+    }
+
+    LocalDateTime getTime(String updateType) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String key = "DAILY";
+
+        switch (updateType) {
+            case "DAILY":
+                key = KEY_DAILY;
+                break;
+            case "WEEKLY":
+                key = KEY_WEEKLY;
+                break;
+            case "MONTHLY":
+                key = KEY_MONTHLY;
+                break;
+        }
+
+        Cursor cursor = db.rawQuery("SELECT " + key + " FROM " + TABLE_Update, null);
+        cursor.moveToFirst();
+        LocalDateTime ldt = LocalDateTime.parse(cursor.getString(0));
+        return ldt;
     }
 
     public void incrementTaskFromWatch(String abbrev, int newProg) {
