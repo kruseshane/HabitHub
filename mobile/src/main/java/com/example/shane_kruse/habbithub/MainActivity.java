@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Check if update interval has been passed since last launch
+
+
         //Create a message handler//
         myHandler = new Handler(new Handler.Callback() {
             @Override

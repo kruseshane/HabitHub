@@ -1,5 +1,6 @@
 package com.example.shane_kruse.habbithub;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ public class Task {
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
     private int prog;               //Current progress towards the goal
-    private LocalTime due_date; //Date/Time that the task must be completed by
+    private LocalDateTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
     private boolean completed;      //Has the goal been met
     private String interval_type;   //Daily, weekly, monthly
@@ -21,7 +22,7 @@ public class Task {
     private String abbrev;          //Abbreviation for smartwatch
 
 
-    public Task(String descr, int goal, int prog, LocalTime due_date, String icon,
+    public Task(String descr, int goal, int prog, LocalDateTime due_date, String icon,
                 boolean completed, String interval_type, ArrayList<String> interval,
                 boolean repeat, String color, boolean on_watch, String abbrev) {
 
@@ -80,11 +81,11 @@ public class Task {
         this.prog = prog;
     }
 
-    public LocalTime getDue_date() {
+    public LocalDateTime getDue_date() {
         return due_date;
     }
 
-    public void setDue_date(LocalTime due_date) {
+    public void setDue_date(LocalDateTime due_date) {
         this.due_date = due_date;
 }
 

@@ -20,6 +20,9 @@ import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -38,7 +41,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private String descr;           //Description of Task
     private int goal;               //Number of times Task should be completed
     private int prog = 0;               //Current progress towards the goal
-    private LocalTime due_date; //Date/Time that the task must be completed by
+    private LocalDateTime due_date; //Date/Time that the task must be completed by
     private String icon;            //Icon ID
     private boolean completed = false;      //Has the goal been met
     private String interval_type;   //Daily, weekly, monthly
@@ -365,18 +368,19 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Set due date
-                int hour = 24;
+                int hour = 23;
                 int minute = 59;
+
                 if (!anytimeBtn.isSelected()) {
                     hour = duedatePicker.getHour();
                     minute = duedatePicker.getMinute();
                 }
 
-                due_date = LocalTime.of(hour, minute);
+                due_date = LocalDateTime.now().withHour(hour);
+                due_date = due_date.withMinute(minute);
                 alert.dismiss();
             }
         });
-
         alert.show();
     }
 

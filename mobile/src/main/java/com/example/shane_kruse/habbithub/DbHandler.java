@@ -41,15 +41,6 @@ public class DbHandler extends SQLiteOpenHelper {
                                                 + KEY_ON_WATCH + " BIT, " + KEY_ABBREV + " VARCHAR"
                                                 + ")";
 
-    private static final String TABLE_Update = "updateDB";
-    private static final String KEY_DAILY = "daily";
-    private static final String KEY_WEEKLY = "weekly";
-    private static final String KEY_MONTHLY = "monthly";
-
-    private static final String CREATE_TABLE_UPDATE = "CREATE TABLE IF NOT EXISTS " + TABLE_Update + " ("
-                                                    + KEY_DAILY + " TEXT, " + KEY_WEEKLY + " TEXT, "
-                                                    + KEY_MONTHLY + " TEXT"
-                                                    + ")";
 
     DbHandler(Context context){
         super(context,DB_NAME, null, DB_VERSION);
@@ -57,25 +48,11 @@ public class DbHandler extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_TASK);
-        db.execSQL(CREATE_TABLE_UPDATE);
-
-        // If the updateDB is empty, set the timestamp to be the current time
-        String countQuery = "SELECT COUNT(*) FROM " + TABLE_Update;
-        Cursor cursor = db.rawQuery(countQuery, null);
-        cursor.moveToFirst();
-        int count = cursor.getInt(0);
-        if (count == 0) {
-            ContentValues cv = new ContentValues();
-            cv.put(KEY_DAILY, LocalDateTime.now().toString());
-            cv.put(KEY_WEEKLY, LocalDateTime.now().toString());
-            cv.put(KEY_MONTHLY, LocalDateTime.now().toString());
-        }
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
         // Drop older table if exist
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Task);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Update);
         // Create tables again
         onCreate(db);
     }
@@ -83,9 +60,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public void resetDB() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Task);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Update);
         db.execSQL(CREATE_TABLE_TASK);
-        db.execSQL(CREATE_TABLE_UPDATE);
         db.close();
     }
 
@@ -100,7 +75,7 @@ public class DbHandler extends SQLiteOpenHelper {
             String descr = cursor.getString(1);
             int goal = cursor.getInt(2);
             int prog = cursor.getInt(3);
-            LocalTime due_date = LocalTime.parse(cursor.getString(4));
+            LocalDateTime due_date = LocalDateTime.parse(cursor.getString(4));
             String icon = cursor.getString(5);
             boolean completed = cursor.getInt(6) == 1;
             String interval_type = cursor.getString(7);
@@ -143,7 +118,7 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_DESCR, t.getDescr());
         cv.put(KEY_GOAL, t.getGoal());
         cv.put(KEY_PROG, t.getProg());
-        cv.put(KEY_DUE_DATE, t.getDue_date().getHour() + ":" + t.getDue_date().getMinute());
+        cv.put(KEY_DUE_DATE, t.getDue_date().toString());
         cv.put(KEY_ICON, t.getIcon());
         cv.put(KEY_COMPLETED, completed);
         cv.put(KEY_INTERVAL_TYPE, t.getInterval_type());
@@ -171,50 +146,6 @@ public class DbHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return new_prog;
-    }
-
-    void updateTime(String updateType) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String key = "DAILY";
-
-        switch (updateType) {
-            case "DAILY":
-                key = KEY_DAILY;
-                break;
-            case "WEEKLY":
-                key = KEY_WEEKLY;
-                break;
-            case "MONTHLY":
-                key = KEY_MONTHLY;
-                break;
-        }
-
-        Cursor cursor = db.rawQuery("UPDATE " + TABLE_Update + " SET " + key
-                + " = " + LocalDateTime.now().toString(), null);
-        cursor.close();
-        db.close();
-    }
-
-    LocalDateTime getTime(String updateType) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String key = "DAILY";
-
-        switch (updateType) {
-            case "DAILY":
-                key = KEY_DAILY;
-                break;
-            case "WEEKLY":
-                key = KEY_WEEKLY;
-                break;
-            case "MONTHLY":
-                key = KEY_MONTHLY;
-                break;
-        }
-
-        Cursor cursor = db.rawQuery("SELECT " + key + " FROM " + TABLE_Update, null);
-        cursor.moveToFirst();
-        LocalDateTime ldt = LocalDateTime.parse(cursor.getString(0));
-        return ldt;
     }
 
     public void incrementTaskFromWatch(String abbrev, int newProg) {
