@@ -71,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Load tasks into Current/Upcoming/Completed
+        currentTasks = new ArrayList<>();
+        upcomingTasks = new ArrayList<>();
+        completedTasks = new ArrayList<>();
+
         for (Task t : tasks) {
             // Check if the task is completed
             if (t.isCompleted()) {
