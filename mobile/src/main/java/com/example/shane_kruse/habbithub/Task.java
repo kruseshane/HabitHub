@@ -19,11 +19,14 @@ public class Task {
     private int row_id;             //Row ID in Database
     private boolean on_watch;       //Is task on smartwatch
     private String abbrev;          //Abbreviation for smartwatch
+    private boolean active;         //Task is in progress
+    private LocalDateTime completed_time;
 
 
     public Task(String descr, int goal, int prog, LocalTime due_date, String icon,
                 boolean completed, ArrayList<String> interval, boolean repeat,
-                String color, boolean on_watch, String abbrev) {
+                String color, boolean on_watch, String abbrev, boolean active,
+                LocalDateTime completed_time) {
 
         this.descr = descr;
         this.goal = goal;
@@ -37,12 +40,33 @@ public class Task {
         this.row_id = -1;
         this.on_watch = on_watch;
         this.abbrev = abbrev;
+        this.active = active;
+        this.completed_time = completed_time;
+    }
+
+    // Copy another Task object for repeat
+    public Task (Task t) {
+        this.descr = t.descr;
+        this.goal = t.goal;
+        this.prog = 0;
+        this.due_date = t.due_date;
+        this.icon = t.icon;
+        this.completed = false;
+        this.interval = t.interval;
+        this.repeat = t.repeat;
+        this.color = t.color;
+        this.row_id = -1;
+        this.on_watch = t.on_watch;
+        this.abbrev = t.abbrev;
+        this.active = true;
+        this.completed_time = null;
     }
 
     public int incrementProg(){
         prog++;
         if (prog >= goal) {
             completed = true;
+            if (!repeat) active = false;
         }
         return prog;
     }
@@ -142,6 +166,22 @@ public class Task {
 
     public void setAbbrev(String abbrev) {
         this.abbrev = abbrev;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getCompleted_time() {
+        return completed_time;
+    }
+
+    public void setCompleted_time(LocalDateTime completed_time) {
+        this.completed_time = completed_time;
     }
 
 }

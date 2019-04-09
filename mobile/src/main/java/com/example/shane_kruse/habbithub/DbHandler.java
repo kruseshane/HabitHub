@@ -28,6 +28,8 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String KEY_COLOR = "color";
     private static final String KEY_ON_WATCH = "on_watch";
     private static final String KEY_ABBREV = "abbrev";
+    private static final String KEY_ACTIVE = "active";
+    private static final String KEY_TIME_COMPLETED = "time_completed";
 
     private static final String CREATE_TABLE_TASK = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " ("
                                                 + KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -36,7 +38,8 @@ public class DbHandler extends SQLiteOpenHelper {
                                                 + KEY_ICON + " VARCAHR, " + KEY_COMPLETED + " BIT, "
                                                 + KEY_INTERVAL + " VARCHAR, " + KEY_REPEAT + " BIT, "
                                                 + KEY_COLOR + " VARCHAR, " + KEY_ON_WATCH + " BIT, "
-                                                + KEY_ABBREV + " VARCHAR"
+                                                + KEY_ABBREV + " VARCHAR, " + KEY_ACTIVE + " BIT, "
+                                                + KEY_TIME_COMPLETED + " TEXT"
                                                 + ")";
 
     DbHandler(Context context){
@@ -63,7 +66,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
     ArrayList<Task> loadData() throws ParseException {
         ArrayList<Task> tasks = new ArrayList<>();
-        String query = "SELECT * FROM " + TABLE_Task;
+        String query = "SELECT * FROM " + TABLE_Task + " WHERE " + KEY_ACTIVE + " = 1 ";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
@@ -80,13 +83,23 @@ public class DbHandler extends SQLiteOpenHelper {
             String color = cursor.getString(9);
             boolean on_watch = (1 == cursor.getInt(10));
             String abbrev = cursor.getString(11);
+            boolean active = cursor.getInt(12) == 1;
+
+            /*
+            LocalDateTime completed_time;
+            String time_str = cursor.getString(13);
+            if (time_str == "") completed_time = null;
+            else completed_time = LocalDateTime.parse(time_str);
+            */
+            LocalDateTime completed_time = null;
 
             // Turn string into ArrayList<String>
             String[] interval_list = interval_str.split(",");
             ArrayList<String> interval = new ArrayList<String>(Arrays.asList(interval_list));
 
             Task task = new Task(descr, goal, prog, due_date, icon, completed,
-                                interval, repeat, color, on_watch, abbrev);
+                                interval, repeat, color, on_watch, abbrev,
+                                active, completed_time);
             tasks.add(task);
             task.setRow_id(id);
         }
@@ -122,6 +135,8 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_COLOR, t.getColor());
         cv.put(KEY_ON_WATCH, watchBit);
         cv.put(KEY_ABBREV, t.getAbbrev());
+        cv.put(KEY_ACTIVE, t.isActive());
+        cv.put(KEY_TIME_COMPLETED, "");
 
         SQLiteDatabase db = this.getWritableDatabase();
         int row_id = (int) db.insert(TABLE_Task, null, cv);
@@ -133,14 +148,26 @@ public class DbHandler extends SQLiteOpenHelper {
         int new_prog  = t.incrementProg();
         int row = t.getRow_id();
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("UPDATE " + TABLE_Task + " SET " + KEY_PROG + " = " + new_prog
-                                    + " WHERE " + KEY_ROW + " = " + row, null);
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_PROG, new_prog);
 
-        cursor.moveToFirst();
-        cursor.close();
+        if (t.isCompleted()) {
+            if (t.isRepeat()) repeatTask(t);
+            cv.put(KEY_COMPLETED, 1);
+            cv.put(KEY_TIME_COMPLETED, LocalDateTime.now().toString());
+
+            if (!t.isActive()) cv.put(KEY_ACTIVE, 0);
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.update(TABLE_Task, cv, KEY_ROW + " = " + row, null);
         db.close();
         return new_prog;
+    }
+
+    void repeatTask(Task old_task) {
+        Task new_task = new Task(old_task);
+        insertTask(new_task);
     }
 
     public void incrementTaskFromWatch(String abbrev, int newProg) {
@@ -175,7 +202,6 @@ public class DbHandler extends SQLiteOpenHelper {
                 }
             } while (cursor.moveToNext());
         }
-
         return s;
     }
 }

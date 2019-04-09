@@ -19,6 +19,8 @@ import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -45,6 +47,8 @@ public class ScheduleActivity extends AppCompatActivity {
     private String color;               //Color hex
     private boolean on_watch;           //Is task on smartwatch
     private String abbrev;              //Abbreviation for smartwatch
+    private boolean active = true;      //Task in progress
+    private LocalDateTime time_completed = null;
 
     ArrayList<Button> buttonList;
 
@@ -101,9 +105,9 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 // Add to database
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
-                hand.insertTask(new Task(descr, goal, prog, due_date, icon,
-                                        completed, intervalList, repeat,
-                                        color, on_watch, abbrev));
+                hand.insertTask(new Task(descr, goal, prog, due_date, icon, completed,
+                                        intervalList, repeat, color, on_watch, abbrev,
+                                        active, time_completed));
 
                 // Return to dashboard
                 Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);

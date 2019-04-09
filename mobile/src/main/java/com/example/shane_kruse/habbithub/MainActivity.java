@@ -84,18 +84,17 @@ public class MainActivity extends AppCompatActivity {
 
             // Check if the task is due today
             boolean isCurrent = false;
-            for (String dayAbrev : t.getInterval()) {
-                Calendar calendar = Calendar.getInstance();
-                int today = calendar.get(Calendar.DAY_OF_WEEK);
-                int day_due = getDay(dayAbrev);
+            Calendar calendar = Calendar.getInstance();
+            int today = calendar.get(Calendar.DAY_OF_WEEK);
 
+            for (String dayAbrev : t.getInterval()) {
+                int day_due = getDay(dayAbrev);
                 if (today == day_due) {
                     currentTasks.add(t);
                     isCurrent = true;
                     break;
                 }
             }
-
             // Check if the task is upcoming
             if (!isCurrent) upcomingTasks.add(t);
         }
@@ -156,8 +155,10 @@ public class MainActivity extends AppCompatActivity {
             updateGoalProgress(sum, total);
         }
 
+        // Default to today
+        updateRecycler(currentTasks);
         todayButton = findViewById(R.id.today_button);
-        todayButton.setPressed(true); // Default to today
+        todayButton.setPressed(true);
 
         upcomingButton = findViewById(R.id.upcoming_button);
         completedButton = findViewById(R.id.completed_button);
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(true);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(false);
+                updateRecycler(currentTasks);
                 return true;
             }
         });
@@ -178,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(true);
                 completedButton.setPressed(false);
+                updateRecycler(upcomingTasks);
                 return true;
             }
         });
@@ -188,12 +191,14 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(true);
+                updateRecycler(completedTasks);
                 return true;
             }
         });
-        // Create RecyclerView and fill in data from "tasks"
-        // aka magic
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, tasks, MainActivity.this);
+    }
+
+    void updateRecycler(ArrayList<Task> newTaskList) {
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, newTaskList, MainActivity.this);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
