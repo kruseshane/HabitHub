@@ -21,13 +21,17 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
     private int listItemLayout;
     private static ArrayList<Task> taskList;
     private static DbHandler dbh;
-    private Context mContext;
+    private static Context mContext;
+    private static MainActivity mainAct;
+    private static boolean clickable;
 
-    public MyTaskAdapter (int layoutID, ArrayList<Task> data, Context context) {
+    public MyTaskAdapter (int layoutID, ArrayList<Task> data, Context context, boolean clickable) {
         listItemLayout = layoutID;
         taskList = data;
         mContext = context;
         dbh = new DbHandler(mContext);
+        mainAct = (MainActivity) mContext;
+        this.clickable = clickable;
     }
 
     public int getItemCount() {
@@ -75,21 +79,24 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         }
 
         public void onClick(View view) {
-            System.out.println(task_desc.getText());
-            Task t = taskList.get(index);
-            dbh.incrementTask(t);
-            hold_goal = view.findViewById(R.id.task_goal);
-            hold_goal.setText(t.getProg() + "/" + t.getGoal());
+            if (clickable) {
+                Task t = taskList.get(index);
+                boolean completed = dbh.incrementTask(t);
 
-            //hold_goal.setText(dbh.getCurrentProg(t.getDescr()) + "/" + t.getGoal());
+                if (completed) mainAct.removeCompleted(index);
 
-            int total = 0;
-            float sum = 0;
-            for (int i = 0; i < taskList.size(); i++) {
-                total += taskList.get(i).getGoal();
-                sum += taskList.get(i).getProg();
+                hold_goal = view.findViewById(R.id.task_goal);
+                hold_goal.setText(t.getProg() + "/" + t.getGoal());
+
+
+                int total = 0;
+                float sum = 0;
+                for (int i = 0; i < taskList.size(); i++) {
+                    total += taskList.get(i).getGoal();
+                    sum += taskList.get(i).getProg();
+                }
+                mainAct.updateGoalProgress(sum, total);
             }
-            ((MainActivity) view.getContext()).updateGoalProgress(sum, total);
         }
     }
 }

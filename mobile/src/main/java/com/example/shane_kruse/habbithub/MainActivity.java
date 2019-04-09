@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
-    private DbHandler dbh;
+    public static DbHandler dbh;
     private Button todayButton;
     private Button upcomingButton;
     private Button completedButton;
@@ -156,7 +156,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Default to today
-        updateRecycler(currentTasks);
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, currentTasks, MainActivity.this, true);
+        taskRecycler = (RecyclerView) findViewById(R.id.task_list);
+        taskRecycler.setLayoutManager(new LinearLayoutManager(this));
+        taskRecycler.setItemAnimator(new DefaultItemAnimator());
+        taskRecycler.setAdapter(mAdapter);
         todayButton = findViewById(R.id.today_button);
         todayButton.setPressed(true);
 
@@ -169,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(true);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(false);
-                updateRecycler(currentTasks);
+                updateRecycler(currentTasks, true);
                 return true;
             }
         });
@@ -180,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(true);
                 completedButton.setPressed(false);
-                updateRecycler(upcomingTasks);
+                updateRecycler(upcomingTasks, false);
                 return true;
             }
         });
@@ -191,14 +195,21 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(true);
-                updateRecycler(completedTasks);
+                updateRecycler(completedTasks, false);
                 return true;
             }
         });
     }
 
-    void updateRecycler(ArrayList<Task> newTaskList) {
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, newTaskList, MainActivity.this);
+    void removeCompleted(int index) {
+        Task hold = currentTasks.get(index);
+        currentTasks.remove(index);
+        completedTasks.add(hold);
+        mAdapter.notifyItemRemoved(index);
+    }
+
+    void updateRecycler(ArrayList<Task> newTaskList, boolean clickable) {
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, newTaskList, MainActivity.this, clickable);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());

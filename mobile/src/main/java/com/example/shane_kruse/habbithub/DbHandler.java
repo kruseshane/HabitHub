@@ -16,20 +16,20 @@ public class DbHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "taskdb";
 
     private static final String TABLE_Task = "task";
-    private static final String KEY_ROW = "_id";
-    private static final String KEY_DESCR = "descr";
-    private static final String KEY_GOAL = "goal";
-    private static final String KEY_PROG = "prog";
-    private static final String KEY_DUE_DATE = "due_date";
-    private static final String KEY_ICON = "icon";
-    private static final String KEY_COMPLETED = "completed";
-    private static final String KEY_INTERVAL = "interval";
-    private static final String KEY_REPEAT = "repeat";
-    private static final String KEY_COLOR = "color";
-    private static final String KEY_ON_WATCH = "on_watch";
-    private static final String KEY_ABBREV = "abbrev";
-    private static final String KEY_ACTIVE = "active";
-    private static final String KEY_TIME_COMPLETED = "time_completed";
+    private static final String KEY_ROW = "_id";                        //0
+    private static final String KEY_DESCR = "descr";                    //1
+    private static final String KEY_GOAL = "goal";                      //2
+    private static final String KEY_PROG = "prog";                      //3
+    private static final String KEY_DUE_DATE = "due_date";              //4
+    private static final String KEY_ICON = "icon";                      //5
+    private static final String KEY_COMPLETED = "completed";            //6
+    private static final String KEY_INTERVAL = "interval";              //7
+    private static final String KEY_REPEAT = "repeat";                  //8
+    private static final String KEY_COLOR = "color";                    //9
+    private static final String KEY_ON_WATCH = "on_watch";              //10
+    private static final String KEY_ABBREV = "abbrev";                  //11
+    private static final String KEY_ACTIVE = "active";                  //12
+    private static final String KEY_TIME_COMPLETED = "time_completed";  //13
 
     private static final String CREATE_TABLE_TASK = "CREATE TABLE IF NOT EXISTS " + TABLE_Task + " ("
                                                 + KEY_ROW + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -144,28 +144,54 @@ public class DbHandler extends SQLiteOpenHelper {
         System.out.println(row_id);
     }
 
-    int incrementTask(Task t) {
-        int new_prog  = t.incrementProg();
-        int row = t.getRow_id();
-
+    boolean incrementTask(int rowID) {
+        Cursor c = getTask(rowID);
+        int new_prog = c.getInt(3) + 1;
+        int goal = c.getInt(2);
+        boolean completed = c.getInt(6) == 1;
+        boolean repeat = c.getInt(8) == 1;
         ContentValues cv = new ContentValues();
+
+        // Update progress
         cv.put(KEY_PROG, new_prog);
 
-        if (t.isCompleted()) {
-            if (t.isRepeat()) repeatTask(t);
+        // Update completed and time_completed if at or past goal
+        if (new_prog >= goal) {
+            if (repeat) repeatTask(rowID);
             cv.put(KEY_COMPLETED, 1);
             cv.put(KEY_TIME_COMPLETED, LocalDateTime.now().toString());
 
-            if (!t.isActive()) cv.put(KEY_ACTIVE, 0);
+            // If the goal isn't set to repeat, make it inactive
+            if (!repeat) cv.put(KEY_ACTIVE, 0);
         }
 
+        // Update table
         SQLiteDatabase db = this.getWritableDatabase();
-        db.update(TABLE_Task, cv, KEY_ROW + " = " + row, null);
+        db.update(TABLE_Task, cv, KEY_ROW + " = " + rowID, null);
         db.close();
-        return new_prog;
+
+        return completed;
     }
 
-    void repeatTask(Task old_task) {
+    Cursor getTask(int rowID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_Task + " WHERE " + KEY_ROW + " = " + rowID;
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        return c;
+    }
+
+    int getProg(int rowID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT " + KEY_PROG + " FROM " + TABLE_Task + " WHERE " + KEY_ROW + " = " + rowID;
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        return c.getInt(0);
+    }
+
+    void repeatTask(int rowID) {
+        Cursor c = getTask(rowID);
+
         Task new_task = new Task(old_task);
         insertTask(new_task);
     }
@@ -173,7 +199,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public void incrementTaskFromWatch(String abbrev, int newProg) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("UPDATE " + TABLE_Task + " SET " + KEY_PROG + " = " + newProg
-         + " WHERE " + KEY_ABBREV + " = '" + abbrev + "'", null);
+         + " WHERE " + KEY_ABBREV + " = '" + abbrev + "' AND " + KEY_ACTIVE + " = 1", null);
         cursor.moveToFirst();
         cursor.close();
     }
@@ -197,6 +223,8 @@ public class DbHandler extends SQLiteOpenHelper {
         if (count > 0 && cursor.moveToFirst()) {
             do {
                 if (cursor.getInt(12) == 1) {
+                    // abbrev, color, prog, goal
+                    // TODO change index
                     s += cursor.getString(13) + "," + cursor.getString(11) + "," + cursor.getInt(3) +
                             "," + cursor.getInt(2) + "&";
                 }

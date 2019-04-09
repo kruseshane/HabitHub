@@ -1,5 +1,7 @@
 package com.example.shane_kruse.habbithub;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -21,6 +23,7 @@ public class Task {
     private String abbrev;          //Abbreviation for smartwatch
     private boolean active;         //Task is in progress
     private LocalDateTime completed_time;
+    private DbHandler dbh;
 
 
     public Task(String descr, int goal, int prog, LocalTime due_date, String icon,
@@ -42,6 +45,7 @@ public class Task {
         this.abbrev = abbrev;
         this.active = active;
         this.completed_time = completed_time;
+        this.dbh = MainActivity.dbh;
     }
 
     // Copy another Task object for repeat
@@ -63,7 +67,8 @@ public class Task {
     }
 
     public int incrementProg(){
-        prog++;
+        prog = dbh.incrementTask(row_id);
+
         if (prog >= goal) {
             completed = true;
             if (!repeat) active = false;
@@ -96,6 +101,13 @@ public class Task {
     }
 
     public int getProg() {
+        SQLiteDatabase db = dbh.getWritableDatabase();
+        prog = dbh.getProg(row_id);
+
+        if (prog >= goal) {
+            completed = true;
+            if (!repeat) active = false;
+        }
         return prog;
     }
 
