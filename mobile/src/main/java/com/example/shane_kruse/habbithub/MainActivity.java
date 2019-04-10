@@ -26,11 +26,7 @@ import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
-
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -73,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
