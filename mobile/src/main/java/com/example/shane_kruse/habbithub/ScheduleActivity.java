@@ -105,9 +105,8 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 // Add to database
                 DbHandler hand = new DbHandler(ScheduleActivity.this);
-                hand.insertTask(new Task(descr, goal, prog, due_date, icon, completed,
-                                        intervalList, repeat, color, on_watch, abbrev,
-                                        active, time_completed));
+                hand.insertTask(descr, goal, prog, due_date, icon, completed,
+                                intervalList, repeat, color, on_watch, abbrev);
 
                 // Return to dashboard
                 Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);

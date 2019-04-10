@@ -81,7 +81,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         public void onClick(View view) {
             if (clickable) {
                 Task t = taskList.get(index);
-                boolean completed = dbh.incrementTask(t);
+                boolean completed = dbh.incrementTask(t.getRow_id());
 
                 if (completed) mainAct.removeCompleted(index);
 
