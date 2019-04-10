@@ -63,43 +63,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         dbh  = new DbHandler(this);
 
-        tasks = null;
-        try {
-            tasks = dbh.loadData();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        // Load tasks into Current/Upcoming/Completed
-        currentTasks = new ArrayList<>();
-        upcomingTasks = new ArrayList<>();
-        completedTasks = new ArrayList<>();
-
-        for (Task t : tasks) {
-            // Check if the task is completed
-            if (t.isCompleted()) {
-                completedTasks.add(t);
-                continue;
-            }
-
-            // Check if the task is due today
-            boolean isCurrent = false;
-            Calendar calendar = Calendar.getInstance();
-            int today = calendar.get(Calendar.DAY_OF_WEEK);
-
-            for (String dayAbrev : t.getInterval()) {
-                int day_due = getDay(dayAbrev);
-                if (today == day_due) {
-                    currentTasks.add(t);
-                    isCurrent = true;
-                    break;
-                }
-            }
-            // Check if the task is upcoming
-            if (!isCurrent) upcomingTasks.add(t);
-        }
-
-
         //Create a message handler//
         myHandler = new Handler(new Handler.Callback() {
             @Override
@@ -156,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Default to today
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, currentTasks, MainActivity.this, true);
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, getCurrentTasks(), MainActivity.this, true);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
@@ -173,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(true);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(false);
-                updateRecycler(currentTasks, true);
+                updateRecycler(getCurrentTasks(), true);
                 return true;
             }
         });
@@ -184,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(true);
                 completedButton.setPressed(false);
-                updateRecycler(upcomingTasks, false);
+                updateRecycler(getUpcomingTasks(), false);
                 return true;
             }
         });
@@ -195,17 +158,14 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(true);
-                updateRecycler(completedTasks, false);
+                updateRecycler(getCompletedTasks(), false);
                 return true;
             }
         });
     }
 
     void removeCompleted(int index) {
-        Task hold = currentTasks.get(index);
-        currentTasks.remove(index);
-        completedTasks.add(hold);
-        mAdapter.notifyItemRemoved(index);
+        updateRecycler(getCurrentTasks(), true);
     }
 
     void updateRecycler(ArrayList<Task> newTaskList, boolean clickable) {
@@ -242,6 +202,57 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return day;
+    }
+
+    ArrayList<Task> getCurrentTasks() {
+        ArrayList<Task> activeTasks = dbh.loadActive();
+
+        // Load tasks into Current and Upcoming
+        currentTasks = new ArrayList<>();
+
+        for (Task t : activeTasks) {
+            // Check if the task is due today
+            Calendar calendar = Calendar.getInstance();
+            int today = calendar.get(Calendar.DAY_OF_WEEK);
+
+            for (String dayAbrev : t.getInterval()) {
+                int day_due = getDay(dayAbrev);
+                if (today == day_due) {
+                    currentTasks.add(t);
+                    break;
+                }
+            }
+        }
+        return currentTasks;
+    }
+
+    ArrayList<Task> getUpcomingTasks() {
+        ArrayList<Task> activeTasks = dbh.loadActive();
+
+        // Load tasks into Current and Upcoming
+        upcomingTasks = new ArrayList<>();
+
+        for (Task t : activeTasks) {
+            // Check if the task is due today
+            boolean isCurrent = false;
+            Calendar calendar = Calendar.getInstance();
+            int today = calendar.get(Calendar.DAY_OF_WEEK);
+
+            for (String dayAbrev : t.getInterval()) {
+                int day_due = getDay(dayAbrev);
+                if (today == day_due) {
+                    isCurrent = true;
+                    break;
+                }
+            }
+            // Check if the task is upcoming
+            if (!isCurrent) upcomingTasks.add(t);
+        }
+        return upcomingTasks;
+    }
+
+    ArrayList<Task> getCompletedTasks() {
+        return dbh.loadHistory();
     }
 
     @Override

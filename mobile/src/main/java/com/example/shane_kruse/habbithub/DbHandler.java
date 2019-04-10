@@ -84,7 +84,7 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    ArrayList<Task> loadData() throws ParseException {
+    ArrayList<Task> loadActive() {
         ArrayList<Task> tasks = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_ACTIVE;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -92,7 +92,23 @@ public class DbHandler extends SQLiteOpenHelper {
 
         while (cursor.moveToNext()) {
             int id = cursor.getInt(0);
-            Task task = new Task(id);
+            Task task = new Task(id, true);
+            tasks.add(task);
+        }
+        cursor.close();
+        db.close();
+        return tasks;
+    }
+
+    ArrayList<Task> loadHistory() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE_HISTORY;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(0);
+            Task task = new Task(id, false);
             tasks.add(task);
         }
         cursor.close();
@@ -136,7 +152,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
 
     boolean incrementTask(int rowID) {
-        Cursor c = getTask(rowID);
+        Cursor c = getTask(rowID, true);
         int new_prog = c.getInt(3) + 1;
         int goal = c.getInt(2);
         boolean completed = c.getInt(6) == 1;
@@ -172,8 +188,8 @@ public class DbHandler extends SQLiteOpenHelper {
         return completed;
     }
 
-    void repeatTask(int rowID) {
-        copyToHistory(rowID);
+    int repeatTask(int rowID) {
+        int newRowID = copyToHistory(rowID);
 
         // Reset values of task in active table
         ContentValues cv = new ContentValues();
@@ -182,6 +198,8 @@ public class DbHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.update(TABLE_ACTIVE, cv, KEY_ROW + " = " + rowID, null);
+
+        return newRowID;
     }
 
     void removeTask(int rowID) {
@@ -191,9 +209,9 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     // Get values from active task and copy them into history table
-    void copyToHistory(int rowID) {
+    int copyToHistory(int rowID) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor c = getTask(rowID);
+        Cursor c = getTask(rowID, true);
 
         ContentValues cv = new ContentValues();
         cv.put(KEY_DESCR, c.getString(1));
@@ -210,39 +228,44 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_TASK_ID, rowID);
         cv.put(KEY_TIME_COMPLETED, LocalDateTime.now().toString());
 
-        db.insert(TABLE_HISTORY, null, cv);
+        int row = (int)db.insert(TABLE_HISTORY, null, cv);
+        return row;
     }
 
-    Cursor getTask(int rowID) {
+    Cursor getTask(int rowID, boolean active) {
+        String table;
+        if (active) table = TABLE_ACTIVE;
+        else table = TABLE_HISTORY;
+
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_ACTIVE + " WHERE " + KEY_ROW + " = " + rowID;
+        String query = "SELECT * FROM " + table + " WHERE " + KEY_ROW + " = " + rowID;
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         return c;
     }
 
-    String getDescr(int rowID) {
-        Cursor c = getTask(rowID);
+    String getDescr(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
         return c.getString(1);
     }
 
-    int getGoal(int rowID) {
-        Cursor c = getTask(rowID);
+    int getGoal(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
         return c.getInt(2);
     }
 
-    int getProg(int rowID) {
-        Cursor c = getTask(rowID);
+    int getProg(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
         return c.getInt(3);
     }
 
-    LocalTime getDueDate(int rowID) {
-        Cursor c = getTask(rowID);
+    LocalTime getDueDate(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
         return LocalTime.parse(c.getString(4));
     }
 
-    String getIcon(int rowID) {
-        Cursor c = getTask(rowID);
+    String getIcon(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
         return c.getString(5);
     }
 
@@ -255,20 +278,20 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    boolean getCompleted(int rowID) {
-        Cursor c = getTask(rowID);
+    boolean getCompleted(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
         return c.getInt(6) == 1;
     }
 
-    ArrayList<String> getInterval(int rowID) {
-        Cursor c = getTask(rowID);
+    ArrayList<String> getInterval(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
         String interval_str = c.getString(7);
 
         return  new ArrayList<String>(Arrays.asList(interval_str.split(",")));
     }
 
-    String getColor(int rowID) {
-        Cursor c = getTask(rowID);
+    String getColor(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
         return c.getString(9);
     }
 

@@ -85,17 +85,20 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
 
                 if (completed) mainAct.removeCompleted(index);
 
-                hold_goal = view.findViewById(R.id.task_goal);
-                hold_goal.setText(t.getProg() + "/" + t.getGoal());
+                else {
+                    hold_goal = view.findViewById(R.id.task_goal);
+                    hold_goal.setText(t.getProg() + "/" + t.getGoal());
 
-
-                int total = 0;
-                float sum = 0;
-                for (int i = 0; i < taskList.size(); i++) {
-                    total += taskList.get(i).getGoal();
-                    sum += taskList.get(i).getProg();
+                    //TODO Find a better way to keep track of progress
+                    // TaskList will not store already completed tasks
+                    int total = 0;
+                    float sum = 0;
+                    for (int i = 0; i < taskList.size(); i++) {
+                        total += taskList.get(i).getGoal();
+                        sum += taskList.get(i).getProg();
+                    }
+                    mainAct.updateGoalProgress(sum, total);
                 }
-                mainAct.updateGoalProgress(sum, total);
             }
         }
     }

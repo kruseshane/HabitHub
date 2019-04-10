@@ -10,6 +10,7 @@ import java.util.Date;
 
 public class Task {
     private int row_id;             //Row ID in Database
+    private boolean active;         //Which table the Task is in
     private DbHandler dbh;
 
 
@@ -18,15 +19,17 @@ public class Task {
                 boolean completed, ArrayList<String> interval, boolean repeat,
                 String color, boolean on_watch, String abbrev) {
 
+        active = true;
         this.dbh = MainActivity.dbh;
         row_id = dbh.insertTask(descr, goal, prog, due_date, icon, completed, interval,
                                 repeat, color, on_watch, abbrev);
     }
 
     // Load a task from the database
-    public Task(int row_id) {
+    public Task(int row_id, boolean active) {
         this.dbh = MainActivity.dbh;
         this.row_id = row_id;
+        this.active = active;
     }
 
     public boolean incrementProg(){
@@ -38,27 +41,27 @@ public class Task {
     }
 
     public String getDescr() {
-        return dbh.getDescr(row_id);
+        return dbh.getDescr(row_id, active);
     }
 
 
     public int getGoal() {
-        return dbh.getGoal(row_id);
+        return dbh.getGoal(row_id, active);
     }
 
 
     public int getProg() {
-        return dbh.getProg(row_id);
+        return dbh.getProg(row_id, active);
     }
 
 
     public LocalTime getDue_date() {
-        return dbh.getDueDate(row_id);
+        return dbh.getDueDate(row_id, active);
     }
 
 
     public String getIcon() {
-        return dbh.getIcon(row_id);
+        return dbh.getIcon(row_id, active);
     }
 
     public void setIcon(String icon) {
@@ -66,20 +69,20 @@ public class Task {
     }
 
     public boolean isCompleted() {
-        return dbh.getCompleted(row_id);
+        return dbh.getCompleted(row_id, active);
     }
 
 
     public ArrayList<String> getInterval() {
-        return dbh.getInterval(row_id);
+        return dbh.getInterval(row_id, active);
     }
 
     public String getColor() {
-        return dbh.getColor(row_id);
+        return dbh.getColor(row_id, active);
     }
 
     public void setColor(String color) {
-        dbh.setColor(row_id, color);
+        dbh.setColor(row_id, color  );
     }
 
 
