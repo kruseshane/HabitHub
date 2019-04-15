@@ -44,21 +44,17 @@ public class Task {
         return dbh.getDescr(row_id, active);
     }
 
-
     public int getGoal() {
         return dbh.getGoal(row_id, active);
     }
-
 
     public int getProg() {
         return dbh.getProg(row_id, active);
     }
 
-
     public LocalTime getDue_date() {
         return dbh.getDueDate(row_id, active);
     }
-
 
     public String getIcon() {
         return dbh.getIcon(row_id, active);
@@ -72,7 +68,6 @@ public class Task {
         return dbh.getCompleted(row_id, active);
     }
 
-
     public ArrayList<String> getInterval() {
         return dbh.getInterval(row_id, active);
     }
@@ -83,6 +78,14 @@ public class Task {
 
     public void setColor(String color) {
         dbh.setColor(row_id, color  );
+    }
+
+    public String getAbbrev() {
+        return dbh.getAbbrev(row_id, active);
+    }
+
+    public boolean isOnWatch() {
+        return dbh.isOnWatch(row_id, active);
     }
 
 

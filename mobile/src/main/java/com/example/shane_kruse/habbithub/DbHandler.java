@@ -132,7 +132,7 @@ public class DbHandler extends SQLiteOpenHelper {
             boolean isCurrent = false;
             int today = calendar.get(Calendar.DAY_OF_WEEK);
             int id = cursor.getInt(0);
-            Task task = new Task(id, true);
+            Task task = new Task(id, false);
 
             for (String dayAbrev : task.getInterval()) {
                 int day_due = getDay(dayAbrev);
@@ -351,6 +351,16 @@ public class DbHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.update(TABLE_ACTIVE, cv, KEY_ROW + " = " + rowID, null);
         db.close();
+    }
+
+    String getAbbrev(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
+        return c.getString(11);
+    }
+
+    boolean isOnWatch(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
+        return c.getInt(10) == 1;
     }
 
     public void incrementTaskFromWatch(String abbrev, int newProg) {
