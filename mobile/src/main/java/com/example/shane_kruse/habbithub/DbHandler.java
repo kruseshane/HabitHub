@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 
 public class DbHandler extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
@@ -96,6 +97,57 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
         return tasks;
     }
+
+    ArrayList<Task> loadToday() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        String query = "SELECT * FROM " + TABLE_ACTIVE;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            int today = calendar.get(Calendar.DAY_OF_WEEK);
+            int id = cursor.getInt(0);
+            Task task = new Task(id, true);
+
+            for (String dayAbrev : task.getInterval()) {
+                int day_due = getDay(dayAbrev);
+                if (today == day_due) {
+                    tasks.add(task);
+                    break;
+                }
+            }
+        }
+        return tasks;
+    }
+
+    ArrayList<Task> loadUpcoming() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        String query = "SELECT * FROM " + TABLE_ACTIVE;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            boolean isCurrent = false;
+            int today = calendar.get(Calendar.DAY_OF_WEEK);
+            int id = cursor.getInt(0);
+            Task task = new Task(id, true);
+
+            for (String dayAbrev : task.getInterval()) {
+                int day_due = getDay(dayAbrev);
+                if (today == day_due) {
+                    isCurrent = true;
+                    break;
+                }
+            }
+            // Check if the task is upcoming
+            if (!isCurrent) tasks.add(task);
+        }
+        return tasks;
+    }
+
+
 
     ArrayList<Task> loadHistory() {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -336,5 +388,33 @@ public class DbHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         return s;
+    }
+
+    int getDay(String dayAbrev) {
+        int day = -1;
+        switch(dayAbrev) {
+            case "M":
+                day = Calendar.MONDAY;
+                break;
+            case "T":
+                day = Calendar.TUESDAY;
+                break;
+            case "W":
+                day = Calendar.WEDNESDAY;
+                break;
+            case "TR":
+                day = Calendar.THURSDAY;
+                break;
+            case "F":
+                day = Calendar.FRIDAY;
+                break;
+            case "SA":
+                day = Calendar.SATURDAY;
+                break;
+            case "SU":
+                day = Calendar.SUNDAY;
+                break;
+        }
+        return day;
     }
 }
