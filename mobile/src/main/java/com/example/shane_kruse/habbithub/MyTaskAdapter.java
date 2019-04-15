@@ -83,7 +83,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
                 Task t = taskList.get(index);
                 boolean completed = dbh.incrementTask(t.getRow_id());
 
-                if (completed) mainAct.removeCompleted(index);
+                if (completed) mainAct.removeCompleted();
 
                 else {
                     hold_goal = view.findViewById(R.id.task_goal);

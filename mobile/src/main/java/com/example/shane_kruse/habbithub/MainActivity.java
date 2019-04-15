@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void removeCompleted(int index) {
+    void removeCompleted() {
         updateRecycler(getCurrentTasks(), true);
     }
 
