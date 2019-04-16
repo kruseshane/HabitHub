@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
     private static Context mContext;
     private static MainActivity mainAct;
     private static boolean clickable;
+    private int lastPosition = -1;
 
     public MyTaskAdapter (int layoutID, ArrayList<Task> data, Context context, boolean clickable) {
         listItemLayout = layoutID;
@@ -58,7 +61,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         myViewHolder.setIndex(i);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView task_desc;
         public TextView task_goal;
         public TextView hold_goal;
@@ -74,6 +77,20 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
             this.index = -1;
         }
 
+        void deleteItem(int index) {
+            taskList.remove(index);
+            notifyItemRemoved(index);
+            notifyItemRangeChanged(index, taskList.size());
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.task_slide_right_out);
+            itemView.startAnimation(animation);
+        }
+
+        void setAnimation(View v, int position) {
+            if (position > lastPosition) {
+
+            }
+        }
+
         void setIndex(int index) {
             this.index = index;
         }
@@ -84,7 +101,10 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
                 boolean completed = dbh.incrementTask(t.getRow_id());
 
                 //if (completed) mainAct.removeCompleted();
-                if (completed) mainAct.updateRecycler(dbh.loadToday(), true);
+                if (completed) {
+                    deleteItem(index);
+                    //mainAct.updateRecycler(dbh.loadToday(), true);
+                }
 
                 else {
                     hold_goal = view.findViewById(R.id.task_goal);

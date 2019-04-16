@@ -126,7 +126,7 @@ public class DbHandler extends SQLiteOpenHelper {
             boolean isCurrent = false;
             int today = calendar.get(Calendar.DAY_OF_WEEK);
             int id = cursor.getInt(0);
-            Task task = new Task(id, false);
+            Task task = new Task(id, true);
 
             for (String dayAbrev : task.getInterval()) {
                 int day_due = getDay(dayAbrev);
