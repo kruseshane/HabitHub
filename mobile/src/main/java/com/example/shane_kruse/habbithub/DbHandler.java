@@ -5,13 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DbHandler extends SQLiteOpenHelper {
+    MainActivity mainAct;
+
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "taskdb";
 
@@ -58,6 +63,11 @@ public class DbHandler extends SQLiteOpenHelper {
         super(context,DB_NAME, null, DB_VERSION);
     }
 
+    DbHandler(Context context, MainActivity mainAct) {
+        super(context, DB_NAME, null, DB_VERSION);
+        this.mainAct = mainAct;
+    }
+
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_ACTIVE);
         db.execSQL(CREATE_TABLE_HISTORY);
@@ -80,22 +90,6 @@ public class DbHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_HISTORY);
 
         db.close();
-    }
-
-    ArrayList<Task> loadActive() {
-        ArrayList<Task> tasks = new ArrayList<>();
-        String query = "SELECT * FROM " + TABLE_ACTIVE;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(0);
-            Task task = new Task(id, true);
-            tasks.add(task);
-        }
-        cursor.close();
-        db.close();
-        return tasks;
     }
 
     ArrayList<Task> loadToday() {
@@ -147,8 +141,6 @@ public class DbHandler extends SQLiteOpenHelper {
         return tasks;
     }
 
-
-
     ArrayList<Task> loadHistory() {
         ArrayList<Task> tasks = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_HISTORY;
@@ -156,6 +148,7 @@ public class DbHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
+            System.out.println(cursor.getString(13));
             int id = cursor.getInt(0);
             Task task = new Task(id, false);
             tasks.add(task);
@@ -163,6 +156,44 @@ public class DbHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return tasks;
+    }
+
+    int[] getDailyProgress() {
+        int totalGoal = 0;
+        int totalProg = 0;
+
+        // Check tasks due today
+        Calendar calendar = Calendar.getInstance();
+        String queryActive = "SELECT * FROM " + TABLE_ACTIVE;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursorActive = db.rawQuery(queryActive, null);
+
+        while (cursorActive.moveToNext()) {
+            int today = calendar.get(Calendar.DAY_OF_WEEK);
+            int id = cursorActive.getInt(0);
+            Task task = new Task(id, true);
+
+            for (String dayAbrev : task.getInterval()) {
+                int day_due = getDay(dayAbrev);
+                if (today == day_due) {
+                    totalGoal += task.getGoal();
+                    totalProg += task.getProg();
+                }
+            }
+        }
+
+        // Check history for tasks completed today
+        String today = LocalDate.now().toString();
+        String queryHist = "SELECT * FROM " + TABLE_HISTORY + " WHERE "
+                            + KEY_TIME_COMPLETED + " LIKE " + "'" + today + "%'";
+        Cursor cursorHist = db.rawQuery(queryHist, null);
+
+        while (cursorHist.moveToNext()) {
+            totalGoal += cursorHist.getInt(2);
+            totalProg += cursorHist.getInt(3);
+        }
+
+        return new int[] {totalGoal, totalProg};
     }
 
     int insertTask(String descr, int goal, int prog, LocalTime due_date, String icon,
@@ -210,6 +241,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
         // Update progress
         cv.put(KEY_PROG, new_prog);
+        mainAct.incrementProg();
 
         // Update completed and time_completed if at or past goal
         if (new_prog >= goal) {

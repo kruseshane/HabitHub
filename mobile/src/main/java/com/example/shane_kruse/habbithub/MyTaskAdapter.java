@@ -29,8 +29,8 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         listItemLayout = layoutID;
         taskList = data;
         mContext = context;
-        dbh = new DbHandler(mContext);
         mainAct = (MainActivity) mContext;
+        dbh = new DbHandler(mContext, mainAct);
         this.clickable = clickable;
     }
 
@@ -83,21 +83,12 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
                 Task t = taskList.get(index);
                 boolean completed = dbh.incrementTask(t.getRow_id());
 
-                if (completed) mainAct.removeCompleted();
+                //if (completed) mainAct.removeCompleted();
+                if (completed) mainAct.updateRecycler(dbh.loadToday(), true);
 
                 else {
                     hold_goal = view.findViewById(R.id.task_goal);
                     hold_goal.setText(t.getProg() + "/" + t.getGoal());
-
-                    //TODO Find a better way to keep track of progress
-                    // TaskList will not store already completed tasks
-                    int total = 0;
-                    float sum = 0;
-                    for (int i = 0; i < taskList.size(); i++) {
-                        total += taskList.get(i).getGoal();
-                        sum += taskList.get(i).getProg();
-                    }
-                    mainAct.updateGoalProgress(sum, total);
                 }
             }
         }

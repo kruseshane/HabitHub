@@ -52,12 +52,14 @@ public class MainActivity extends AppCompatActivity {
     private Button upcomingButton;
     private Button completedButton;
     private String newTaskMsg;
+    private int totalGoal;
+    private int totalProg;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbh  = new DbHandler(this);
+        dbh  = new DbHandler(MainActivity.this, MainActivity.this);
 
         //Create a message handler//
         myHandler = new Handler(new Handler.Callback() {
@@ -103,18 +105,13 @@ public class MainActivity extends AppCompatActivity {
         progressBarOverall = findViewById(R.id.goal_progress_overall);
         setProgressBarAttributes();
 
-        if (tasks.size() < 1) {
-            updateGoalProgress(0, 0);
-        } else {
-            for (int i = 0; i < tasks.size(); i++) {
-                total += tasks.get(i).getGoal();
-                sum += tasks.get(i).getProg();
-            }
-            updateGoalProgress(sum, total);
-        }
+        int[] goalProg = dbh.getDailyProgress();
+        totalGoal = goalProg[0];
+        totalProg = goalProg[1];
+        updateGoalProgress(totalProg, totalGoal);
 
         // Default to today
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, getCurrentTasks(), MainActivity.this, true);
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, dbh.loadToday(), MainActivity.this, true);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
@@ -131,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(true);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(false);
-                updateRecycler(getCurrentTasks(), true);
+                updateRecycler(dbh.loadToday(), true);
                 return true;
             }
         });
@@ -142,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(true);
                 completedButton.setPressed(false);
-                updateRecycler(getUpcomingTasks(), false);
+                updateRecycler(dbh.loadUpcoming(), false);
                 return true;
             }
         });
@@ -153,14 +150,10 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(true);
-                updateRecycler(getCompletedTasks(), false);
+                updateRecycler(dbh.loadHistory(), false);
                 return true;
             }
         });
-    }
-
-    void removeCompleted() {
-        updateRecycler(getCurrentTasks(), true);
     }
 
     void updateRecycler(ArrayList<Task> newTaskList, boolean clickable) {
@@ -169,6 +162,13 @@ public class MainActivity extends AppCompatActivity {
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
         taskRecycler.setAdapter(mAdapter);
+    }
+
+    void incrementProg() {
+        if (totalProg < totalGoal) {
+            totalProg++;
+            updateGoalProgress(totalProg, totalGoal);
+        }
     }
 
     int getDay(String dayAbrev) {
@@ -197,57 +197,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return day;
-    }
-
-    ArrayList<Task> getCurrentTasks() {
-        ArrayList<Task> activeTasks = dbh.loadActive();
-
-        // Load tasks into Current and Upcoming
-        currentTasks = new ArrayList<>();
-
-        for (Task t : activeTasks) {
-            // Check if the task is due today
-            Calendar calendar = Calendar.getInstance();
-            int today = calendar.get(Calendar.DAY_OF_WEEK);
-
-            for (String dayAbrev : t.getInterval()) {
-                int day_due = getDay(dayAbrev);
-                if (today == day_due) {
-                    currentTasks.add(t);
-                    break;
-                }
-            }
-        }
-        return currentTasks;
-    }
-
-    ArrayList<Task> getUpcomingTasks() {
-        ArrayList<Task> activeTasks = dbh.loadActive();
-
-        // Load tasks into Current and Upcoming
-        upcomingTasks = new ArrayList<>();
-
-        for (Task t : activeTasks) {
-            // Check if the task is due today
-            boolean isCurrent = false;
-            Calendar calendar = Calendar.getInstance();
-            int today = calendar.get(Calendar.DAY_OF_WEEK);
-
-            for (String dayAbrev : t.getInterval()) {
-                int day_due = getDay(dayAbrev);
-                if (today == day_due) {
-                    isCurrent = true;
-                    break;
-                }
-            }
-            // Check if the task is upcoming
-            if (!isCurrent) upcomingTasks.add(t);
-        }
-        return upcomingTasks;
-    }
-
-    ArrayList<Task> getCompletedTasks() {
-        return dbh.loadHistory();
     }
 
     @Override
@@ -291,19 +240,14 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("UPDATE SENT");
 
             }
-            //Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void updateGoalProgress(float sum, int total) {
-        DecimalFormat df = new DecimalFormat("#.#");
-        for (int i = 0; i < tasks.size(); i++) {
-            total += tasks.get(i).getGoal();
-            sum += tasks.get(i).getProg();
-        }
-
         float prog = (sum/total) * 100;
+        if (Float.isNaN(prog)) prog = (float) 100.0;
 
+        DecimalFormat df = new DecimalFormat("#.#");
         progressBarOverall.setProgress(Float.parseFloat(df.format(prog)));
     }
 
