@@ -26,7 +26,7 @@
             android:gravity="center"
             android:background="@drawable/main_grad">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                     android:layout_marginRight="15dp"
                     android:src="@mipmap/ic_launcher_foreground_menu_options" />
 
-            </android.support.v7.widget.Toolbar>
+            </androidx.appcompat.widget.Toolbar>
 
             <com.github.lzyzsd.circleprogress.DonutProgress
                 android:id="@+id/goal_progress_overall"
@@ -78,7 +78,7 @@
 
         </LinearLayout>
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/toolbarTransparent"
@@ -131,9 +131,9 @@
             </LinearLayout>
 
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/task_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"

@@ -4,18 +4,16 @@ import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -35,7 +33,7 @@ public class ScheduleActivity extends AppCompatActivity {
     TimePicker duedatePicker;
     TextView save;
     EditText abbrevText;
-    NumberPicker dailyNumPicker;
+    com.shawnlin.numberpicker.NumberPicker dailyNumPicker;
     Context context;
     boolean isEverydaySelected = false;
 
@@ -92,10 +90,12 @@ public class ScheduleActivity extends AppCompatActivity {
                 goal = dailyNumPicker.getValue();
 
                 // Check if scheduling info was entered
+                /*
                 if (intervalList.isEmpty() || due_date == null) {
                     showPopup();
                     return;
                 }
+                */
 
                 // Update the smartwatch
                 String newTaskMsg = "";
@@ -216,10 +216,7 @@ public class ScheduleActivity extends AppCompatActivity {
         setupIntervalBtn(buttonList);
 
         // Setup NumberPickers
-        dailyNumPicker = findViewById(R.id.daily_times_per_day_picker);
-        dailyNumPicker.setMinValue(0);
-        dailyNumPicker.setMaxValue(10);
-        dailyNumPicker.setValue(1);
+        dailyNumPicker = findViewById(R.id.num_picker);
 
         // Enable animated layout changes
         ((ViewGroup) findViewById(R.id.schedule_layout)).getLayoutTransition()
@@ -260,17 +257,9 @@ public class ScheduleActivity extends AppCompatActivity {
                         everyDayBtn.setBackground(getDrawable(R.drawable.rounded_btn_schedule));
                     }
                     b.setBackground(getDrawable(R.drawable.weekday_selected));
-
-                    /*
-                    if (b.isSelected()) {
-                        b.setSelected(false);
-                        b.setBackgroundColor(Color.GRAY);
-                    }
-                    else {
-                        b.setSelected(true);
-                        b.setBackground(getDrawable(R.drawable.weekday_selected));
-                    }
-                    */
+                    
+                    if (b.isSelected()) b.setSelected(false);
+                    else b.setSelected(true);
                 }
             });
         }
