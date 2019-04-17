@@ -220,14 +220,22 @@ public class MainActivity extends AppCompatActivity {
             //Upon receiving each message from the wearable, display the following text//
 
             String message = intent.getStringExtra("message");
-            //System.out.println(message);
+            System.out.println(message);
             Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             System.out.println(message);
             if (message.split(",")[0].equals("$")) {
                 String [] data = message.split(",");
-                dbh.incrementTaskFromWatch(data[1], Integer.parseInt(data[2]));
+                if (dbh.incrementTask(Integer.parseInt(data[1]))) {
+                    updateRecycler(dbh.loadToday(), true);
+                    String updateMsg = dbh.getWatchTasks();
 
-                mAdapter.notifyItemChanged(Integer.parseInt(data[3]));
+                    // Send update to watch
+                    new NewThread("/my_path", updateMsg).start();
+
+                    System.out.println("UPDATE SENT");
+                }
+                //mAdapter.notifyItemChanged(Integer.parseInt(data[3]));
+                mAdapter.notifyDataSetChanged();
             }
             if (message.equals("REQUEST_UPDATE")) {
                 System.out.println("REQUEST_UPDATE RECEIVED");

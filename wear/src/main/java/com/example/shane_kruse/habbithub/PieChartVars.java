@@ -9,6 +9,7 @@ public class PieChartVars {
     public static ArrayList<Integer> colors;
     public static int[] taskGoals;
     public static int[] taskProgs;
+    public static int[] taskRowIds;
 
     public static void setColors(ArrayList<Integer> colors) {
         PieChartVars.colors = colors;
@@ -28,6 +29,10 @@ public class PieChartVars {
 
     public static void setTaskProgs(int[] taskProgs) {
         PieChartVars.taskProgs = taskProgs;
+    }
+
+    public static void setTaskRowIds(int[] taskRowIds) {
+        PieChartVars.taskRowIds = taskRowIds;
     }
 
     public static float[] floatVals(ArrayList<Float> arr) {

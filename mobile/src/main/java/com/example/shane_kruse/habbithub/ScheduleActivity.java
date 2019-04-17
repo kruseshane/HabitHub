@@ -45,7 +45,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private boolean completed = false;  //Has the goal been met
     private boolean repeat;             //On or off to repeat task every interval type
     private String color;               //Color hex
-    private boolean on_watch;           //Is task on smartwatch
+    private boolean on_watch = false;           //Is task on smartwatch
     private String abbrev;              //Abbreviation for smartwatch
     private boolean active = true;      //Task in progress
     private LocalDateTime time_completed = null;

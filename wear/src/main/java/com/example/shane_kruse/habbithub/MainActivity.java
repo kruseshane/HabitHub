@@ -53,6 +53,7 @@ public class MainActivity extends WearableActivity {
     private ArrayList<Integer> colors;
     private int[] taskGoals;
     private int[] taskProgs;
+    private int[] taskRowIds;
     private PieChartVars vars;
 
     @Override
@@ -97,6 +98,7 @@ public class MainActivity extends WearableActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
+            System.out.println(message);
             if (message.equals(getString(R.string.new_smartwatch_task))) {
                 new NewThread("/my_path", "REQUEST_UPDATE").start();
             } else {
@@ -176,6 +178,7 @@ public class MainActivity extends WearableActivity {
         colors = new ArrayList<>();
         taskProgs = new int[tasks.length];
         taskGoals = new int[tasks.length];
+        taskRowIds = new int[tasks.length];
 
         if (tasks[0].contains(",")) {
             for (int i = 0; i < tasks.length; i++) {
@@ -187,6 +190,7 @@ public class MainActivity extends WearableActivity {
                 colors.add(Color.parseColor(data[1]));
                 taskProgs[i] = Integer.parseInt(data[2]);
                 taskGoals[i] = Integer.parseInt(data[3]);
+                taskRowIds[i] = Integer.parseInt(data[4]);
             }
         } else {
             xData.add("No tasks on watch");
@@ -199,6 +203,7 @@ public class MainActivity extends WearableActivity {
         vars.setColors(colors);
         vars.setTaskGoals(taskGoals);
         vars.setTaskProgs(taskProgs);
+        vars.setTaskRowIds(taskRowIds);
         createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
 }
 
@@ -251,8 +256,7 @@ public class MainActivity extends WearableActivity {
                 }
                 startActivity(intent);
 
-                new NewThread("/my_path", "$," + pe.getLabel() + "," + vars.taskProgs[pieDataSet.getEntryIndex(e)] +
-                         "," + pieDataSet.getEntryIndex(e)).start();
+                new NewThread("/my_path", "$," + vars.taskRowIds[pieDataSet.getEntryIndex(e)]).start();
 
                 finish();
             }

@@ -395,12 +395,21 @@ public class DbHandler extends SQLiteOpenHelper {
         return c.getInt(10) == 1;
     }
 
-    public void incrementTaskFromWatch(String abbrev, int newProg) {
+    public Boolean incrementTaskFromWatch(String abbrev, int newProg) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("UPDATE " + TABLE_ACTIVE + " SET " + KEY_PROG + " = " + newProg
-         + " WHERE " + KEY_ABBREV + " = '" + abbrev + "' AND "  + " = 1", null);
+         + " WHERE " + KEY_ABBREV + " = '" + abbrev + "'", null);
         cursor.moveToFirst();
         cursor.close();
+        db = this.getReadableDatabase();
+        Cursor check = db.rawQuery("SELECT prog,goal FROM " + TABLE_ACTIVE + " WHERE abbrev = '" + abbrev
+         + "'", null);
+        check.moveToFirst();
+        if (check.getInt(0) == check.getInt(1)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public int getCurrentProg(String taskDesc) {
@@ -413,21 +422,13 @@ public class DbHandler extends SQLiteOpenHelper {
 
     public String getWatchTasks() {
         String s = "";
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor mCount = db.rawQuery("select count(*) from " + TABLE_ACTIVE, null);
-        mCount.moveToFirst();
-        int count= mCount.getInt(0);
-        mCount.close();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_ACTIVE, null);
-        if (count > 0 && cursor.moveToFirst()) {
-            do {
-                if (cursor.getInt(12) == 1) {
-                    // abbrev, color, prog, goal
-                    // TODO change index
-                    s += cursor.getString(13) + "," + cursor.getString(11) + "," + cursor.getInt(3) +
-                            "," + cursor.getInt(2) + "&";
-                }
-            } while (cursor.moveToNext());
+        ArrayList<Task> today = loadToday();
+        for (Task task : today) {
+            if (task.isOnWatch()) {
+                System.out.println(task.getRow_id());
+                s += task.getAbbrev() + "," + task.getColor() + "," + task.getProg() + "," + task.getGoal() +
+                        "," + task.getRow_id() + "&";
+            }
         }
         return s;
     }
