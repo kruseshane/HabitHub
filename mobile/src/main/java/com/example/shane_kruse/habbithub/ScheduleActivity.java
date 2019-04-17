@@ -29,13 +29,15 @@ import java.util.Objects;
 public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
     Button mondayBtn, tuesdayBtn, wednesdayBtn, thursdayBtn,
-            fridayBtn, saturdayBtn, sundayBtn, timePickerBtn;
+            fridayBtn, saturdayBtn, sundayBtn, timePickerBtn,
+            everyDayBtn;
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
     TextView save;
     EditText abbrevText;
     NumberPicker dailyNumPicker;
     Context context;
+    boolean isEverydaySelected = false;
 
     private String descr;               //Description of Task
     private int goal;                   //Number of times Task should be completed
@@ -121,6 +123,16 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        everyDayBtn = findViewById(R.id.interval_everyday_btn);
+        everyDayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isEverydaySelected = true;
+                clearWeekdayBtns(buttonList);
+                everyDayBtn.setBackground(getDrawable(R.drawable.rounded_schedule_btn_selected));
             }
         });
 
@@ -244,12 +256,10 @@ public class ScheduleActivity extends AppCompatActivity {
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) { // TODO fix button not deselecting!!!!
-                    System.out.println("Selected: " + b.isPressed());
-                    if (b.isPressed()) {
-                        b.setBackground(getDrawable(R.drawable.weekday_selected));
-                    } else {
-
+                    if (isEverydaySelected) {
+                        everyDayBtn.setBackground(getDrawable(R.drawable.rounded_btn_schedule));
                     }
+                    b.setBackground(getDrawable(R.drawable.weekday_selected));
 
                     /*
                     if (b.isSelected()) {
@@ -263,6 +273,13 @@ public class ScheduleActivity extends AppCompatActivity {
                     */
                 }
             });
+        }
+    }
+
+    // Set weekday buttons back to default
+    void clearWeekdayBtns(ArrayList<Button> buttons) {
+        for (int i = 0; i < buttons.size(); i++) {
+            buttons.get(i).setBackground(getDrawable(R.drawable.round_weekday_btn));
         }
     }
 }
