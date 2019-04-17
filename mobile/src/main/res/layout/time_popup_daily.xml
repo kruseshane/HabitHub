@@ -7,6 +7,16 @@
     android:layout_gravity="center"
     android:padding="10dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select the time this task should be completed by"
+        android:textSize="28sp"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:fontFamily="sans-serif-condensed"
+        android:layout_margin="15dp"/>
+
     <TimePicker
         android:id="@+id/time_picker"
         android:layout_width="wrap_content"
@@ -19,6 +29,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/anytime"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="24sp"/>
+
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
         android:fontFamily="sans-serif-condensed"
         android:textSize="24sp"/>
 

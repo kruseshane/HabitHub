@@ -4,6 +4,7 @@ import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +18,6 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
     Button mondayBtn, tuesdayBtn, wednesdayBtn, thursdayBtn,
             fridayBtn, saturdayBtn, sundayBtn, timePickerBtn,
-            everyDayBtn;
+            everyDayBtn, anytimeBtn, pickTimeBtn;
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
     TextView save;
@@ -80,22 +80,23 @@ public class ScheduleActivity extends AppCompatActivity {
                 // Set the time the task is due
                 int hour = 23;
                 int minute = 59;
-                //if (!anytimeBtn.isSelected()) {
-                  //  hour = duedatePicker.getHour();
-                  //  minute = duedatePicker.getMinute();
-                //}
+                if (!anytimeBtn.isSelected()) {
+                    hour = duedatePicker.getHour();
+                    minute = duedatePicker.getMinute();
+                }
+
                 due_date = LocalTime.of(hour, minute);
 
                 // Set goal from numberpicker
                 goal = dailyNumPicker.getValue();
 
                 // Check if scheduling info was entered
-                /*
+
                 if (intervalList.isEmpty() || due_date == null) {
                     showPopup();
                     return;
                 }
-                */
+
 
                 // Update the smartwatch
                 String newTaskMsg = "";
@@ -222,6 +223,15 @@ public class ScheduleActivity extends AppCompatActivity {
         ((ViewGroup) findViewById(R.id.schedule_layout)).getLayoutTransition()
                 .enableTransitionType(LayoutTransition.CHANGING);
 
+        // Pick time button
+        pickTimeBtn = findViewById(R.id.pick_time_btn);
+        pickTimeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePopup();
+            }
+        });
+
         // Read Task info from create page
         Bundle data = getIntent().getExtras();
         descr = (String) data.get("desc");
@@ -237,6 +247,40 @@ public class ScheduleActivity extends AppCompatActivity {
 
         Button dismissBtn = popup.findViewById(R.id.dismissBtn);
         dismissBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alert.dismiss();
+            }
+        });
+
+        alert.show();
+    }
+
+    void showTimePopup() {
+        LayoutInflater inflater = getLayoutInflater();
+        View popup = inflater.inflate(R.layout.time_popup_daily, null);
+        final AlertDialog alert = new AlertDialog.Builder(this).create();
+        alert.setView(popup);
+
+        duedatePicker = popup.findViewById(R.id.time_picker);
+
+        anytimeBtn = popup.findViewById(R.id.anytimeBtn);
+        anytimeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(anytimeBtn.isSelected()) {
+                    anytimeBtn.setSelected(false);
+                    anytimeBtn.setBackgroundColor(Color.WHITE);
+                }
+                else {
+                    anytimeBtn.setSelected(true);
+                    anytimeBtn.setBackgroundColor(Color.GREEN);
+                }
+            }
+        });
+
+        Button saveBtn = popup.findViewById(R.id.saveBtn);
+        saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alert.dismiss();
