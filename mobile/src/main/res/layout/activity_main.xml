@@ -139,5 +139,17 @@
             android:layout_height="0dp"
             android:layout_weight="6" />
 
+        <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/no_data_available"
+            android:textSize="40sp"
+            android:fontFamily="sans-serif-condensed"
+            android:textStyle="bold"/>
+
     </LinearLayout>
 </LinearLayout>

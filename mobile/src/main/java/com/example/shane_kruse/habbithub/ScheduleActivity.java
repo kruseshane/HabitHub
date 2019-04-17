@@ -80,10 +80,6 @@ public class ScheduleActivity extends AppCompatActivity {
                 // Set the time the task is due
                 int hour = 23;
                 int minute = 59;
-                if (!anytimeBtn.isSelected()) {
-                    hour = duedatePicker.getHour();
-                    minute = duedatePicker.getMinute();
-                }
 
                 due_date = LocalTime.of(hour, minute);
 

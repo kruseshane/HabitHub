@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import androidx.annotation.Nullable;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private MyTaskAdapter mAdapter;
     private Toolbar mToolbar;
     private Handler myHandler; // was protected
+    private TextView emptyView;
     DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
@@ -110,16 +112,16 @@ public class MainActivity extends AppCompatActivity {
         updateRecycler(dbh.loadToday(), true);
 
         todayButton = findViewById(R.id.today_button);
-        todayButton.setPressed(true);
+        todayButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
         upcomingButton = findViewById(R.id.upcoming_button);
         completedButton = findViewById(R.id.completed_button);
 
         todayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                todayButton.setPressed(true);
-                upcomingButton.setPressed(false);
-                completedButton.setPressed(false);
+                todayButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
+                upcomingButton.setBackgroundColor(getColor(R.color.silver));
+                completedButton.setBackgroundColor(getColor(R.color.silver));
                 updateRecycler(dbh.loadToday(), true);
             }
         });
@@ -127,9 +129,9 @@ public class MainActivity extends AppCompatActivity {
         upcomingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                todayButton.setPressed(false);
-                upcomingButton.setPressed(true);
-                completedButton.setPressed(false);
+                todayButton.setBackgroundColor(getColor(R.color.silver));
+                upcomingButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
+                completedButton.setBackgroundColor(getColor(R.color.silver));
                 updateRecycler(dbh.loadUpcoming(), false);
             }
         });
@@ -137,15 +139,16 @@ public class MainActivity extends AppCompatActivity {
         completedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                todayButton.setPressed(false);
-                upcomingButton.setPressed(false);
-                completedButton.setPressed(true);
+                todayButton.setBackgroundColor(getColor(R.color.silver));
+                upcomingButton.setBackgroundColor(getColor(R.color.silver));
+                completedButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
                 updateRecycler(dbh.loadHistory(), false);
             }
         });
     }
 
     void updateRecycler(ArrayList<Task> newTaskList, boolean clickable) {
+
         mAdapter = new MyTaskAdapter(R.layout.task_recycler, newTaskList, MainActivity.this, clickable);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -157,6 +160,15 @@ public class MainActivity extends AppCompatActivity {
                 AnimationUtils.loadLayoutAnimation(context, R.anim.list_animation_fall_down);
         taskRecycler.setLayoutAnimation(controller);
         taskRecycler.scheduleLayoutAnimation();
+
+        emptyView = findViewById(R.id.empty_view);
+        if (newTaskList.isEmpty()) {
+            taskRecycler.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            taskRecycler.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+        }
     }
 
     void incrementProg() {

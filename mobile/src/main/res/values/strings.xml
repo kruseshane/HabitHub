@@ -39,4 +39,6 @@
     <string name="friday">F</string>
     <string name="saturday">SA</string>
     <string name="sunday">SU</string>
+
+    <string name="no_data_available">No Tasks</string>
 </resources>
