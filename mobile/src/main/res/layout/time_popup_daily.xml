@@ -7,6 +7,19 @@
     android:layout_gravity="center"
     android:padding="10dp">
 
+    <TimePicker
+        android:id="@+id/time_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:timePickerMode="spinner" />
 
+    <Button
+        android:id="@+id/anytimeBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/anytime"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="24sp"/>
 
 </LinearLayout>

@@ -29,7 +29,7 @@ import java.util.Objects;
 public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
     Button mondayBtn, tuesdayBtn, wednesdayBtn, thursdayBtn,
-            fridayBtn, saturdayBtn, sundayBtn, anytimeBtn;
+            fridayBtn, saturdayBtn, sundayBtn, timePickerBtn;
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
     TextView save;
@@ -80,10 +80,10 @@ public class ScheduleActivity extends AppCompatActivity {
                 // Set the time the task is due
                 int hour = 23;
                 int minute = 59;
-                if (!anytimeBtn.isSelected()) {
-                    hour = duedatePicker.getHour();
-                    minute = duedatePicker.getMinute();
-                }
+                //if (!anytimeBtn.isSelected()) {
+                  //  hour = duedatePicker.getHour();
+                  //  minute = duedatePicker.getMinute();
+                //}
                 due_date = LocalTime.of(hour, minute);
 
                 // Set goal from numberpicker
@@ -192,8 +192,13 @@ public class ScheduleActivity extends AppCompatActivity {
         saturdayBtn = findViewById(R.id.interval_saturday_btn);
         buttonList.add(saturdayBtn);
 
-        anytimeBtn = findViewById(R.id.anytimeBtn);
-        buttonList.add(anytimeBtn);
+        timePickerBtn = findViewById(R.id.pick_time_btn);
+        timePickerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         // Setup Buttons
         setupIntervalBtn(buttonList);
@@ -238,15 +243,24 @@ public class ScheduleActivity extends AppCompatActivity {
 
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v) { // TODO fix button not deselecting!!!!
+                    System.out.println("Selected: " + b.isPressed());
+                    if (b.isPressed()) {
+                        b.setBackground(getDrawable(R.drawable.weekday_selected));
+                    } else {
+
+                    }
+
+                    /*
                     if (b.isSelected()) {
                         b.setSelected(false);
                         b.setBackgroundColor(Color.GRAY);
                     }
                     else {
                         b.setSelected(true);
-                        b.setBackgroundColor(Color.GREEN);
+                        b.setBackground(getDrawable(R.drawable.weekday_selected));
                     }
+                    */
                 }
             });
         }
