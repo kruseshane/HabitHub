@@ -77,18 +77,13 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
             this.index = -1;
         }
 
+
         void deleteItem(int index) {
             taskList.remove(index);
             notifyItemRemoved(index);
             notifyItemRangeChanged(index, taskList.size());
             Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.task_slide_right_out);
             itemView.startAnimation(animation);
-        }
-
-        void setAnimation(View v, int position) {
-            if (position > lastPosition) {
-
-            }
         }
 
         void setIndex(int index) {

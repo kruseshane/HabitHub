@@ -16,7 +16,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
@@ -37,15 +36,10 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Task> tasks = new ArrayList<>();
-    private ArrayList<Task> currentTasks;
-    private ArrayList<Task> upcomingTasks;
-    private ArrayList<Task> completedTasks;
     private RecyclerView taskRecycler;
     private MyTaskAdapter mAdapter;
     private Toolbar mToolbar;
     private Handler myHandler; // was protected
-    private int total;
-    private float sum;
     DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
