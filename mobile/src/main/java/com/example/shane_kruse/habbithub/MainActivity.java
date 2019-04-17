@@ -16,8 +16,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,15 +36,10 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Task> tasks = new ArrayList<>();
-    private ArrayList<Task> currentTasks;
-    private ArrayList<Task> upcomingTasks;
-    private ArrayList<Task> completedTasks;
     private RecyclerView taskRecycler;
     private MyTaskAdapter mAdapter;
     private Toolbar mToolbar;
     private Handler myHandler; // was protected
-    private int total;
-    private float sum;
     DonutProgress progressBarOverall;
     private ImageView addTask;
     private ImageView menuOptions;
@@ -111,47 +107,40 @@ public class MainActivity extends AppCompatActivity {
         updateGoalProgress(totalProg, totalGoal);
 
         // Default to today
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, dbh.loadToday(), MainActivity.this, true);
-        taskRecycler = (RecyclerView) findViewById(R.id.task_list);
-        taskRecycler.setLayoutManager(new LinearLayoutManager(this));
-        taskRecycler.setItemAnimator(new DefaultItemAnimator());
-        taskRecycler.setAdapter(mAdapter);
+        updateRecycler(dbh.loadToday(), true);
+
         todayButton = findViewById(R.id.today_button);
         todayButton.setPressed(true);
-
         upcomingButton = findViewById(R.id.upcoming_button);
         completedButton = findViewById(R.id.completed_button);
 
-        todayButton.setOnTouchListener(new View.OnTouchListener() {
+        todayButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public void onClick(View v) {
                 todayButton.setPressed(true);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(false);
                 updateRecycler(dbh.loadToday(), true);
-                return true;
             }
         });
 
-        upcomingButton.setOnTouchListener(new View.OnTouchListener() {
+        upcomingButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public void onClick(View v) {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(true);
                 completedButton.setPressed(false);
                 updateRecycler(dbh.loadUpcoming(), false);
-                return true;
             }
         });
 
-        completedButton.setOnTouchListener(new View.OnTouchListener() {
+        completedButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public void onClick(View v) {
                 todayButton.setPressed(false);
                 upcomingButton.setPressed(false);
                 completedButton.setPressed(true);
                 updateRecycler(dbh.loadHistory(), false);
-                return true;
             }
         });
     }
@@ -162,6 +151,12 @@ public class MainActivity extends AppCompatActivity {
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
         taskRecycler.setAdapter(mAdapter);
+
+        Context context = taskRecycler.getContext();
+        LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(context, R.anim.list_animation_fall_down);
+        taskRecycler.setLayoutAnimation(controller);
+        taskRecycler.scheduleLayoutAnimation();
     }
 
     void incrementProg() {
