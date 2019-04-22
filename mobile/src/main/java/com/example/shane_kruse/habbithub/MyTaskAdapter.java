@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
     private static MainActivity mainAct;
     private static boolean clickable;
     private int lastPosition = -1;
+
 
     public MyTaskAdapter (int layoutID, ArrayList<Task> data, Context context, boolean clickable) {
         listItemLayout = layoutID;
@@ -94,7 +96,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
                 //if (completed) mainAct.removeCompleted();
                 if (completed) {
                     deleteItem(index);
-                    //mainAct.updateRecycler(dbh.loadToday(), true);
+                    mainAct.updateRecycler(dbh.loadToday(), true);
                 }
 
                 else {

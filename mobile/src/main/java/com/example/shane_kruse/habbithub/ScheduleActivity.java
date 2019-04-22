@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -28,7 +29,8 @@ public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
     Button mondayBtn, tuesdayBtn, wednesdayBtn, thursdayBtn,
             fridayBtn, saturdayBtn, sundayBtn, timePickerBtn,
-            everyDayBtn, anytimeBtn, pickTimeBtn;
+            everyDayBtn, pickTimeBtn;
+    CheckBox anytimeChkBox;
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
     TextView save;
@@ -259,7 +261,20 @@ public class ScheduleActivity extends AppCompatActivity {
         alert.setView(popup);
 
         duedatePicker = popup.findViewById(R.id.time_picker);
+        anytimeChkBox = popup.findViewById(R.id.anytime_checkbox);
 
+        anytimeChkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    duedatePicker.setEnabled(false);
+                } else {
+                    duedatePicker.setEnabled(true);
+                }
+            }
+        });
+
+        /*
         anytimeBtn = popup.findViewById(R.id.anytimeBtn);
         anytimeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,6 +289,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 }
             }
         });
+        */
 
         Button saveBtn = popup.findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {

@@ -29,6 +29,7 @@ public class EditActivity extends AppCompatActivity {
     private String icon;
     private String hex;
     private DbHandler hand;
+    private boolean nameSelected, colorSelected, iconSelected;
 
 
     Integer[] iconIDs = {
@@ -93,10 +94,18 @@ public class EditActivity extends AppCompatActivity {
         descEdit = findViewById(R.id.edit_desc_txtBox);
         descEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
+                if (hasFocus) {
                     descEdit.setHint("");
-                else
+                }
+                else {
                     descEdit.setHint(getString(R.string.edit_task_desc_hint));
+                    if (!descEdit.getText().toString().equals("")) {
+                        nameSelected = true;
+                    }
+                    if (nameSelected && colorSelected && iconSelected) {
+                        nextText.setVisibility(View.VISIBLE);
+                    }
+                }
             }
         });
 
@@ -129,6 +138,10 @@ public class EditActivity extends AppCompatActivity {
                         hex = "#E38BFC";
                         break;
                 }
+                colorSelected = true;
+                if (nameSelected && colorSelected && iconSelected) {
+                    nextText.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -141,6 +154,10 @@ public class EditActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // Get id of icon selected
                 icon = String.valueOf(iconIDs[position]);
+                iconSelected = true;
+                if (nameSelected && colorSelected && iconSelected) {
+                    nextText.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
