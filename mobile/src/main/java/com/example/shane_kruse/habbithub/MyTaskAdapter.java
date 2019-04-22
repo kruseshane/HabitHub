@@ -4,15 +4,18 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 
 
@@ -59,7 +62,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         myViewHolder.setIndex(i);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
         public TextView task_desc;
         public TextView task_goal;
         public TextView hold_goal;
@@ -69,6 +72,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         ViewHolder (View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+            itemView.setOnCreateContextMenuListener(this);
             task_desc = (TextView) itemView.findViewById(R.id.task_desc);
             task_goal = (TextView) itemView.findViewById(R.id.task_goal);
             task_icon = (ImageView) itemView.findViewById(R.id.icon);
@@ -104,6 +108,11 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
                     hold_goal.setText(t.getProg() + "/" + t.getGoal());
                 }
             }
+        }
+
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.add(0, v.getId(), 0, "Edit");
+            menu.add(0, v.getId(), 0, "Delete");
         }
     }
 }
