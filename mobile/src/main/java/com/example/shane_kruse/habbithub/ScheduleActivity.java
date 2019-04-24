@@ -263,6 +263,7 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showTimePopup();
+                pickTimeBtn.setBackground(getDrawable(R.drawable.rounded_schedule_btn_selected));
             }
         });
 
