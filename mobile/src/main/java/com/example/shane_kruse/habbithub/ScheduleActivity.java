@@ -203,14 +203,6 @@ public class ScheduleActivity extends AppCompatActivity {
         saturdayBtn = findViewById(R.id.interval_saturday_btn);
         buttonList.add(saturdayBtn);
 
-        timePickerBtn = findViewById(R.id.pick_time_btn);
-        timePickerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
         // Setup Buttons
         setupIntervalBtn(buttonList);
 
@@ -227,6 +219,7 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showTimePopup();
+                pickTimeBtn.setBackground(getDrawable(R.drawable.rounded_schedule_btn_selected));
             }
         });
 

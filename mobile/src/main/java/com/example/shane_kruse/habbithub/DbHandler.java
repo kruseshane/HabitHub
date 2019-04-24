@@ -395,6 +395,11 @@ public class DbHandler extends SQLiteOpenHelper {
         return c.getInt(10) == 1;
     }
 
+    boolean isOnRepeat (int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
+        return c.getInt(8) == 1;
+    }
+
     public Boolean incrementTaskFromWatch(String abbrev, int newProg) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("UPDATE " + TABLE_ACTIVE + " SET " + KEY_PROG + " = " + newProg
