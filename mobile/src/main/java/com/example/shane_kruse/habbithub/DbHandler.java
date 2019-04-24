@@ -110,17 +110,16 @@ public class DbHandler extends SQLiteOpenHelper {
 
                     // If the task repeats, check that it hasn't been already completed
                     if (task.getRepeat()) {
-                        ArrayList<Task> history = loadHistory();
-                        // Check task history
+
+                        // Load history of selected task
+                        ArrayList<Task> history = loadHistory(task.getRow_id());
+
+                        // Check if task was completed today
                         boolean occuredToday = false;
                         for (Task t: history) {
-                            // Sort by tasks with matching ID's
-                            if (t.getTaskID() != task.getRow_id())
-                                continue;
-
                             LocalDate completed = t.getCompletedTime().toLocalDate();
                             LocalDate now = LocalDate.now();
-                            // Check if completed time occurred today
+
                             if (completed.compareTo(now) == 0)
                                 occuredToday = true;
                         }
@@ -145,7 +144,6 @@ public class DbHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
-            boolean isCurrent = false;
             int today = calendar.get(Calendar.DAY_OF_WEEK);
             int id = cursor.getInt(0);
             Task task = new Task(id, true);
@@ -173,6 +171,23 @@ public class DbHandler extends SQLiteOpenHelper {
     ArrayList<Task> loadHistory() {
         ArrayList<Task> tasks = new ArrayList<>();
         String query = "SELECT * FROM " + TABLE_HISTORY;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            System.out.println(cursor.getString(13));
+            int id = cursor.getInt(0);
+            Task task = new Task(id, false);
+            tasks.add(task);
+        }
+        cursor.close();
+        db.close();
+        return tasks;
+    }
+
+    ArrayList<Task> loadHistory(int rowID) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE_HISTORY + " WHERE " + KEY_TASK_ID + " = " + rowID;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 

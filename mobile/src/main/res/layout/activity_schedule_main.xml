@@ -161,7 +161,8 @@
         android:layout_marginEnd="36dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
-        android:text="Everyday"/>
+        android:text="Everyday"
+        android:textAllCaps="false"/>
 
     <View
         android:layout_width="fill_parent"
@@ -210,6 +211,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/select_time"
+        android:textAllCaps="false"
         android:background="@drawable/rounded_btn_schedule"
         android:layout_gravity="center"
         android:padding="16dp"/>

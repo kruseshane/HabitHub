@@ -10,8 +10,18 @@
         android:layout_height="wrap_content"
         android:text="@string/abbrev_popup_text"
         android:layout_gravity="center"
-        android:padding="15dp"
-        android:textSize="17sp"
+        android:paddingTop="15dp"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-condensed"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/abbrev_char_limit"
+        android:layout_gravity="center"
+        android:paddingBottom="15dp"
+        android:paddingTop="5dp"
+        android:textSize="15sp"
         android:fontFamily="sans-serif-condensed"/>
 
     <LinearLayout

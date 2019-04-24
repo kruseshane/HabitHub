@@ -29,8 +29,7 @@ import java.util.Objects;
 public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
     Button mondayBtn, tuesdayBtn, wednesdayBtn, thursdayBtn,
-            fridayBtn, saturdayBtn, sundayBtn, timePickerBtn,
-            everyDayBtn, pickTimeBtn;
+            fridayBtn, saturdayBtn, sundayBtn, everyDayBtn, pickTimeBtn;
     CheckBox anytimeChkBox;
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
@@ -90,7 +89,10 @@ public class ScheduleActivity extends AppCompatActivity {
                 // Get list of days selected
                 ArrayList<String> intervalList = new ArrayList<>();
                 for (Button b : buttonList) {
-                    if (b.isSelected()) intervalList.add(b.getText().toString());
+                    if (isEverydaySelected)
+                        intervalList.add(b.getText().toString());
+                    else if (b.isSelected())
+                        intervalList.add(b.getText().toString());
                 }
 
                 // Set the time the task is due
@@ -150,16 +152,6 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
-            }
-        });
-
-        everyDayBtn = findViewById(R.id.interval_everyday_btn);
-        everyDayBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isEverydaySelected = true;
-                clearWeekdayBtns(buttonList);
-                everyDayBtn.setBackground(getDrawable(R.drawable.rounded_schedule_btn_selected));
             }
         });
 
@@ -240,6 +232,23 @@ public class ScheduleActivity extends AppCompatActivity {
 
         // Setup Buttons
         setupIntervalBtn(buttonList);
+
+        //Everyday buttons
+        everyDayBtn = findViewById(R.id.interval_everyday_btn);
+        everyDayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isEverydaySelected){
+                    isEverydaySelected = false;
+                    everyDayBtn.setBackground(getDrawable(R.drawable.rounded_btn_schedule));
+                }
+                else {
+                    isEverydaySelected = true;
+                    clearWeekdayBtns(buttonList);
+                    everyDayBtn.setBackground(getDrawable(R.drawable.rounded_schedule_btn_selected));
+                }
+            }
+        });
 
         // Setup NumberPickers
         dailyNumPicker = findViewById(R.id.num_picker);
@@ -380,13 +389,14 @@ public class ScheduleActivity extends AppCompatActivity {
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) { // TODO fix button not deselecting!!!!
-                    if (isEverydaySelected) {
-                        everyDayBtn.setBackground(getDrawable(R.drawable.rounded_btn_schedule));
+                    if (b.isSelected()) {
+                        b.setSelected(false);
+                        b.setBackground(getDrawable(R.drawable.round_weekday_btn));
                     }
-                    b.setBackground(getDrawable(R.drawable.weekday_selected));
-                    
-                    if (b.isSelected()) b.setSelected(false);
-                    else b.setSelected(true);
+                    else {
+                        b.setSelected(true);
+                        b.setBackground(getDrawable(R.drawable.weekday_selected));
+                    }
                 }
             });
         }
@@ -396,6 +406,7 @@ public class ScheduleActivity extends AppCompatActivity {
     void clearWeekdayBtns(ArrayList<Button> buttons) {
         for (int i = 0; i < buttons.size(); i++) {
             buttons.get(i).setBackground(getDrawable(R.drawable.round_weekday_btn));
+            buttons.get(i).setSelected(false);
         }
     }
 }

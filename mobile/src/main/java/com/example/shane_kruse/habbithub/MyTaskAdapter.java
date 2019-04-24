@@ -140,10 +140,8 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
                 Task t = taskList.get(index);
                 boolean completed = dbh.incrementTask(t.getRow_id());
 
-                if (completed) {
+                if (completed)
                     deleteItem(index);
-                    mainAct.updateRecycler(dbh.loadToday(), "TODAY");
-                }
 
                 else {
                     hold_goal = view.findViewById(R.id.task_goal);
@@ -191,7 +189,6 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
 
                         dbh.removeTask(rowID);
                         deleteItem(index);
-                        mainAct.updateRecycler(dbh.loadToday(), "TODAY");
                         mainAct.loadProgress();
                         return false;
                     }

@@ -152,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void updateRecycler(ArrayList<Task> newTaskList, String type) {
-
         mAdapter = new MyTaskAdapter(R.layout.task_recycler, newTaskList, MainActivity.this, type);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
