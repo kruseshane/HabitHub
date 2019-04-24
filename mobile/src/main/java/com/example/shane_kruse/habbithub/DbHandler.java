@@ -95,7 +95,7 @@ public class DbHandler extends SQLiteOpenHelper {
     ArrayList<Task> loadToday() {
         ArrayList<Task> tasks = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
-        String query = "SELECT * FROM " + TABLE_ACTIVE;
+        String query = "SELECT * FROM " + TABLE_ACTIVE + " WHERE " + KEY_COMPLETED + " = " + 0;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
@@ -107,7 +107,29 @@ public class DbHandler extends SQLiteOpenHelper {
             for (String dayAbrev : task.getInterval()) {
                 int day_due = getDay(dayAbrev);
                 if (today == day_due) {
-                    tasks.add(task);
+
+                    // If the task repeats, check that it hasn't been already completed
+                    if (task.getRepeat()) {
+                        ArrayList<Task> history = loadHistory();
+                        // Check task history
+                        boolean occuredToday = false;
+                        for (Task t: history) {
+                            // Sort by tasks with matching ID's
+                            if (t.getTaskID() != task.getRow_id())
+                                continue;
+
+                            LocalDate completed = t.getCompletedTime().toLocalDate();
+                            LocalDate now = LocalDate.now();
+                            // Check if completed time occurred today
+                            if (completed.compareTo(now) == 0)
+                                occuredToday = true;
+                        }
+                        if (!occuredToday)
+                            tasks.add(task);
+                    }
+                    else
+                        tasks.add(task);
+
                     break;
                 }
             }
@@ -127,16 +149,23 @@ public class DbHandler extends SQLiteOpenHelper {
             int today = calendar.get(Calendar.DAY_OF_WEEK);
             int id = cursor.getInt(0);
             Task task = new Task(id, true);
+            ArrayList<String> intervalList = task.getInterval();
 
-            for (String dayAbrev : task.getInterval()) {
-                int day_due = getDay(dayAbrev);
-                if (today == day_due) {
-                    isCurrent = true;
-                    break;
+            if (task.getRepeat())
+                tasks.add(task);
+            else if (intervalList.size() == 1) {
+                if (getDay(intervalList.get(0)) > today)
+                    tasks.add(task);
+            }
+            else {
+                for (String dayAbrev : task.getInterval()) {
+                    int day_due = getDay(dayAbrev);
+                    if (day_due > today) {
+                        tasks.add(task);
+                        break;
+                    }
                 }
             }
-            // Check if the task is upcoming
-            if (!isCurrent) tasks.add(task);
         }
         return tasks;
     }
@@ -163,29 +192,17 @@ public class DbHandler extends SQLiteOpenHelper {
         int totalProg = 0;
 
         // Check tasks due today
-        Calendar calendar = Calendar.getInstance();
-        String queryActive = "SELECT * FROM " + TABLE_ACTIVE;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursorActive = db.rawQuery(queryActive, null);
-
-        while (cursorActive.moveToNext()) {
-            int today = calendar.get(Calendar.DAY_OF_WEEK);
-            int id = cursorActive.getInt(0);
-            Task task = new Task(id, true);
-
-            for (String dayAbrev : task.getInterval()) {
-                int day_due = getDay(dayAbrev);
-                if (today == day_due) {
-                    totalGoal += task.getGoal();
-                    totalProg += task.getProg();
-                }
-            }
+        ArrayList<Task> todayList = loadToday();
+        for (Task t: todayList) {
+            totalGoal += t.getGoal();
+            totalProg += t.getProg();
         }
 
         // Check history for tasks completed today
         String today = LocalDate.now().toString();
         String queryHist = "SELECT * FROM " + TABLE_HISTORY + " WHERE "
                             + KEY_TIME_COMPLETED + " LIKE " + "'" + today + "%'";
+        SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursorHist = db.rawQuery(queryHist, null);
 
         while (cursorHist.moveToNext()) {
@@ -205,6 +222,7 @@ public class DbHandler extends SQLiteOpenHelper {
         for (String s: interval) {
             interval_str += s + ",";
         }
+        interval_str = interval_str.substring(0, interval_str.length() - 1);
 
         // Convert boolean into 0 or 1 to be inserted into BIT field on database
         int repeatBit = repeat ? 1 : 0;
@@ -229,7 +247,38 @@ public class DbHandler extends SQLiteOpenHelper {
         return row_id;
     }
 
+    void updateTask(int id, String descr, int goal, int prog, LocalTime due_date, String icon,
+                    boolean completed, ArrayList<String> interval, boolean repeat,
+                    String color, boolean on_watch, String abbrev) {
 
+        // Turn interval into String
+        String interval_str = "";
+        for (String s: interval) {
+            interval_str += s + ",";
+        }
+        interval_str = interval_str.substring(0, interval_str.length() - 1);
+
+        // Convert boolean into 0 or 1 to be inserted into BIT field on database
+        int repeatBit = repeat ? 1 : 0;
+        int watchBit = on_watch ? 1 : 0;
+        int completedBit = completed ? 1 : 0;
+
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_DESCR, descr);
+        cv.put(KEY_GOAL, goal);
+        cv.put(KEY_PROG, prog);
+        cv.put(KEY_DUE_DATE, due_date.toString());
+        cv.put(KEY_ICON, icon);
+        cv.put(KEY_COMPLETED, completedBit);
+        cv.put(KEY_INTERVAL, interval_str);
+        cv.put(KEY_REPEAT, repeatBit);
+        cv.put(KEY_COLOR, color);
+        cv.put(KEY_ON_WATCH, watchBit);
+        cv.put(KEY_ABBREV, abbrev);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.update(TABLE_ACTIVE, cv, KEY_ROW + " = " + id, null);
+    }
 
     boolean incrementTask(int rowID) {
         Cursor c = getTask(rowID, true);
@@ -248,13 +297,17 @@ public class DbHandler extends SQLiteOpenHelper {
             cv.put(KEY_COMPLETED, 1);
             completed = true;
 
+            SQLiteDatabase db = this.getWritableDatabase();
+            db.update(TABLE_ACTIVE, cv, KEY_ROW + " = " + rowID, null);
+            db.close();
+
             // If the task is set to repeat, reinsert it into the database
-            if (repeat) repeatTask(rowID);
+            if (repeat) {
+                repeatTask(rowID);
+                return true;
+            }
             // Otherwise move it to history table
             else {
-                SQLiteDatabase db = this.getWritableDatabase();
-                db.update(TABLE_ACTIVE, cv, KEY_ROW + " = " + rowID, null);
-                db.close();
                 copyToHistory(rowID);
                 removeTask(rowID);
                 return true;
@@ -395,9 +448,19 @@ public class DbHandler extends SQLiteOpenHelper {
         return c.getInt(10) == 1;
     }
 
-    boolean isOnRepeat (int rowID, boolean active) {
+    boolean getRepeat(int rowID, boolean active) {
         Cursor c = getTask(rowID, active);
         return c.getInt(8) == 1;
+    }
+
+    LocalDateTime getCompletedTime(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
+        return LocalDateTime.parse(c.getString(13));
+    }
+
+    int getTaskID(int rowID, boolean active) {
+        Cursor c = getTask(rowID, active);
+        return c.getInt(12);
     }
 
     public Boolean incrementTaskFromWatch(String abbrev, int newProg) {
@@ -436,6 +499,18 @@ public class DbHandler extends SQLiteOpenHelper {
             }
         }
         return s;
+    }
+
+    public int getNumWatchTasks() {
+        int numTasks = 0;
+
+        ArrayList<Task> today = loadToday();
+        for (Task task : today) {
+            if (task.isOnWatch())
+                numTasks++;
+        }
+
+        return numTasks;
     }
 
     int getDay(String dayAbrev) {

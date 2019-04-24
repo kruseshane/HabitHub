@@ -1,14 +1,15 @@
 package com.example.shane_kruse.habbithub;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -16,6 +17,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 
@@ -25,17 +28,17 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
     private static DbHandler dbh;
     private static Context mContext;
     private static MainActivity mainAct;
-    private static boolean clickable;
+    private static String type;
     private int lastPosition = -1;
 
 
-    public MyTaskAdapter (int layoutID, ArrayList<Task> data, Context context, boolean clickable) {
+    public MyTaskAdapter (int layoutID, ArrayList<Task> data, Context context, String type) {
         listItemLayout = layoutID;
         taskList = data;
         mContext = context;
         mainAct = (MainActivity) mContext;
         dbh = new DbHandler(mContext, mainAct);
-        this.clickable = clickable;
+        this.type = type;
     }
 
     public int getItemCount() {
@@ -51,20 +54,52 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
     @Override
     public void onBindViewHolder (@NonNull ViewHolder myViewHolder, int i) {
         myViewHolder.task_desc.setText(taskList.get(i).getDescr());
-
-        //String goal_str = String.valueOf(taskList.get(i).getGoal());
-        //String current_goal_str = String.valueOf(taskList.get(i).getProg());
-        //myViewHolder.task_goal.setText(current_goal_str + "/" + goal_str);
         myViewHolder.task_goal.setText(taskList.get(i).getProg() + "/" + taskList.get(i).getGoal());
+
         myViewHolder.task_icon.setBackgroundResource(R.drawable.task_icon_background_shape_circle);
         myViewHolder.task_icon.getBackground().setColorFilter(Color.parseColor(taskList.get(i).getColor()), PorterDuff.Mode.SRC);
         myViewHolder.task_icon.setImageResource(Integer.parseInt(taskList.get(i).getIcon()));
-        if (dbh.isOnWatch(taskList.get(i).getRow_id(), true)) {
-            myViewHolder.watch_icon.setImageResource(R.mipmap.foreground_on_watch);
+
+
+        String time_str = "";
+        Task t = taskList.get(i);
+
+        if (type == "TODAY") {
+            LocalTime due_time = t.getDue_date();
+            // Check if time is set to Anytime
+            if (due_time.toString().equals("23:59"))
+                time_str = "Today";
+                // Convert from military time
+            else {
+                String time_period = "AM";
+                String hour;
+                String minute = String.valueOf(due_time.getMinute());
+
+                if (due_time.getHour() > 12) {
+                    hour = String.valueOf(due_time.getHour() - 12);
+                    time_period = "PM";
+                }
+                else
+                    hour = String.valueOf(due_time.getHour());
+
+                time_str = hour + ":" + minute + " " + time_period;
+            }
         }
-        if (dbh.isOnRepeat(taskList.get(i).getRow_id(), true)) {
-            myViewHolder.repeat_icon.setImageResource(R.mipmap.foreground_repeat);
+
+        else if (type == "UPCOMING") {
+            ArrayList<String> interval = t.getInterval();
+            for (String s: interval) {
+                time_str += s + ",";
+            }
+            time_str = time_str.substring(0, time_str.length() - 1);
         }
+
+        else if (type == "COMPLETED") {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd hh:mm a");
+            time_str = t.getCompletedTime().format(dtf);
+        }
+
+        myViewHolder.task_time.setText(time_str);
         myViewHolder.setIndex(i);
     }
 
@@ -73,8 +108,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         public TextView task_goal;
         public TextView hold_goal;
         public ImageView task_icon;
-        public ImageView watch_icon;
-        public ImageView repeat_icon;
+        public TextView task_time;
         private int index;
 
         ViewHolder (View itemView) {
@@ -84,8 +118,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
             task_desc = (TextView) itemView.findViewById(R.id.task_desc);
             task_goal = (TextView) itemView.findViewById(R.id.task_goal);
             task_icon = (ImageView) itemView.findViewById(R.id.icon);
-            watch_icon = itemView.findViewById(R.id.on_watch_icon_view);
-            repeat_icon = itemView.findViewById(R.id.repeat_icon_view);
+            task_time = (TextView) itemView.findViewById(R.id.task_time);
             this.index = -1;
         }
 
@@ -103,14 +136,13 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         }
 
         public void onClick(View view) {
-            if (clickable) {
+            if (type == "TODAY") {
                 Task t = taskList.get(index);
                 boolean completed = dbh.incrementTask(t.getRow_id());
 
-                //if (completed) mainAct.removeCompleted();
                 if (completed) {
                     deleteItem(index);
-                    mainAct.updateRecycler(dbh.loadToday(), true);
+                    mainAct.updateRecycler(dbh.loadToday(), "TODAY");
                 }
 
                 else {
@@ -121,8 +153,50 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         }
 
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.add(0, v.getId(), 0, "Edit");
-            menu.add(0, v.getId(), 0, "Delete");
+            if (type != "COMPLETED") {
+                menu.add(Menu.NONE, 1, 1, "Edit").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int recyclerID = getLayoutPosition();
+                        Task t = taskList.get(recyclerID);
+
+                        Intent editTask = new Intent(mContext, EditActivity.class);
+                        editTask.putExtra("id", t.getRow_id());
+                        editTask.putExtra("descr", t.getDescr());
+                        editTask.putExtra("goal", t.getGoal());
+                        editTask.putExtra("due_date", t.getDue_date().toString());
+                        editTask.putExtra("icon", t.getIcon());
+
+                        String interval_str = "";
+                        for (String s : t.getInterval())
+                            interval_str += s + ",";
+                        interval_str = interval_str.substring(0, interval_str.length() - 1);
+
+                        editTask.putExtra("interval", interval_str);
+                        editTask.putExtra("repeat", t.getRepeat());
+                        editTask.putExtra("color", t.getColor());
+                        editTask.putExtra("on_watch", t.isOnWatch());
+                        editTask.putExtra("abbrev", t.getAbbrev());
+
+                        mContext.startActivity(editTask);
+                        return false;
+                    }
+                });
+
+                menu.add(Menu.NONE, 1, 2, "Delete").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int recyclerID = getLayoutPosition();
+                        int rowID = taskList.get(recyclerID).getRow_id();
+
+                        dbh.removeTask(rowID);
+                        deleteItem(index);
+                        mainAct.updateRecycler(dbh.loadToday(), "TODAY");
+                        mainAct.loadProgress();
+                        return false;
+                    }
+                });
+            }
         }
     }
 }

@@ -1,11 +1,14 @@
 package com.example.shane_kruse.habbithub;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -30,6 +33,7 @@ public class EditActivity extends AppCompatActivity {
     private String hex;
     private DbHandler hand;
     private boolean nameSelected, colorSelected, iconSelected;
+    Intent nextIntent;
 
 
     Integer[] iconIDs = {
@@ -62,6 +66,7 @@ public class EditActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         hand = new DbHandler(EditActivity.this);
+        nextIntent = new Intent(EditActivity.this, ScheduleActivity.class);
 
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -73,11 +78,10 @@ public class EditActivity extends AppCompatActivity {
         nextText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EditActivity.this, ScheduleActivity.class);
-                intent.putExtra("desc", descEdit.getText().toString());
-                intent.putExtra("icon", icon);
-                intent.putExtra("hex", hex);
-                startActivity(intent);
+                nextIntent.putExtra("desc", descEdit.getText().toString());
+                nextIntent.putExtra("icon", icon);
+                nextIntent.putExtra("hex", hex);
+                startActivity(nextIntent);
             }
         });
 
@@ -108,14 +112,6 @@ public class EditActivity extends AppCompatActivity {
                 }
             }
         });
-
-        Intent intent = getIntent();
-        int position = intent.getIntExtra("task_pos", 0);
-        //int goal = intent.getIntExtra("task_goal", 0);
-        String desc = intent.getStringExtra("task_desc");
-
-        descEdit.setText(desc);
-        //goalEdit.setText(String.valueOf(goal));
 
         colorSelection = findViewById(R.id.color_selector_view);
         colorSelection.setAdapter(new ColorAdapterGridView(this));
@@ -160,6 +156,23 @@ public class EditActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // Load existing task info if a task is being edited
+        Intent editIntent = getIntent();
+        String editDescr = editIntent.getStringExtra("descr");
+
+        if (editDescr != null) {
+            descEdit.setText(editDescr);
+            nameSelected = true;
+
+            nextIntent.putExtra("id", editIntent.getIntExtra("id", -1));
+            nextIntent.putExtra("goal", editIntent.getIntExtra("goal", -1));
+            nextIntent.putExtra("due_date", editIntent.getStringExtra("due_date"));
+            nextIntent.putExtra("interval", editIntent.getStringExtra("interval"));
+            nextIntent.putExtra("repeat", editIntent.getBooleanExtra("repeat", false));
+            nextIntent.putExtra("on_watch", editIntent.getBooleanExtra("on_watch", false));
+            nextIntent.putExtra("abbrev", editIntent.getStringExtra("abbrev"));
+        }
     }
 
 

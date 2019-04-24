@@ -95,7 +95,8 @@
             android:layout_gravity="center"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
-            android:listSelector="@drawable/icon_selector">
+            android:listSelector="@drawable/icon_selector"
+            android:choiceMode="singleChoice">
         </GridView>
 
         <!--
@@ -162,7 +163,8 @@
             android:numColumns="4"
             android:columnWidth="100dp"
             android:gravity="center"
-            android:listSelector="@drawable/icon_selector">
+            android:listSelector="@drawable/icon_selector"
+            android:choiceMode="singleChoice">
         </GridView>
     </LinearLayout>
 

@@ -88,5 +88,23 @@ public class Task {
         return dbh.isOnWatch(row_id, active);
     }
 
+    public boolean getRepeat() {
+        return dbh.getRepeat(row_id, active);
+    }
+
+    public LocalDateTime getCompletedTime() {
+        if (active)
+            return null;
+        else
+            return dbh.getCompletedTime(row_id, active);
+    }
+
+    public int getTaskID() {
+        if (active)
+            return -1;
+
+        return dbh.getTaskID(row_id, active);
+    }
+
 
 }

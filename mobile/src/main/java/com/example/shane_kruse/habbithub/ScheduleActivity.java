@@ -4,11 +4,11 @@ import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +22,7 @@ import android.widget.TimePicker;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -33,10 +34,13 @@ public class ScheduleActivity extends AppCompatActivity {
     CheckBox anytimeChkBox;
     Switch repeatSwitch, watchSwitch;
     TimePicker duedatePicker;
+    private View timePopup;
     TextView save;
     EditText abbrevText;
     com.shawnlin.numberpicker.NumberPicker dailyNumPicker;
     Context context;
+    private DbHandler dbh = new DbHandler(ScheduleActivity.this);
+
     boolean isEverydaySelected = false;
 
     private String descr;               //Description of Task
@@ -51,6 +55,16 @@ public class ScheduleActivity extends AppCompatActivity {
     private String abbrev;              //Abbreviation for smartwatch
     private boolean active = true;      //Task in progress
     private LocalDateTime time_completed = null;
+    private boolean time_selected = false;
+
+    private boolean edit = false;
+    private int id;
+    private int goalEdit;
+    private String due_dateEdit;
+    private String intervalEdit;
+    private boolean repeatEdit;
+    private boolean on_watchEdit;
+    private String abbrevEdit;
 
     ArrayList<Button> buttonList;
 
@@ -80,20 +94,26 @@ public class ScheduleActivity extends AppCompatActivity {
                 }
 
                 // Set the time the task is due
-                int hour = 23;
-                int minute = 59;
+                int hour, minute;
+                if (anytimeChkBox.isChecked()) {
+                    hour = 23;
+                    minute = 59;
+                }
+                else {
+                    hour = duedatePicker.getHour();
+                    minute = duedatePicker.getMinute();
+                }
 
                 due_date = LocalTime.of(hour, minute);
 
-                // Set goal from numberpicker
-                goal = dailyNumPicker.getValue();
-
                 // Check if scheduling info was entered
-
-                if (intervalList.isEmpty() || due_date == null) {
+                if (intervalList.isEmpty() || !time_selected) {
                     showPopup();
                     return;
                 }
+
+                // Set goal from numberpicker
+                goal = dailyNumPicker.getValue();
 
 
                 // Update the smartwatch
@@ -104,14 +124,22 @@ public class ScheduleActivity extends AppCompatActivity {
                     newTaskMsg = getString(R.string.new_smartwatch_task);
                 }
 
+                // Update database
+                Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
+
+                if (edit)
+                    dbh.updateTask(id, descr, goal, prog, due_date, icon, completed,
+                            intervalList, repeat, color, on_watch, abbrev);
+
                 // Add to database
-                DbHandler hand = new DbHandler(ScheduleActivity.this);
-                hand.insertTask(descr, goal, prog, due_date, icon, completed,
-                                intervalList, repeat, color, on_watch, abbrev);
+                else {
+                    dbh.insertTask(descr, goal, prog, due_date, icon, completed,
+                            intervalList, repeat, color, on_watch, abbrev);
+
+                    i.putExtra("taskMsg", newTaskMsg);
+                }
 
                 // Return to dashboard
-                Intent i  = new Intent(ScheduleActivity.this, MainActivity.class);
-                i.putExtra("taskMsg", newTaskMsg);
                 startActivity(i);
             }
         });
@@ -149,6 +177,10 @@ public class ScheduleActivity extends AppCompatActivity {
         });
 
         watchSwitch = findViewById(R.id.watch_task_switch);
+
+        if (dbh.getNumWatchTasks() > 5)
+            watchSwitch.setEnabled(false);
+
         watchSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -160,6 +192,9 @@ public class ScheduleActivity extends AppCompatActivity {
                     alert.setView(popup);
 
                     abbrevText = popup.findViewById(R.id.abbrev_text);
+                    if (abbrevEdit != null)
+                        abbrevText.setText(abbrevEdit);
+
                     Button okBtn = popup.findViewById(R.id.ok_button);
                     okBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -223,11 +258,76 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         });
 
+        // Time Popup
+        LayoutInflater timeInflater = getLayoutInflater();
+        timePopup = timeInflater.inflate(R.layout.time_popup_daily, null);
+        duedatePicker = timePopup.findViewById(R.id.time_picker);
+        anytimeChkBox = timePopup.findViewById(R.id.anytime_checkbox);
+
         // Read Task info from create page
         Bundle data = getIntent().getExtras();
         descr = (String) data.get("desc");
         icon = (String) data.get("icon");
         color = (String) data.get("hex");
+
+        if (data.get("due_date") != null) {
+            edit = true;
+
+            // Read data from intent
+            id = (int) data.get("id");
+            goalEdit = (int) data.get("goal");
+            due_dateEdit = (String) data.get("due_date");
+            intervalEdit = (String) data.get("interval");
+            repeatEdit = (boolean) data.get("repeat");
+            on_watchEdit = (boolean) data.get("on_watch");
+            abbrevEdit = (String) data.get("abbrev");
+
+            goal = goalEdit;
+            due_date = LocalTime.parse(due_dateEdit);
+            repeat = repeatEdit;
+            on_watch = on_watchEdit;
+            abbrev = abbrevEdit;
+
+            // Update UI on delay (after it loads)
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Switches
+                    repeatSwitch.setChecked(repeatEdit);
+                    watchSwitch.setChecked(on_watchEdit);
+
+                    // TimePicker
+                    if (due_dateEdit.equals("23:59")){
+                        anytimeChkBox.setChecked(true);
+                        duedatePicker.setEnabled(false);
+                    }
+                    else {
+                        duedatePicker.setHour(due_date.getHour());
+                        duedatePicker.setMinute(due_date.getMinute());
+                    }
+
+                    // Goal
+                    dailyNumPicker.setValue(goalEdit);
+
+                    // Interval Buttons
+                    ArrayList<String> intervals = new ArrayList<>(
+                            Arrays.asList(intervalEdit.split(",")));
+
+                    for (String s : intervals) {
+                        for (Button b: buttonList) {
+                            String bText = b.getText().toString();
+                            if (bText.equals(s)) {
+                                b.performClick();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }, 500);
+
+
+        }
     }
 
     void showPopup() {
@@ -248,13 +348,8 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     void showTimePopup() {
-        LayoutInflater inflater = getLayoutInflater();
-        View popup = inflater.inflate(R.layout.time_popup_daily, null);
         final AlertDialog alert = new AlertDialog.Builder(this).create();
-        alert.setView(popup);
-
-        duedatePicker = popup.findViewById(R.id.time_picker);
-        anytimeChkBox = popup.findViewById(R.id.anytime_checkbox);
+        alert.setView(timePopup);
 
         anytimeChkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -267,27 +362,11 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         });
 
-        /*
-        anytimeBtn = popup.findViewById(R.id.anytimeBtn);
-        anytimeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(anytimeBtn.isSelected()) {
-                    anytimeBtn.setSelected(false);
-                    anytimeBtn.setBackgroundColor(Color.WHITE);
-                }
-                else {
-                    anytimeBtn.setSelected(true);
-                    anytimeBtn.setBackgroundColor(Color.GREEN);
-                }
-            }
-        });
-        */
-
-        Button saveBtn = popup.findViewById(R.id.saveBtn);
+        Button saveBtn = timePopup.findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                time_selected = true;
                 alert.dismiss();
             }
         });
