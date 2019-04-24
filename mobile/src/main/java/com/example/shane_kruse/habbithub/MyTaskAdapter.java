@@ -58,6 +58,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
 
         myViewHolder.task_icon.setBackgroundResource(R.drawable.task_icon_background_shape_circle);
         myViewHolder.task_icon.getBackground().setColorFilter(Color.parseColor(taskList.get(i).getColor()), PorterDuff.Mode.SRC);
+        System.out.println(Integer.parseInt(taskList.get(i).getIcon()));
         myViewHolder.task_icon.setImageResource(Integer.parseInt(taskList.get(i).getIcon()));
 
         String time_str = "";

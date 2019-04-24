@@ -36,6 +36,7 @@ public class EditActivity extends AppCompatActivity {
     Intent nextIntent;
 
 
+    // 51% scale size
     Integer[] iconIDs = {
             R.mipmap.ic_launcher_foreground_dog_task_icon,
             R.mipmap.ic_launcher_foreground_water_task_icon,
@@ -56,6 +57,7 @@ public class EditActivity extends AppCompatActivity {
             R.mipmap.ic_launcher_foreground_bug_icon,
             R.mipmap.ic_launcher_foreground_bus_icon,
             R.mipmap.ic_launcher_foreground_carrot_icon,
+            R.mipmap.ic_launcher_foreground_eat_healthy_task_icon,
             R.mipmap.ic_launcher_foreground_card_icon,
             R.mipmap.ic_launcher_foreground_tooth_icon,
             R.mipmap.ic_launcher_foreground_floss_icon,
@@ -81,10 +83,16 @@ public class EditActivity extends AppCompatActivity {
 
 
     Integer[] colorIDs = {
-            R.mipmap.foreground_color_color_red_icon,
-            R.mipmap.foreground_color_light_blue_icon,
-            R.mipmap.foreground_color_light_green_icon,
+            R.mipmap.foreground_color_red_icon,
+            R.mipmap.foreground_color_pink_icon,
             R.mipmap.foreground_color_light_purple_icon,
+            R.mipmap.foreground_color_dark_blue_icon,
+            R.mipmap.foreground_color_light_blue_icon,
+            R.mipmap.foreground_color_orange_icon,
+            R.mipmap.foreground_color_yellow_icon,
+            R.mipmap.foreground_color_green_icon,
+            R.mipmap.foreground_color_light_green_icon,
+            R.mipmap.foreground_color_teal_icon
     };
 
     @Override
@@ -152,15 +160,15 @@ public class EditActivity extends AppCompatActivity {
                 System.out.println(position);
                 switch(position) {
                     case 0:
-                        hex = "#D33D3D";
+                        hex = "#D34545"; // red
                     case 1:
-                        hex = "#289BAF";
+                        hex = "#E562AA"; // pink
                         break;
                     case 2:
-                        hex = "#90F24B";
+                        hex = "#CA7FDB"; // light purple
                         break;
                     case 3:
-                        hex = "#E38BFC";
+                        hex = "#167199"; // dark blue
                         break;
                 }
                 colorSelected = true;
@@ -179,6 +187,7 @@ public class EditActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // Get id of icon selected
                 icon = String.valueOf(iconIDs[position]);
+
                 iconSelected = true;
                 if (nameSelected && colorSelected && iconSelected) {
                     nextText.setVisibility(View.VISIBLE);
