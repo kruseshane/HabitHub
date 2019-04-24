@@ -51,7 +51,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="scalingPercent" value="44" />
+                                                <entry key="scalingPercent" value="51" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -62,9 +62,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="C:\Users\Shane\Downloads\icons8-repeat-96.png" />
-                                      <entry key="foregroundLayerName" value="foreground_repeat" />
-                                      <entry key="outputName" value="repeat_icon" />
+                                      <entry key="foregroundImage" value="C:\Users\HackerMan\Desktop\JimmyIcons\icons8-grapes-96.png" />
+                                      <entry key="foregroundLayerName" value="ic_launcher_foreground_grapes_icon" />
+                                      <entry key="outputName" value="grapes_icon" />
                                     </map>
                                   </option>
                                 </PersistentState>

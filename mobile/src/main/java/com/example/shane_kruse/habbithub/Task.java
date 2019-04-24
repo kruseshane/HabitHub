@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Task {
+public class Task implements Comparable<Task>{
     private int row_id;             //Row ID in Database
     private boolean active;         //Which table the Task is in
     private DbHandler dbh;
@@ -38,6 +38,10 @@ public class Task {
 
     public int getRow_id() {
         return this.row_id;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     public String getDescr() {
@@ -106,5 +110,8 @@ public class Task {
         return dbh.getTaskID(row_id, active);
     }
 
-
+    @Override
+    public int compareTo(Task o) {
+        return 0;
+    }
 }
