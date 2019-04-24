@@ -60,16 +60,18 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         myViewHolder.task_icon.getBackground().setColorFilter(Color.parseColor(taskList.get(i).getColor()), PorterDuff.Mode.SRC);
         myViewHolder.task_icon.setImageResource(Integer.parseInt(taskList.get(i).getIcon()));
 
-        if (dbh.isOnWatch(taskList.get(i).getRow_id(), true)) {
-            myViewHolder.watch_icon.setImageResource(R.mipmap.foreground_on_watch);
-        }
-
-        if (dbh.getRepeat(taskList.get(i).getRow_id(), true)) {
-            myViewHolder.repeat_icon.setImageResource(R.mipmap.foreground_repeat);
-        }
-
         String time_str = "";
         Task t = taskList.get(i);
+
+        if (!type.equals("COMPLETED")) {
+            if (dbh.isOnWatch(taskList.get(i).getRow_id(), true)) {
+                myViewHolder.watch_icon.setImageResource(R.mipmap.foreground_on_watch);
+            }
+
+            if (dbh.getRepeat(taskList.get(i).getRow_id(), true)) {
+                myViewHolder.repeat_icon.setImageResource(R.mipmap.foreground_repeat);
+            }
+        }
 
         if (type == "TODAY") {
             LocalTime due_time = t.getDue_date();

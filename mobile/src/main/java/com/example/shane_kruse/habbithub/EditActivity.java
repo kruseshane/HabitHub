@@ -62,7 +62,21 @@ public class EditActivity extends AppCompatActivity {
             R.mipmap.ic_launcher_foreground_dumbbell_icon,
             R.mipmap.ic_launcher_foreground_facebook_icon,
             R.mipmap.ic_launcher_foreground_github_icon,
-            R.mipmap.ic_launcher_foreground_grapes_icon
+            R.mipmap.ic_launcher_foreground_grapes_icon,
+            R.mipmap.ic_launcher_foreground_timer_task_icon,
+            R.mipmap.ic_launcher_foreground_hamburger_task_icon,
+            R.mipmap.ic_launcher_foreground_icecream_task_icon,
+            R.mipmap.ic_launcher_foreground_insta_task_icon,
+            R.mipmap.ic_launcher_foreground_youtube_task_icon,
+            R.mipmap.ic_launcher_foreground_rent_task_icon,
+            R.mipmap.ic_launcher_foreground_cart_task_icon,
+            R.mipmap.ic_launcher_foreground_car_task_icon,
+            R.mipmap.ic_launcher_foreground_code_task_icon,
+            R.mipmap.ic_launcher_foreground_check_computer_task_icon,
+            R.mipmap.ic_launcher_foreground_report_computer_task_icon,
+            R.mipmap.ic_launcher_foreground_bike_task_icon,
+            R.mipmap.ic_launcher_foreground_twitter_task_icon,
+            R.mipmap.ic_launcher_foreground_wash_hands_task_icon
     };
 
 

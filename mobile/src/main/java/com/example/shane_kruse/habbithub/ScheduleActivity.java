@@ -143,6 +143,8 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 // Return to dashboard
                 startActivity(i);
+
+                finish();
             }
         });
 
