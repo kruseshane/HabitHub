@@ -14,7 +14,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
@@ -104,13 +103,10 @@ public class MainActivity extends AppCompatActivity {
         progressBarOverall = findViewById(R.id.goal_progress_overall);
         setProgressBarAttributes();
 
-        int[] goalProg = dbh.getDailyProgress();
-        totalGoal = goalProg[0];
-        totalProg = goalProg[1];
-        updateGoalProgress(totalProg, totalGoal);
+        loadProgress();
 
         // Default to today
-        updateRecycler(dbh.loadToday(), true);
+        updateRecycler(dbh.loadToday(), "TODAY");
 
         todayButton = findViewById(R.id.today_button);
         todayButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
@@ -123,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
                 upcomingButton.setBackgroundColor(getColor(R.color.silver));
                 completedButton.setBackgroundColor(getColor(R.color.silver));
-                updateRecycler(dbh.loadToday(), true);
+                updateRecycler(dbh.loadToday(), "TODAY");
             }
         });
 
@@ -133,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setBackgroundColor(getColor(R.color.silver));
                 upcomingButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
                 completedButton.setBackgroundColor(getColor(R.color.silver));
-                updateRecycler(dbh.loadUpcoming(), false);
+                updateRecycler(dbh.loadUpcoming(), "UPCOMING");
             }
         });
 
@@ -143,14 +139,14 @@ public class MainActivity extends AppCompatActivity {
                 todayButton.setBackgroundColor(getColor(R.color.silver));
                 upcomingButton.setBackgroundColor(getColor(R.color.silver));
                 completedButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
-                updateRecycler(dbh.loadHistory(), false);
+                updateRecycler(dbh.loadHistory(), "COMPLETED");
             }
         });
     }
 
-    void updateRecycler(ArrayList<Task> newTaskList, boolean clickable) {
+    void updateRecycler(ArrayList<Task> newTaskList, String type) {
 
-        mAdapter = new MyTaskAdapter(R.layout.task_recycler, newTaskList, MainActivity.this, clickable);
+        mAdapter = new MyTaskAdapter(R.layout.task_recycler, newTaskList, MainActivity.this, type);
         taskRecycler = (RecyclerView) findViewById(R.id.task_list);
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
         taskRecycler.setItemAnimator(new DefaultItemAnimator());
@@ -234,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
             if (message.split(",")[0].equals("$")) {
                 String [] data = message.split(",");
                 if (dbh.incrementTask(Integer.parseInt(data[1]))) {
-                    updateRecycler(dbh.loadToday(), true);
+                    updateRecycler(dbh.loadToday(), "TODAY");
                     String updateMsg = dbh.getWatchTasks();
 
                     // Send update to watch
@@ -257,6 +253,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    public void loadProgress() {
+        int[] goalProg = dbh.getDailyProgress();
+        totalGoal = goalProg[0];
+        totalProg = goalProg[1];
+        updateGoalProgress(totalProg, totalGoal);
     }
 
     public void updateGoalProgress(float sum, int total) {
