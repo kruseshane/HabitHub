@@ -84,7 +84,7 @@ public class EditActivity extends AppCompatActivity {
             R.mipmap.foreground_color_color_red_icon,
             R.mipmap.foreground_color_light_blue_icon,
             R.mipmap.foreground_color_light_green_icon,
-            R.mipmap.foreground_color_light_purple_icon
+            R.mipmap.foreground_color_light_purple_icon,
     };
 
     @Override

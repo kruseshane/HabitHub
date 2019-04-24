@@ -62,9 +62,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="C:\Users\HackerMan\Desktop\JimmyIcons\icons8-grapes-96.png" />
-                                      <entry key="foregroundLayerName" value="ic_launcher_foreground_grapes_icon" />
-                                      <entry key="outputName" value="grapes_icon" />
+                                      <entry key="foregroundImage" value="C:\Users\HackerMan\Desktop\ColorIcons\yellow.png" />
+                                      <entry key="foregroundLayerName" value="foreground_color_yellow_icon" />
+                                      <entry key="outputName" value="yellow_icon" />
                                     </map>
                                   </option>
                                 </PersistentState>
