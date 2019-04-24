@@ -12,17 +12,17 @@
         android:roundIcon="@mipmap/ic_launcher_logo_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".SplashScreen">
+        <activity android:name=".InformationActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".SplashScreen" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
-        <activity android:name=".EditActivity" />
-        <activity android:name=".ScheduleActivity" />
+        <activity android:name=".MainActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".EditActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ScheduleActivity" android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.android.gms.version"

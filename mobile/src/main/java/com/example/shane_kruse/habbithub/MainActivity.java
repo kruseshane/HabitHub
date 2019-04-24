@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView emptyView;
     DonutProgress progressBarOverall;
     private ImageView addTask;
-    private ImageView menuOptions;
+    private ImageView info;
     public static DbHandler dbh;
     private Button todayButton;
     private Button upcomingButton;
@@ -88,7 +88,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        menuOptions = findViewById(R.id.menu_options);
+        info = findViewById(R.id.info_img);
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, InformationActivity.class);
+                startActivity(i);
+            }
+        });
 
         //Register to receive local broadcasts, which we'll be creating in the next step//
         IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
@@ -229,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(message);
             if (message.split(",")[0].equals("$")) {
                 String [] data = message.split(",");
+                System.out.println(data[0] + "," + data[1]);
                 if (dbh.incrementTask(Integer.parseInt(data[1]))) {
                     updateRecycler(dbh.loadToday(), "TODAY");
                     String updateMsg = dbh.getWatchTasks();

@@ -11,6 +11,9 @@ import android.os.Message;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.support.wearable.activity.WearableActivity;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -178,20 +181,16 @@ public class MainActivity extends WearableActivity {
                 taskProgs[i] = Integer.parseInt(data[2]);
                 taskGoals[i] = Integer.parseInt(data[3]);
                 taskRowIds[i] = Integer.parseInt(data[4]);
-            }
-        } else {
-            xData.add("No tasks on watch");
-            yData.add(100.0f);
-            colors.add(Color.LTGRAY);
-        }
 
-        vars.setxData(xData);
-        vars.setyData(yData);
-        vars.setColors(colors);
-        vars.setTaskGoals(taskGoals);
-        vars.setTaskProgs(taskProgs);
-        vars.setTaskRowIds(taskRowIds);
-        createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
+                vars.setxData(xData);
+                vars.setyData(yData);
+                vars.setColors(colors);
+                vars.setTaskGoals(taskGoals);
+                vars.setTaskProgs(taskProgs);
+                vars.setTaskRowIds(taskRowIds);
+                createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
+            }
+        }
 }
 
     public void createPieChart(String[] xData, float[] yData, ArrayList<Integer> colors) {

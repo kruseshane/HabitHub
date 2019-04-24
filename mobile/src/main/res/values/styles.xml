@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="customSwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">#DA7E59</item>
+    </style>
+
 </resources>
