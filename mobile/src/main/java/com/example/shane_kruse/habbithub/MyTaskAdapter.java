@@ -60,6 +60,13 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         myViewHolder.task_icon.getBackground().setColorFilter(Color.parseColor(taskList.get(i).getColor()), PorterDuff.Mode.SRC);
         myViewHolder.task_icon.setImageResource(Integer.parseInt(taskList.get(i).getIcon()));
 
+        if (dbh.isOnWatch(taskList.get(i).getRow_id(), true)) {
+            myViewHolder.watch_icon.setImageResource(R.mipmap.foreground_on_watch);
+        }
+
+        if (dbh.getRepeat(taskList.get(i).getRow_id(), true)) {
+            myViewHolder.repeat_icon.setImageResource(R.mipmap.foreground_repeat);
+        }
 
         String time_str = "";
         Task t = taskList.get(i);
@@ -109,6 +116,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
         public TextView hold_goal;
         public ImageView task_icon;
         public TextView task_time;
+        public ImageView watch_icon, repeat_icon;
         private int index;
 
         ViewHolder (View itemView) {
@@ -119,6 +127,8 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
             task_goal = (TextView) itemView.findViewById(R.id.task_goal);
             task_icon = (ImageView) itemView.findViewById(R.id.icon);
             task_time = (TextView) itemView.findViewById(R.id.task_time);
+            watch_icon = itemView.findViewById(R.id.on_watch_icon_view);
+            repeat_icon = itemView.findViewById(R.id.repeat_icon_view);
             this.index = -1;
         }
 
