@@ -227,12 +227,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            //Upon receiving each message from the wearable, display the following text//
 
             String message = intent.getStringExtra("message");
-            System.out.println(message);
+            System.out.println(message + " fuck");
             Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-            System.out.println(message);
             if (message.split(",")[0].equals("$")) {
                 String [] data = message.split(",");
                 System.out.println(data[0] + "," + data[1]);
@@ -244,6 +242,12 @@ public class MainActivity extends AppCompatActivity {
                     new NewThread("/my_path", updateMsg).start();
 
                     System.out.println("UPDATE SENT");
+                    try {
+                        Thread.sleep(1500);
+                    } catch(InterruptedException ex) {
+                        Toast.makeText(MainActivity.this, "Toast", Toast.LENGTH_SHORT).show();
+                        ex.printStackTrace();
+                    }
                 }
                 //mAdapter.notifyItemChanged(Integer.parseInt(data[3]));
                 mAdapter.notifyDataSetChanged();
@@ -251,13 +255,7 @@ public class MainActivity extends AppCompatActivity {
             if (message.equals("REQUEST_UPDATE")) {
                 System.out.println("REQUEST_UPDATE RECEIVED");
                 //dbh.getWatchTasks();
-                String updateMsg = dbh.getWatchTasks();
-
-                // Send update to watch
-                new NewThread("/my_path", updateMsg).start();
-
-                System.out.println("UPDATE SENT");
-
+                sendUpdateToWatch();
             }
         }
     }
@@ -339,5 +337,14 @@ public class MainActivity extends AppCompatActivity {
             myHandler.sendMessage(msg);
 
         }
+    }
+
+    public void sendUpdateToWatch() {
+        String updateMsg = dbh.getWatchTasks();
+
+        // Send update to watch
+        new NewThread("/my_path", updateMsg).start();
+
+        System.out.println("UPDATE SENT");
     }
 }

@@ -161,6 +161,7 @@ public class EditActivity extends AppCompatActivity {
                 switch(position) {
                     case 0:
                         hex = "#D34545"; // red
+                        break;
                     case 1:
                         hex = "#E562AA"; // pink
                         break;
@@ -170,11 +171,31 @@ public class EditActivity extends AppCompatActivity {
                     case 3:
                         hex = "#167199"; // dark blue
                         break;
+                    case 4:
+                        hex = "#91D8F7"; // light blue
+                        break;
+                    case 5:
+                        hex = "#FFA13B"; // orange
+                        break;
+                    case 6:
+                        hex = "#FFE556"; // yellow
+                        break;
+                    case 7:
+                        hex = "#8BBF48"; // green
+                        break;
+                    case 8:
+                        hex = "#DFFD8B"; // light green
+                        break;
+                    case 9:
+                        hex = "#53B5B5"; // teal
+                        break;
                 }
                 colorSelected = true;
                 if (nameSelected && colorSelected && iconSelected) {
                     nextText.setVisibility(View.VISIBLE);
                 }
+
+                descEdit.clearFocus();
             }
         });
 
@@ -192,6 +213,8 @@ public class EditActivity extends AppCompatActivity {
                 if (nameSelected && colorSelected && iconSelected) {
                     nextText.setVisibility(View.VISIBLE);
                 }
+
+                descEdit.clearFocus();
             }
         });
 

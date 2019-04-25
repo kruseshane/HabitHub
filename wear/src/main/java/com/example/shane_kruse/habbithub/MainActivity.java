@@ -65,6 +65,8 @@ public class MainActivity extends WearableActivity {
             }
         });
 
+        pieChart = findViewById(R.id.pie_chart);
+
         Intent intent = getIntent();
         upToDate = intent.getBooleanExtra("updateStatus", false);
         if (!upToDate) {
@@ -188,8 +190,27 @@ public class MainActivity extends WearableActivity {
                 vars.setTaskGoals(taskGoals);
                 vars.setTaskProgs(taskProgs);
                 vars.setTaskRowIds(taskRowIds);
+
+                System.out.println("Here");
+                for (Integer integer : taskProgs) {
+                    System.out.print(integer + " ");
+                }
+
+                System.out.println("");
+
+                for (Integer integer : taskGoals) {
+                    System.out.print(integer + " ");
+                }
+                System.out.println("There");
+
+
                 createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
             }
+        } else {
+            if (!pieChart.equals(null)) {
+                pieChart.clear();
+            }
+
         }
 }
 

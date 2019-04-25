@@ -334,6 +334,8 @@ public class DbHandler extends SQLiteOpenHelper {
         db.update(TABLE_ACTIVE, cv, KEY_ROW + " = " + rowID, null);
         db.close();
 
+        mainAct.sendUpdateToWatch();
+
         return completed;
     }
 
