@@ -53,6 +53,9 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder (@NonNull ViewHolder myViewHolder, int i) {
+        System.out.println("in onBind ================================================================" +
+                "++++++++++++++++++++++++++++++++++++++++++++======================================" +
+                "1234567890" + taskList.get(i).getProg() + "/" + taskList.get(i).getGoal());
         myViewHolder.task_desc.setText(taskList.get(i).getDescr());
         myViewHolder.task_goal.setText(taskList.get(i).getProg() + "/" + taskList.get(i).getGoal());
 

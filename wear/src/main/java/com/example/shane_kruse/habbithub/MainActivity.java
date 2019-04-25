@@ -11,8 +11,10 @@ import android.os.Message;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.support.wearable.activity.WearableActivity;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -64,8 +66,6 @@ public class MainActivity extends WearableActivity {
                 return true;
             }
         });
-
-        pieChart = findViewById(R.id.pie_chart);
 
         Intent intent = getIntent();
         upToDate = intent.getBooleanExtra("updateStatus", false);
@@ -184,40 +184,32 @@ public class MainActivity extends WearableActivity {
                 taskGoals[i] = Integer.parseInt(data[3]);
                 taskRowIds[i] = Integer.parseInt(data[4]);
 
-                vars.setxData(xData);
-                vars.setyData(yData);
-                vars.setColors(colors);
-                vars.setTaskGoals(taskGoals);
-                vars.setTaskProgs(taskProgs);
-                vars.setTaskRowIds(taskRowIds);
 
-                System.out.println("Here");
-                for (Integer integer : taskProgs) {
-                    System.out.print(integer + " ");
-                }
-
-                System.out.println("");
-
-                for (Integer integer : taskGoals) {
-                    System.out.print(integer + " ");
-                }
-                System.out.println("There");
-
-
-                createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
             }
         } else {
-            if (!pieChart.equals(null)) {
-                pieChart.clear();
-            }
-
+            xData.add("");
+            yData.add(0f);
+            colors.add(Color.BLACK);
         }
+
+        vars.setxData(xData);
+        vars.setyData(yData);
+        vars.setColors(colors);
+        vars.setTaskGoals(taskGoals);
+        vars.setTaskProgs(taskProgs);
+        vars.setTaskRowIds(taskRowIds);
+
+        createPieChart(vars.xData.toArray(new String[0]), vars.floatVals(vars.yData), vars.colors);
 }
 
     public void createPieChart(String[] xData, float[] yData, ArrayList<Integer> colors) {
 
         background = findViewById(R.id.pie_background);
         pieChart = findViewById(R.id.pie_chart);
+
+        if (xData[0].equals("")) {
+            pieChart.setEnabled(false);
+        }
 
         background.setBackgroundColor(Color.parseColor("#F5F5F5"));
 

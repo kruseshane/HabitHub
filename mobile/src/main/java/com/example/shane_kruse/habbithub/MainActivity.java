@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private String newTaskMsg;
     private int totalGoal;
     private int totalProg;
+    static boolean readyToReceive = true;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -97,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Default to today
+        updateRecycler(dbh.loadToday(), "TODAY");
+
+
         //Register to receive local broadcasts, which we'll be creating in the next step//
         IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
         Receiver messageReceiver = new Receiver();
@@ -111,9 +116,6 @@ public class MainActivity extends AppCompatActivity {
         setProgressBarAttributes();
 
         loadProgress();
-
-        // Default to today
-        updateRecycler(dbh.loadToday(), "TODAY");
 
         todayButton = findViewById(R.id.today_button);
         todayButton.setBackgroundColor(Color.parseColor("#A0A0A0"));
@@ -227,36 +229,37 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            if (!readyToReceive) return;
+            readyToReceive = false;
             String message = intent.getStringExtra("message");
-            System.out.println(message + " fuck");
-            Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            System.out.println("In onReceive with message [" + message + "]");
             if (message.split(",")[0].equals("$")) {
-                String [] data = message.split(",");
-                System.out.println(data[0] + "," + data[1]);
+                final String [] data = message.split(",");
+                System.out.println("Increment from watch found");
+                //dbh.printRow(Integer.parseInt(data[1]));
                 if (dbh.incrementTask(Integer.parseInt(data[1]))) {
+                    System.out.println("Task completed");
                     updateRecycler(dbh.loadToday(), "TODAY");
                     String updateMsg = dbh.getWatchTasks();
-
                     // Send update to watch
                     new NewThread("/my_path", updateMsg).start();
-
-                    System.out.println("UPDATE SENT");
-                    try {
-                        Thread.sleep(1500);
-                    } catch(InterruptedException ex) {
-                        Toast.makeText(MainActivity.this, "Toast", Toast.LENGTH_SHORT).show();
-                        ex.printStackTrace();
-                    }
+                    System.out.println("Updated tasks sent to watch");
                 }
-                //mAdapter.notifyItemChanged(Integer.parseInt(data[3]));
-                mAdapter.notifyDataSetChanged();
             }
             if (message.equals("REQUEST_UPDATE")) {
                 System.out.println("REQUEST_UPDATE RECEIVED");
                 //dbh.getWatchTasks();
                 sendUpdateToWatch();
             }
+            Handler handler= new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Ready to receive message again");
+                    readyToReceive = true;
+                }
+            }, 500);
+
         }
     }
 
@@ -292,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void run() {
 
-            System.out.println("Sending " + message + " to watch");
+            System.out.println("Sending " + message + " to watch in NewThread class");
             //Retrieve the connected devices, known as nodes//
             com.google.android.gms.tasks.Task<List<Node>> mobileDeviceList =
                     Wearable.getNodeClient(getApplicationContext()).getConnectedNodes();
@@ -331,7 +334,6 @@ public class MainActivity extends AppCompatActivity {
         public void sendmessage(String messageText) {
             Bundle bundle = new Bundle();
             bundle.putString("messageText", messageText);
-            System.out.println(myHandler.toString());
             Message msg = myHandler.obtainMessage();
             msg.setData(bundle);
             myHandler.sendMessage(msg);
@@ -345,6 +347,10 @@ public class MainActivity extends AppCompatActivity {
         // Send update to watch
         new NewThread("/my_path", updateMsg).start();
 
-        System.out.println("UPDATE SENT");
+        System.out.println("Update sent to watch form sendUpdateToWatch");
+    }
+
+    public void updateProgGoal() {
+        mAdapter.notifyDataSetChanged();
     }
 }

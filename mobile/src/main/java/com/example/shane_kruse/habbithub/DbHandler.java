@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Handler;
 
 public class DbHandler extends SQLiteOpenHelper {
     MainActivity mainAct;
@@ -307,6 +308,8 @@ public class DbHandler extends SQLiteOpenHelper {
         cv.put(KEY_PROG, new_prog);
         mainAct.incrementProg();
 
+        mainAct.updateProgGoal(); // <- fuck this shit... one line method fixed 8 hours of headache...
+
         // Update completed and time_completed if at or past goal
         if (new_prog >= goal) {
             cv.put(KEY_COMPLETED, 1);
@@ -334,9 +337,22 @@ public class DbHandler extends SQLiteOpenHelper {
         db.update(TABLE_ACTIVE, cv, KEY_ROW + " = " + rowID, null);
         db.close();
 
-        mainAct.sendUpdateToWatch();
+        //mainAct.sendUpdateToWatch();
 
         return completed;
+    }
+
+    public String printRow(int rowID) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_ACTIVE + " WHERE " + KEY_ROW + "=" + rowID, null);
+        System.out.println("Progress\tGoal");
+        if (cursor.moveToFirst()) {
+            do {
+               //System.out.println(cursor.getInt(3) + "\t" + cursor.getInt(2));
+                return cursor.getInt(3) + "," + cursor.getInt(2);
+            } while(cursor.moveToNext());
+        }
+        return "";
     }
 
     int repeatTask(int rowID) {
