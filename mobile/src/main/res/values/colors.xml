@@ -8,4 +8,5 @@
     <color name="light_orange">#F4CA8F</color>
     <color name="silver">#C0C0C0</color>
     <color name="toolbarTransparent">#00FFFFFF</color>
+    <color name="chkBoxColor">#DA7E59</color>
 </resources>

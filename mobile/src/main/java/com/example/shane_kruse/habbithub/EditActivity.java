@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.hardware.input.InputManager;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -196,6 +199,8 @@ public class EditActivity extends AppCompatActivity {
                 }
 
                 descEdit.clearFocus();
+                InputMethodManager im = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                im.hideSoftInputFromWindow(descEdit.getWindowToken(), 0);
             }
         });
 

@@ -28,7 +28,7 @@ import java.util.Objects;
 
 public class ScheduleActivity extends AppCompatActivity {
     Toolbar mToolbar;
-    Button mondayBtn, tuesdayBtn, wednesdayBtn, thursdayBtn,
+    Button mondayBtn, tuesdayBtn, wednesdayBtn, thursdayBtn, saveTimeBtn,
             fridayBtn, saturdayBtn, sundayBtn, everyDayBtn, pickTimeBtn;
     CheckBox anytimeChkBox;
     Switch repeatSwitch, watchSwitch;
@@ -39,6 +39,8 @@ public class ScheduleActivity extends AppCompatActivity {
     com.shawnlin.numberpicker.NumberPicker dailyNumPicker;
     Context context;
     private DbHandler dbh = new DbHandler(ScheduleActivity.this);
+    AlertDialog timeAlert;
+
 
     boolean isEverydaySelected = false;
 
@@ -110,6 +112,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 // Check if scheduling info was entered
                 if (intervalList.isEmpty() || !time_selected) {
+                    showPopup();
                     showPopup();
                     return;
                 }
@@ -243,6 +246,10 @@ public class ScheduleActivity extends AppCompatActivity {
                 if (isEverydaySelected){
                     isEverydaySelected = false;
                     everyDayBtn.setBackground(getDrawable(R.drawable.rounded_btn_schedule));
+
+                    for (Button b : buttonList)
+                        b.setEnabled(true);
+
                 }
                 else {
                     isEverydaySelected = true;
@@ -259,6 +266,35 @@ public class ScheduleActivity extends AppCompatActivity {
         ((ViewGroup) findViewById(R.id.schedule_layout)).getLayoutTransition()
                 .enableTransitionType(LayoutTransition.CHANGING);
 
+        // Time Popup
+        LayoutInflater timeInflater = getLayoutInflater();
+        timePopup = timeInflater.inflate(R.layout.time_popup_daily, null);
+        duedatePicker = timePopup.findViewById(R.id.time_picker);
+
+        timeAlert = new AlertDialog.Builder(this).create();
+        timeAlert.setView(timePopup);
+
+        anytimeChkBox = timePopup.findViewById(R.id.anytime_checkbox);
+        anytimeChkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    duedatePicker.setEnabled(false);
+                } else {
+                    duedatePicker.setEnabled(true);
+                }
+            }
+        });
+
+        saveTimeBtn = timePopup.findViewById(R.id.saveBtn);
+        saveTimeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                time_selected = true;
+                timeAlert.dismiss();
+            }
+        });
+
         // Pick time button
         pickTimeBtn = findViewById(R.id.pick_time_btn);
         pickTimeBtn.setOnClickListener(new View.OnClickListener() {
@@ -266,14 +302,9 @@ public class ScheduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 showTimePopup();
                 pickTimeBtn.setBackground(getDrawable(R.drawable.rounded_schedule_btn_selected));
+                //pickTimeBtn.setEnabled(false);
             }
         });
-
-        // Time Popup
-        LayoutInflater timeInflater = getLayoutInflater();
-        timePopup = timeInflater.inflate(R.layout.time_popup_daily, null);
-        duedatePicker = timePopup.findViewById(R.id.time_picker);
-        anytimeChkBox = timePopup.findViewById(R.id.anytime_checkbox);
 
         // Read Task info from create page
         Bundle data = getIntent().getExtras();
@@ -317,6 +348,8 @@ public class ScheduleActivity extends AppCompatActivity {
                         duedatePicker.setHour(due_date.getHour());
                         duedatePicker.setMinute(due_date.getMinute());
                     }
+                    pickTimeBtn.setBackground(getDrawable(R.drawable.rounded_schedule_btn_selected));
+                    time_selected = true;
 
                     // Goal
                     dailyNumPicker.setValue(goalEdit);
@@ -359,30 +392,7 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     void showTimePopup() {
-        final AlertDialog alert = new AlertDialog.Builder(this).create();
-        alert.setView(timePopup);
-
-        anytimeChkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    duedatePicker.setEnabled(false);
-                } else {
-                    duedatePicker.setEnabled(true);
-                }
-            }
-        });
-
-        Button saveBtn = timePopup.findViewById(R.id.saveBtn);
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                time_selected = true;
-                alert.dismiss();
-            }
-        });
-
-        alert.show();
+        timeAlert.show();
     }
 
     void setupIntervalBtn(ArrayList<Button> buttons) {
@@ -410,6 +420,7 @@ public class ScheduleActivity extends AppCompatActivity {
         for (int i = 0; i < buttons.size(); i++) {
             buttons.get(i).setBackground(getDrawable(R.drawable.round_weekday_btn));
             buttons.get(i).setSelected(false);
+            buttons.get(i).setEnabled(false);
         }
     }
 }

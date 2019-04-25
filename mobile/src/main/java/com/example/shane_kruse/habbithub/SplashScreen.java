@@ -21,7 +21,7 @@ public class SplashScreen extends AppCompatActivity {
 
         logo = findViewById(R.id.logo_view);
 
-        Timer timer = new Timer(3000, 3000);
+        Timer timer = new Timer(2500, 2500);
         timer.start();
 
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.splash_logo_anim);
